@@ -1,0 +1,56 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "geozarr-examples"
+description = "Simple GeoZarr examples"
+authors = [
+    {name = "Max Jones", email = "14077947+maxrjones@users.noreply.github.com"}
+]
+requires-python = ">=3.11"
+dependencies = [
+    "zarr",
+]
+dynamic = [
+  "version",
+]
+classifiers = [
+    'Development Status :: 1 - Planning',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Information Technology',
+    'Intended Audience :: Science/Research',
+    'License :: OSI Approved :: MIT License',
+    'Programming Language :: Python',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Operating System :: Unix',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+]
+license = {text = "MIT License"}
+keywords = ["Python", "compressed", "ndimensional-arrays", "zarr"]
+
+[tool.hatch]
+version.source = "vcs"
+build.hooks.vcs.version-file = "src/geozarr_examples/_version.py"
+
+[tool.pixi.pypi-dependencies]
+geozarr_examples = { path = ".", editable = true }
+xarray = { git = "https://github.com/pydata/xarray.git", rev = "4bbab48cacf94ff285475bd7b7abeea3b2ea888f" }
+xproj = { git = "https://github.com/benbovy/xproj.git", branch = "main" }
+
+[tool.pixi.project]
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
+
+[tool.pixi.dependencies]
+proj = ">=9.5.1"
+
+[tool.pixi.environments]
+default = { solve-group = "default" }
+test = { features = ["test"], solve-group = "default" }
+
+[dependency-groups]
+test = ["pytest"]
