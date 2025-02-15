@@ -36,6 +36,9 @@ Find out more at [https://zarr.dev](https://zarr.dev)
 - VirtualiZarr is simplifying virtualization
 - Progressing towards Zarr specification V3 across languages
 
+::: footer
+:::
+
 ## Zarr implementation landscape
 
 - [Independently implemented across languages](https://zarr.dev/implementations/)
@@ -57,14 +60,14 @@ Read more about [Zarr-Python](https://zarr.readthedocs.io/en/stable/index.html),
 ## What is GeoZarr?
 
 A GeoZarr extension for the Zarr specification
-![](_static/geozarr-repo.png){fig-alt="GeoZarr repository" fig-align="center" width="95%"}
+![](_static/geozarr-repo.png){fig-alt="GeoZarr repository" fig-align="center" width="95%" height="80%"}
 
 ::: footer
 :::
 
 ## Some history
 
-![](_static/geozarr-activity.png){fig-alt="GeoZarr commit activity" fig-align="center" width="95%"}
+![](_static/geozarr-activity.png){fig-alt="GeoZarr commit activity" fig-align="center" width="95%" height="80%"}
 
 ::: footer
 :::
@@ -73,7 +76,7 @@ A GeoZarr extension for the Zarr specification
 
 CRS handling across libraries has been prototyped
 
-![](_static/xproj-docs.png){fig-alt="XProj repository" fig-align="center" width="95%"}
+![](_static/xproj-docs.png){fig-alt="XProj repository" fig-align="center" width="95%" height="80%"}
 
 ::: footer
 Read more in the [xproj docs](https://xproj.readthedocs.io/en/latest/index.html)
@@ -84,7 +87,7 @@ Read more in the [xproj docs](https://xproj.readthedocs.io/en/latest/index.html)
 
 Generic support for analytic coordinates in Xarray
 
-![](_static/flexible-coordinates.png){fig-alt="Flexible coordinates PR" fig-align="center" width="95%"}
+![](_static/flexible-coordinates.png){fig-alt="Flexible coordinates PR" fig-align="center" width="95%" height="80%"}
 
 ::: footer
 Check out the [pull request](https://github.com/pydata/xarray/pull/9543)
@@ -95,7 +98,7 @@ Check out the [pull request](https://github.com/pydata/xarray/pull/9543)
 
 We have a deadline!
 
-![](_static/CNG-conference.png){fig-alt="Cloud Native Geospatial Conference Home Page" fig-align="center" width="95%"}
+![](_static/CNG-conference.png){fig-alt="Cloud Native Geospatial Conference Home Page" fig-align="center" width="95%" height="80%"}
 
 ::: footer
 Check out the [conference](https://2025-ut.cloudnativegeo.org/)
@@ -105,48 +108,56 @@ Check out the [conference](https://2025-ut.cloudnativegeo.org/)
 
 To prove whether CRS/coordinate encoding is solved
 
-![](_static/Pangeo-NetCDF-limitations.png){fig-alt="Pangeo issue on NetCDF limitations" fig-align="center" width="95%"}
+![](_static/Pangeo-NetCDF-limitations.png){fig-alt="Pangeo issue on NetCDF limitations" fig-align="center" width="95%" height="80%"}
 
 ::: footer
+Check out the [post](https://discourse.pangeo.io/t/example-which-highlights-the-limitations-of-netcdf-style-coordinates-for-large-geospatial-rasters/4140)
 :::
 
 ## What do we need?
 
 To prove whether OGC TMS 2.0 is sufficient
 
-![](_static/OGC-TMS.png){fig-alt="OGC TMS 2.0 Standard" fig-align="center" width="95%"}
+![](_static/OGC-TMS.png){fig-alt="OGC TMS 2.0 Standard" fig-align="center" width="95%" height="80%"}
 
 ::: footer
+Check out the [standard](https://www.ogc.org/standards/tms)
+
 :::
 
 ## What do we need?
 
-To prove whether we need xpublish and titiler-multidim
+To prove whether we need both XPublish and Titiler's Xarray extension
 
 :::: {.columns}
 
 ::: {.column width="50%"}
-![](_static/xpublish-community.png){fig-alt="XPublish on GitHub" fig-align="center" width="95%"}
+![](_static/xpublish-community.png){fig-alt="XPublish on GitHub" fig-align="center" width="95%" height="80%"}
 :::
 
 
 ::: {.column width="50%"}
-![](_static/titiler-multidim-repo.png){fig-alt="Titiler-multidim on GitHub" fig-align="center" width="95%"}
+![](_static/titiler-multidim-repo.png){fig-alt="Titiler-multidim on GitHub" fig-align="center" width="95%" height="80%"}
 :::
 
 ::::
 
 ::: footer
+Check out [XPublish](https://github.com/xpublish-community/xpublish) and [Titiler-Xarray](https://github.com/developmentseed/titiler/tree/main/src/titiler/xarray)
 :::
 
 ## What do we need?
 
 To show how to get the most out of Zarr and STAC
 
-![](_static/zarr-stac-issue.png){fig-alt="Issue on Zarr + STAC best practices" fig-align="center" width="95%"}
+![](_static/zarr-stac-issue.png){fig-alt="Issue on Zarr + STAC best practices" fig-align="center" width="95%" height="80%"}
 
 ::: footer
+Help us [tackle this issue](https://github.com/cloudnativegeo/cloud-optimized-geospatial-formats-guide/issues/134)
 :::
 
 ## Let's get going! 🚀
 
+::: footer
+Build code in [GeoZarr examples](https://github.com/developmentseed/geozarr-examples)!
+:::
