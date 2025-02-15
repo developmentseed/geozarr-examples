@@ -74,7 +74,7 @@
     "href": "slides.html#what-is-geozarr",
     "title": "GeoZarr",
     "section": "What is GeoZarr?",
-    "text": "What is GeoZarr?\nA GeoZarr extension for the Zarr specification\n\n\n\n\n\n\nRead the spec!"
+    "text": "What is GeoZarr?\nA geospatial extension for the Zarr specification, formalizing metadata expectations.\n\n\n\n\n\n\nRead the spec!"
   },
   {
     "objectID": "slides.html#some-history",
