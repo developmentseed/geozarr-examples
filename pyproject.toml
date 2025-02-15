@@ -40,6 +40,7 @@ build.hooks.vcs.version-file = "src/geozarr_examples/_version.py"
 geozarr_examples = { path = ".", editable = true }
 xarray = { git = "https://github.com/pydata/xarray.git", rev = "4bbab48cacf94ff285475bd7b7abeea3b2ea888f" }
 xproj = { git = "https://github.com/benbovy/xproj.git", branch = "main" }
+rioxarray = { git = "https://github.com/corteva/rioxarray.git" }
 
 [tool.pixi.project]
 channels = ["conda-forge"]
