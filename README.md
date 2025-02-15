@@ -46,7 +46,11 @@ as Zarr-Python 3 supports Zarr specification V3 (see prior question on "How does
 
 Web-Optimized Zarr right now is just an idea. I hope that the term "web-optimized zarr" will promote the use of overviews in GeoZarr (which are optional in the core spec) and familiarize practitioners with the concept of storing full-resolution "archival" versions in other file formats and reduced resolution versions in "native" zarr. GeoZarr would allow a single "web-optimized" entrypoint to both via virtualization. A prototype will part of this repository.
 
-# References
+## References
 
 - [GeoZarr validator](https://github.com/briannapagan/geozarr-validator) by [@briannapagan](https://github.com/briannapagan) [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/)
 - [GeoZarr spec](https://github.com/zarr-developers/geozarr-spec) [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/)
+
+## License
+
+Content in this repository is licensed under the [MIT LICENSE](LICENSE.txt).
