@@ -11,7 +11,7 @@ format:
 ## Goals {footer=false}
 
 - Reinvigorate Building It Out!
-    - 🙅‍♂️💭 All benefits from discussion are finished
+    - 🙅‍♂️💭 All benefits from discussion are exhausted
     - 🚀 GeoZarr can be successful if we act now
     - 💔 GeoZarr can fail if we don't
 
@@ -20,7 +20,7 @@ format:
 
 ## What is Zarr? {footer=false}
 
-An community developed, open-source format for the storage of chunked, compressed, N-dimensional arrays
+An community-developed, open-source format for the storage of chunked, compressed, N-dimensional arrays
 
 - Cloud optimized (concurrent read/writes, "infinitely" scalable)
 - Cross-disciplinary (originally developed for bio-imaging)
@@ -38,20 +38,20 @@ Find out more at [https://zarr.dev](https://zarr.dev)
 - Progressing towards Zarr specification V3 across languages
 
 ::: footer
+Read more about [Zarr-Python](https://zarr.readthedocs.io/en/stable/index.html), [Icechunk](https://icechunk.io/en/latest/) (from Earthmover), and [VirtualiZarr](https://virtualizarr.readthedocs.io/en/stable/index.html) (community developed, created by Tom Nicholas).
 :::
 
 ## Zarr implementation landscape
 
-- [Independently implemented across languages](https://zarr.dev/implementations/)
-    - Zarr Python 3.0 [released in January](https://zarr.dev/blog/zarr-python-3-release/)
-    - Even Rouault is updating [GDAL's Zarr driver](https://gdal.org/en/stable/drivers/raster/zarr.html)
-    - Lachlan Deakin is [updating the Zarrs Rust library](https://github.com/LDeakin/zarrs)
-    - OpenScapes is coordinating R support (will rely on GDAL driver)
-    - Unidata has build [Zarr support into the NetCDF C library](https://docs.unidata.ucar.edu/nug/current/nczarr_head.html)
-    - Trevor Manz was (is?) trying to consolidate the JavaScript implementations
+- Zarr Python 3.0 [released in January](https://zarr.dev/blog/zarr-python-3-release/)
+- Even Rouault is updating [GDAL's Zarr driver](https://gdal.org/en/stable/drivers/raster/zarr.html)
+- Lachlan Deakin is [updating the Zarrs Rust library](https://github.com/LDeakin/zarrs)
+- OpenScapes is coordinating R support (will rely on GDAL driver)
+- Unidata has build [Zarr support into the NetCDF C library](https://docs.unidata.ucar.edu/nug/current/nczarr_head.html)
+- Trevor Manz was (is?) trying to consolidate the JavaScript implementations
 
 ::: footer
-Read more about [Zarr-Python](https://zarr.readthedocs.io/en/stable/index.html), [Icechunk](https://icechunk.io/en/latest/) (from Earthmover), and [VirtualiZarr](https://virtualizarr.readthedocs.io/en/stable/index.html) (community developed, created by Tom Nicholas).
+Zarr is [independently implemented across languages](https://zarr.dev/implementations/)
 :::
 
 ::: footer
@@ -64,11 +64,12 @@ A GeoZarr extension for the Zarr specification
 ![](_static/geozarr-repo.png){fig-alt="GeoZarr repository" fig-align="center" width="60%"}
 
 ::: footer
+Read [the spec](https://github.com/zarr-developers/geozarr-spec/)!
 :::
 
 ## Some history
 
-![](_static/geozarr-activity.png{fig-alt="GeoZarr commit activity" fig-align="center" width="60%"}
+![](_static/geozarr-activity.png){fig-alt="GeoZarr commit activity" fig-align="center" width="95%"}
 
 ::: footer
 :::
@@ -112,7 +113,7 @@ To prove whether CRS/coordinate encoding is solved
 ![](_static/Pangeo-NetCDF-limitations.png){fig-alt="Pangeo issue on )NetCDF limitations" fig-align="center" width="60%"}
 
 ::: footer
-Check out the [post](https://discourse.pangeo.io/t/example-which-highlights-the-limitations-of-netcdf-style-coordinates-for-large-geospatial-rasters/4140)
+Check out the [Discourse post](https://discourse.pangeo.io/t/example-which-highlights-the-limitations-of-netcdf-style-coordinates-for-large-geospatial-rasters/4140)
 :::
 
 ## What do we need?
