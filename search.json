@@ -46,42 +46,42 @@
     "href": "slides.html#goals",
     "title": "GeoZarr",
     "section": "Goals",
-    "text": "Goals\n\nReinvigorate Building It Out!\n\n🙅‍♂️💭 All benefits from discussion are finished\n🚀 GeoZarr can be successful if we act now\n💔 GeoZarr can fail if we don’t"
+    "text": "Goals\n\nReinvigorate Building It Out!\n\n🙅‍♂️💭 All benefits from discussion are exhausted\n🚀 GeoZarr can be successful if we act now\n💔 GeoZarr can fail if we don’t"
   },
   {
     "objectID": "slides.html#what-is-zarr",
     "href": "slides.html#what-is-zarr",
     "title": "GeoZarr",
     "section": "What is Zarr?",
-    "text": "What is Zarr?\nAn community developed, open-source format for the storage of chunked, compressed, N-dimensional arrays\n\nCloud optimized (concurrent read/writes, “infinitely” scalable)\nCross-disciplinary (originally developed for bio-imaging)\nExtremely extensible (supports any key-value store)\n\n\nFind out more at https://zarr.dev"
+    "text": "What is Zarr?\nAn community-developed, open-source format for the storage of chunked, compressed, N-dimensional arrays\n\nCloud optimized (concurrent read/writes, “infinitely” scalable)\nCross-disciplinary (originally developed for bio-imaging)\nExtremely extensible (supports any key-value store)\n\n\nFind out more at https://zarr.dev"
   },
   {
     "objectID": "slides.html#whats-going-on-today",
     "href": "slides.html#whats-going-on-today",
     "title": "GeoZarr",
     "section": "What’s going on today?",
-    "text": "What’s going on today?\n\nZarr is growing in popularity\nIcechunk is improving consistency and performance\nVirtualiZarr is simplifying virtualization\nProgressing towards Zarr specification V3 across languages"
+    "text": "What’s going on today?\n\nZarr is growing in popularity\nIcechunk is improving consistency and performance\nVirtualiZarr is simplifying virtualization\nProgressing towards Zarr specification V3 across languages\n\n\nRead more about Zarr-Python, Icechunk (from Earthmover), and VirtualiZarr (community developed, created by Tom Nicholas)."
   },
   {
     "objectID": "slides.html#zarr-implementation-landscape",
     "href": "slides.html#zarr-implementation-landscape",
     "title": "GeoZarr",
     "section": "Zarr implementation landscape",
-    "text": "Zarr implementation landscape\n\nIndependently implemented across languages\n\nZarr Python 3.0 released in January\nEven Rouault is updating GDAL’s Zarr driver\nLachlan Deakin is updating the Zarrs Rust library\nOpenScapes is coordinating R support (will rely on GDAL driver)\nUnidata has build Zarr support into the NetCDF C library\nTrevor Manz was (is?) trying to consolidate the JavaScript implementations\n\n\n\nRead more about Zarr-Python, Icechunk (from Earthmover), and VirtualiZarr (community developed, created by Tom Nicholas)."
+    "text": "Zarr implementation landscape\n\nZarr Python 3.0 released in January\nEven Rouault is updating GDAL’s Zarr driver\nLachlan Deakin is updating the Zarrs Rust library\nOpenScapes is coordinating R support (will rely on GDAL driver)\nUnidata has build Zarr support into the NetCDF C library\nTrevor Manz was (is?) trying to consolidate the JavaScript implementations\n\n\nZarr is independently implemented across languages"
   },
   {
     "objectID": "slides.html#what-is-geozarr",
     "href": "slides.html#what-is-geozarr",
     "title": "GeoZarr",
     "section": "What is GeoZarr?",
-    "text": "What is GeoZarr?\nA GeoZarr extension for the Zarr specification"
+    "text": "What is GeoZarr?\nA GeoZarr extension for the Zarr specification\n\n\n\n\n\n\nRead the spec!"
   },
   {
     "objectID": "slides.html#some-history",
     "href": "slides.html#some-history",
     "title": "GeoZarr",
     "section": "Some history",
-    "text": "Some history\n![](_static/geozarr-activity.png{fig-alt=“GeoZarr commit activity” fig-align=“center” width=“60%”}"
+    "text": "Some history"
   },
   {
     "objectID": "slides.html#why-is-this-an-exciting-time",
@@ -109,7 +109,7 @@
     "href": "slides.html#what-do-we-need",
     "title": "GeoZarr",
     "section": "What do we need?",
-    "text": "What do we need?\nTo prove whether CRS/coordinate encoding is solved\n\n\n\n\n\n\nCheck out the post"
+    "text": "What do we need?\nTo prove whether CRS/coordinate encoding is solved\n\n\n\n\n\n\nCheck out the Discourse post"
   },
   {
     "objectID": "slides.html#what-do-we-need-1",
