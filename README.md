@@ -54,4 +54,4 @@ Web-Optimized Zarr right now is just an idea. I hope that the term "web-optimize
 
 ## License
 
-Content in this repository is licensed under the [MIT LICENSE](LICENSE.txt).
+Content in this repository is licensed under the [MIT License](LICENSE.txt).
