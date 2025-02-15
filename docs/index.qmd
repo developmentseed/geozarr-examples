@@ -1,0 +1,8 @@
+---
+title: "GeoZarr examples"
+---
+
+## Overview
+
+Consider this a "scratch" space for building out examples of GeoZarr in practice. If useful, the contents will eventually be migrated to a different repository, such as the Cloud Optimized Geospatial Formats Guide or the GeoZarr spec repository.
+

@@ -1,0 +1,152 @@
+---
+title: GeoZarr
+subtitle: February 2025 (subjective) status report
+footer: "Material based on past presentations by Brianna Pagán and Joe Hamman (mistakes my own)"
+format:
+  revealjs:
+    incremental: false
+---
+
+## Goals {footer=false}
+
+- Reinvigorate Building It Out!
+    - 🙅‍♂️💭 All benefits from discussion are finished
+    - 🚀 GeoZarr can be successful if we act now
+    - 💔 GeoZarr can fail if we don't
+
+::: footer
+:::
+
+## What is Zarr? {footer=false}
+
+An community developed, open-source format for the storage of chunked, compressed, N-dimensional arrays
+
+- Cloud optimized (concurrent read/writes, "infinitely" scalable)
+- Cross-disciplinary (originally developed for bio-imaging)
+- *Extremely* extensible (supports any key-value store)
+
+::: footer
+Find out more at [https://zarr.dev](https://zarr.dev)
+:::
+
+## What's going on today?
+
+- Zarr is growing in popularity
+- Icechunk is improving consistency and performance
+- VirtualiZarr is simplifying virtualization
+- Progressing towards Zarr specification V3 across languages
+
+## Zarr implementation landscape
+
+- [Independently implemented across languages](https://zarr.dev/implementations/)
+    - Zarr Python 3.0 [released in January](https://zarr.dev/blog/zarr-python-3-release/)
+    - Even Rouault is updating [GDAL's Zarr driver](https://gdal.org/en/stable/drivers/raster/zarr.html)
+    - Lachlan Deakin is [updating the Zarrs Rust library](https://github.com/LDeakin/zarrs)
+    - Trevor Manz was (is?) trying to consolidate the JavaScript implementations (unaware of format 3 status)
+    - Unidata has build [Zarr support into the NetCDF C library](https://docs.unidata.ucar.edu/nug/current/nczarr_head.html) (unaware of format 3 status)
+    - OpenScapes is coordinating R support (will rely on GDAL driver)
+    - Unaware of [Julia lang's](https://github.com/JuliaIO/Zarr.jl) progress towards Zarr format 3
+
+::: footer
+Read more about [Zarr-Python](https://zarr.readthedocs.io/en/stable/index.html), [Icechunk](https://icechunk.io/en/latest/) (from Earthmover), and [VirtualiZarr](https://virtualizarr.readthedocs.io/en/stable/index.html) (community developed, created by Tom Nicholas).
+:::
+
+::: footer
+:::
+
+## What is GeoZarr?
+
+A GeoZarr extension for the Zarr specification
+![](_static/geozarr-repo.png){fig-alt="GeoZarr repository" fig-align="center" width="95%"}
+
+::: footer
+:::
+
+## Some history
+
+![](_static/geozarr-activity.png){fig-alt="GeoZarr commit activity" fig-align="center" width="95%"}
+
+::: footer
+:::
+
+## Why is this an exciting time?
+
+CRS handling across libraries has been prototyped
+
+![](_static/xproj-docs.png){fig-alt="XProj repository" fig-align="center" width="95%"}
+
+::: footer
+Read more in the [xproj docs](https://xproj.readthedocs.io/en/latest/index.html)
+:::
+
+
+## Why is this an exciting time?
+
+Generic support for analytic coordinates in Xarray
+
+![](_static/flexible-coordinates.png){fig-alt="Flexible coordinates PR" fig-align="center" width="95%"}
+
+::: footer
+Check out the [pull request](https://github.com/pydata/xarray/pull/9543)
+:::
+
+
+## Why is this an exciting time?
+
+We have a deadline!
+
+![](_static/CNG-conference.png){fig-alt="Cloud Native Geospatial Conference Home Page" fig-align="center" width="95%"}
+
+::: footer
+Check out the [conference](https://2025-ut.cloudnativegeo.org/)
+:::
+
+## What do we need?
+
+To prove whether CRS/coordinate encoding is solved
+
+![](_static/Pangeo-NetCDF-limitations.png){fig-alt="Pangeo issue on NetCDF limitations" fig-align="center" width="95%"}
+
+::: footer
+:::
+
+## What do we need?
+
+To prove whether OGC TMS 2.0 is sufficient
+
+![](_static/OGC-TMS.png){fig-alt="OGC TMS 2.0 Standard" fig-align="center" width="95%"}
+
+::: footer
+:::
+
+## What do we need?
+
+To prove whether we need xpublish and titiler-multidim
+
+:::: {.columns}
+
+::: {.column width="50%"}
+![](_static/xpublish-community.png){fig-alt="XPublish on GitHub" fig-align="center" width="95%"}
+:::
+
+
+::: {.column width="50%"}
+![](_static/titiler-multidim-repo.png){fig-alt="Titiler-multidim on GitHub" fig-align="center" width="95%"}
+:::
+
+::::
+
+::: footer
+:::
+
+## What do we need?
+
+To show how to get the most out of Zarr and STAC
+
+![](_static/zarr-stac-issue.png){fig-alt="Issue on Zarr + STAC best practices" fig-align="center" width="95%"}
+
+::: footer
+:::
+
+## Let's get going! 🚀
+

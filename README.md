@@ -50,6 +50,7 @@ Web-Optimized Zarr right now is just an idea. I hope that the term "web-optimize
 
 - [GeoZarr validator](https://github.com/briannapagan/geozarr-validator) by [@briannapagan](https://github.com/briannapagan) [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/)
 - [GeoZarr spec](https://github.com/zarr-developers/geozarr-spec) [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/)
+- Quarto configuration based on [Cloud Native Geospatial Formats Guide](https://github.com/cloudnativegeo/cloud-optimized-geospatial-formats-guide) and [Tile Benchmarking](https://developmentseed.org/tile-benchmarking/).
 
 ## License
 
