@@ -60,55 +60,55 @@
     "href": "slides.html#why-is-this-an-exciting-time",
     "title": "GeoZarr",
     "section": "Why is this an exciting time?",
-    "text": "Why is this an exciting time?\nCRS handling across libraries has been prototyped\n\n\nRead more in the xproj docs"
+    "text": "Why is this an exciting time?\nCRS handling across libraries has been prototyped\n\n\n\n\n\n\nRead more in the xproj docs"
   },
   {
     "objectID": "slides.html#why-is-this-an-exciting-time-1",
     "href": "slides.html#why-is-this-an-exciting-time-1",
     "title": "GeoZarr",
     "section": "Why is this an exciting time?",
-    "text": "Why is this an exciting time?\nGeneric support for analytic coordinates in Xarray\n\n\nCheck out the pull request"
+    "text": "Why is this an exciting time?\nGeneric support for analytic coordinates in Xarray\n\n\n\n\n\n\nCheck out the pull request"
   },
   {
     "objectID": "slides.html#why-is-this-an-exciting-time-2",
     "href": "slides.html#why-is-this-an-exciting-time-2",
     "title": "GeoZarr",
     "section": "Why is this an exciting time?",
-    "text": "Why is this an exciting time?\nWe have a deadline!\n\n\nCheck out the conference"
+    "text": "Why is this an exciting time?\nWe have a deadline!\n\n\n\n\n\n\nCheck out the conference"
   },
   {
     "objectID": "slides.html#what-do-we-need",
     "href": "slides.html#what-do-we-need",
     "title": "GeoZarr",
     "section": "What do we need?",
-    "text": "What do we need?\nTo prove whether CRS/coordinate encoding is solved"
+    "text": "What do we need?\nTo prove whether CRS/coordinate encoding is solved\n\n\n\n\n\n\nCheck out the post"
   },
   {
     "objectID": "slides.html#what-do-we-need-1",
     "href": "slides.html#what-do-we-need-1",
     "title": "GeoZarr",
     "section": "What do we need?",
-    "text": "What do we need?\nTo prove whether OGC TMS 2.0 is sufficient"
+    "text": "What do we need?\nTo prove whether OGC TMS 2.0 is sufficient\n\n\n\n\n\n\nCheck out the standard"
   },
   {
     "objectID": "slides.html#what-do-we-need-2",
     "href": "slides.html#what-do-we-need-2",
     "title": "GeoZarr",
     "section": "What do we need?",
-    "text": "What do we need?\nTo prove whether we need xpublish and titiler-multidim"
+    "text": "What do we need?\nTo prove whether we need both XPublish and Titiler’s Xarray extension\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCheck out XPublish and Titiler-Xarray"
   },
   {
     "objectID": "slides.html#what-do-we-need-3",
     "href": "slides.html#what-do-we-need-3",
     "title": "GeoZarr",
     "section": "What do we need?",
-    "text": "What do we need?\nTo show how to get the most out of Zarr and STAC"
+    "text": "What do we need?\nTo show how to get the most out of Zarr and STAC\n\n\n\n\n\n\nHelp us tackle this issue"
   },
   {
     "objectID": "slides.html#lets-get-going",
     "href": "slides.html#lets-get-going",
     "title": "GeoZarr",
     "section": "Let’s get going! 🚀",
-    "text": "Let’s get going! 🚀"
+    "text": "Let’s get going! 🚀\n\nBuild code in GeoZarr examples!"
   }
 ]
