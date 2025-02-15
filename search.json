@@ -67,7 +67,7 @@
     "href": "slides.html#zarr-implementation-landscape",
     "title": "GeoZarr",
     "section": "Zarr implementation landscape",
-    "text": "Zarr implementation landscape\n\nIndependently implemented across languages\n\nZarr Python 3.0 released in January\nEven Rouault is updating GDAL’s Zarr driver\nLachlan Deakin is updating the Zarrs Rust library\nTrevor Manz was (is?) trying to consolidate the JavaScript implementations (unaware of format 3 status)\nUnidata has build Zarr support into the NetCDF C library (unaware of format 3 status)\nOpenScapes is coordinating R support (will rely on GDAL driver)\nUnaware of Julia lang’s progress towards Zarr format 3\n\n\n\nRead more about Zarr-Python, Icechunk (from Earthmover), and VirtualiZarr (community developed, created by Tom Nicholas)."
+    "text": "Zarr implementation landscape\n\nIndependently implemented across languages\n\nZarr Python 3.0 released in January\nEven Rouault is updating GDAL’s Zarr driver\nLachlan Deakin is updating the Zarrs Rust library\nOpenScapes is coordinating R support (will rely on GDAL driver)\nUnidata has build Zarr support into the NetCDF C library\nTrevor Manz was (is?) trying to consolidate the JavaScript implementations\n\n\n\nRead more about Zarr-Python, Icechunk (from Earthmover), and VirtualiZarr (community developed, created by Tom Nicholas)."
   },
   {
     "objectID": "slides.html#what-is-geozarr",
