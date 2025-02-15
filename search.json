@@ -81,7 +81,7 @@
     "href": "slides.html#some-history",
     "title": "GeoZarr",
     "section": "Some history",
-    "text": "Some history"
+    "text": "Some history\n![](_static/geozarr-activity.png{fig-alt=“GeoZarr commit activity” fig-align=“center” width=“60%”}"
   },
   {
     "objectID": "slides.html#why-is-this-an-exciting-time",
