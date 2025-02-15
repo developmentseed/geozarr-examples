@@ -62,6 +62,11 @@ rasterio = ">=1.4.3,<2"
 [tool.pixi.feature.analysis.dependencies]
 jupyter = "*"
 panel = "*"
+matplotlib = "*"
+cartopy = "*"
+
+[tool.pixi.feature.analysis.pypi-dependencies]
+geoviews = "*"
 
 [dependency-groups]
 test = ["pytest"]
