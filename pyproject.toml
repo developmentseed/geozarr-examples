@@ -47,10 +47,20 @@ platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
 
 [tool.pixi.dependencies]
 proj = ">=9.5.1"
+cftime = ">=1.6.4,<2"
 
 [tool.pixi.environments]
 default = { solve-group = "default" }
-test = { features = ["test"], solve-group = "default" }
+test = { features = ["test", "io", "analysis"], solve-group = "default" }
+
+[tool.pixi.feature.io.dependencies]
+netcdf4 = "*"
+pooch = ">=1.8.2,<2"
+rasterio = ">=1.4.3,<2"
+
+[tool.pixi.feature.analysis.dependencies]
+jupyter = "*"
+panel = "*"
 
 [dependency-groups]
 test = ["pytest"]
