@@ -59,7 +59,7 @@ Zarr is [independently implemented across languages](https://zarr.dev/implementa
 
 ## What is GeoZarr?
 
-A GeoZarr extension for the Zarr specification
+A geospatial extension for the Zarr specification, formalizing metadata expectations.
 
 ![](_static/geozarr-repo.png){fig-alt="GeoZarr repository" fig-align="center" width="60%"}
 
