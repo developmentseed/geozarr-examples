@@ -1,0 +1,1 @@
+Sitemap: https://developmentseed.github.io/geozarr-examples/sitemap.xml

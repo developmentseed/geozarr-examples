@@ -1,0 +1,114 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "GeoZarr examples",
+    "section": "",
+    "text": "Consider this a “scratch” space for building out examples of GeoZarr in practice. If useful, the contents will eventually be migrated to a different repository, such as the Cloud Optimized Geospatial Formats Guide or the GeoZarr spec repository."
+  },
+  {
+    "objectID": "index.html#overview",
+    "href": "index.html#overview",
+    "title": "GeoZarr examples",
+    "section": "",
+    "text": "Consider this a “scratch” space for building out examples of GeoZarr in practice. If useful, the contents will eventually be migrated to a different repository, such as the Cloud Optimized Geospatial Formats Guide or the GeoZarr spec repository."
+  },
+  {
+    "objectID": "slides.html#goals",
+    "href": "slides.html#goals",
+    "title": "GeoZarr",
+    "section": "Goals",
+    "text": "Goals\n\nReinvigorate Building It Out!\n\n🙅‍♂️💭 All benefits from discussion are finished\n🚀 GeoZarr can be successful if we act now\n💔 GeoZarr can fail if we don’t"
+  },
+  {
+    "objectID": "slides.html#what-is-zarr",
+    "href": "slides.html#what-is-zarr",
+    "title": "GeoZarr",
+    "section": "What is Zarr?",
+    "text": "What is Zarr?\nAn community developed, open-source format for the storage of chunked, compressed, N-dimensional arrays\n\nCloud optimized (concurrent read/writes, “infinitely” scalable)\nCross-disciplinary (originally developed for bio-imaging)\nExtremely extensible (supports any key-value store)\n\n\nFind out more at https://zarr.dev"
+  },
+  {
+    "objectID": "slides.html#whats-going-on-today",
+    "href": "slides.html#whats-going-on-today",
+    "title": "GeoZarr",
+    "section": "What’s going on today?",
+    "text": "What’s going on today?\n\nZarr is growing in popularity\nIcechunk is improving consistency and performance\nVirtualiZarr is simplifying virtualization\nProgressing towards Zarr specification V3 across languages"
+  },
+  {
+    "objectID": "slides.html#zarr-implementation-landscape",
+    "href": "slides.html#zarr-implementation-landscape",
+    "title": "GeoZarr",
+    "section": "Zarr implementation landscape",
+    "text": "Zarr implementation landscape\n\nIndependently implemented across languages\n\nZarr Python 3.0 released in January\nEven Rouault is updating GDAL’s Zarr driver\nLachlan Deakin is updating the Zarrs Rust library\nTrevor Manz was (is?) trying to consolidate the JavaScript implementations (unaware of format 3 status)\nUnidata has build Zarr support into the NetCDF C library (unaware of format 3 status)\nOpenScapes is coordinating R support (will rely on GDAL driver)\nUnaware of Julia lang’s progress towards Zarr format 3\n\n\n\nRead more about Zarr-Python, Icechunk (from Earthmover), and VirtualiZarr (community developed, created by Tom Nicholas)."
+  },
+  {
+    "objectID": "slides.html#what-is-geozarr",
+    "href": "slides.html#what-is-geozarr",
+    "title": "GeoZarr",
+    "section": "What is GeoZarr?",
+    "text": "What is GeoZarr?\nA GeoZarr extension for the Zarr specification"
+  },
+  {
+    "objectID": "slides.html#some-history",
+    "href": "slides.html#some-history",
+    "title": "GeoZarr",
+    "section": "Some history",
+    "text": "Some history"
+  },
+  {
+    "objectID": "slides.html#why-is-this-an-exciting-time",
+    "href": "slides.html#why-is-this-an-exciting-time",
+    "title": "GeoZarr",
+    "section": "Why is this an exciting time?",
+    "text": "Why is this an exciting time?\nCRS handling across libraries has been prototyped\n\n\nRead more in the xproj docs"
+  },
+  {
+    "objectID": "slides.html#why-is-this-an-exciting-time-1",
+    "href": "slides.html#why-is-this-an-exciting-time-1",
+    "title": "GeoZarr",
+    "section": "Why is this an exciting time?",
+    "text": "Why is this an exciting time?\nGeneric support for analytic coordinates in Xarray\n\n\nCheck out the pull request"
+  },
+  {
+    "objectID": "slides.html#why-is-this-an-exciting-time-2",
+    "href": "slides.html#why-is-this-an-exciting-time-2",
+    "title": "GeoZarr",
+    "section": "Why is this an exciting time?",
+    "text": "Why is this an exciting time?\nWe have a deadline!\n\n\nCheck out the conference"
+  },
+  {
+    "objectID": "slides.html#what-do-we-need",
+    "href": "slides.html#what-do-we-need",
+    "title": "GeoZarr",
+    "section": "What do we need?",
+    "text": "What do we need?\nTo prove whether CRS/coordinate encoding is solved"
+  },
+  {
+    "objectID": "slides.html#what-do-we-need-1",
+    "href": "slides.html#what-do-we-need-1",
+    "title": "GeoZarr",
+    "section": "What do we need?",
+    "text": "What do we need?\nTo prove whether OGC TMS 2.0 is sufficient"
+  },
+  {
+    "objectID": "slides.html#what-do-we-need-2",
+    "href": "slides.html#what-do-we-need-2",
+    "title": "GeoZarr",
+    "section": "What do we need?",
+    "text": "What do we need?\nTo prove whether we need xpublish and titiler-multidim"
+  },
+  {
+    "objectID": "slides.html#what-do-we-need-3",
+    "href": "slides.html#what-do-we-need-3",
+    "title": "GeoZarr",
+    "section": "What do we need?",
+    "text": "What do we need?\nTo show how to get the most out of Zarr and STAC"
+  },
+  {
+    "objectID": "slides.html#lets-get-going",
+    "href": "slides.html#lets-get-going",
+    "title": "GeoZarr",
+    "section": "Let’s get going! 🚀",
+    "text": "Let’s get going! 🚀"
+  }
+]
