@@ -64,6 +64,7 @@ jupyter = "*"
 panel = "*"
 matplotlib = "*"
 cartopy = "*"
+hvplot = "*"
 
 [tool.pixi.feature.analysis.pypi-dependencies]
 geoviews = "*"
