@@ -1,11 +1,15 @@
 ---
 title: GeoZarr
 subtitle: February 2025 (subjective) status report
-footer: "Material based on past presentations by Brianna Pagán and Joe Hamman (mistakes my own)"
+footer: "Thanks: Brianna Pagán, Joe Hamman, GeoZarr WG, Zarr refactor WG"
 format:
   revealjs:
     incremental: false
     auto-stretch: false
+    theme: solarized
+    width: 1600
+    height: 900
+    slideNumber: true
 ---
 
 ## Goals {footer=false}
@@ -76,7 +80,14 @@ Read [the spec](https://github.com/zarr-developers/geozarr-spec/)!
 
 ## Why is this an exciting time?
 
-CRS handling across libraries has been prototyped
+Multi-dimensional geospatial solutions can bring real impact across humanitarian, scientific, and industrial needs
+
+::: footer
+:::
+
+## Why is this an exciting time?
+
+Experimental CRS handling across the Python ecosystem
 
 ![](_static/xproj-docs.png){fig-alt="XProj repository" fig-align="center" width="60%"}
 
@@ -87,7 +98,7 @@ Read more in the [xproj docs](https://xproj.readthedocs.io/en/latest/index.html)
 
 ## Why is this an exciting time?
 
-Generic support for analytic coordinates in Xarray
+Generic support for analytic/functional coordinates in Xarray
 
 ![](_static/flexible-coordinates.png){fig-alt="Flexible coordinates PR" fig-align="center" width="60%"}
 
@@ -108,17 +119,7 @@ Check out the [conference](https://2025-ut.cloudnativegeo.org/)
 
 ## What do we need?
 
-To prove whether CRS/coordinate encoding is solved
-
-![](_static/Pangeo-NetCDF-limitations.png){fig-alt="Pangeo issue on )NetCDF limitations" fig-align="center" width="60%"}
-
-::: footer
-Check out the [Discourse post](https://discourse.pangeo.io/t/example-which-highlights-the-limitations-of-netcdf-style-coordinates-for-large-geospatial-rasters/4140)
-:::
-
-## What do we need?
-
-To prove whether OGC TMS 2.0 is sufficient
+To prove whether OGC TMS 2.0 is sufficient for performant and reliable rendering and analysis
 
 ![](_static/OGC-TMS.png){fig-alt="OGC TMS 2.0 Standard" fig-align="center" width="60%"}
 
@@ -129,7 +130,19 @@ Check out the [standard](https://www.ogc.org/standards/tms)
 
 ## What do we need?
 
-To prove whether we need both XPublish and Titiler's Xarray extension
+To push forward Xarray functional coordinates for geospatial
+
+![](_static/Pangeo-NetCDF-limitations.png){fig-alt="Pangeo issue on )NetCDF limitations" fig-align="center" width="60%"}
+
+::: footer
+Check out the [Discourse post](https://discourse.pangeo.io/t/example-which-highlights-the-limitations-of-netcdf-style-coordinates-for-large-geospatial-rasters/4140)
+:::
+
+
+
+## What do we need?
+
+To demonstrate how XPublish and Titiler's Xarray extension fit together (or not)
 
 :::: {.columns}
 
