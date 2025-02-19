@@ -106,6 +106,16 @@ Generic support for analytic/functional coordinates in Xarray
 Check out the [pull request](https://github.com/pydata/xarray/pull/9543)
 :::
 
+## Why is this an exciting time?
+
+Draft ZEP for breaking the stalemate on building Zarr extensions
+
+![](_static/zep9.png){fig-alt="Zarr Extension Naming ZEP" fig-align="center" width="60%"}
+
+::: footer
+Check out the [draft ZEP](https://zarr.dev/zeps/draft/ZEP0009.html)
+:::
+
 
 ## Why is this an exciting time?
 
