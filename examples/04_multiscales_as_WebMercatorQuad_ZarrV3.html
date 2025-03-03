@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Store CRS information in a auxiliary variable specified in grid_mapping</title>
+<title>Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -224,7 +224,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../examples/01_CRS_in_auxiliary_variable.html">Examples</a></li><li class="breadcrumb-item"><a href="../examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html">WebMercatorQuad overviews (Zarr V3)</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Store CRS information in a auxiliary variable specified in grid_mapping</h1>
+<h1 class="title">Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS</h1>
 </div>
 
 
@@ -241,6 +241,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<p>While GeoZarr v0.4 is Zarr V2 specific, let’s write a Zarr V3 store to get an idea about how GeoZarr could be adapted for Zarr format 3.</p>
 <section id="load-example-dataset-from-netcdf-into-xarray" class="level2">
 <h2 class="anchored" data-anchor-id="load-example-dataset-from-netcdf-into-xarray">Load example dataset from NetCDF into Xarray</h2>
 <div id="cell-3" class="cell" data-execution_count="1">
