@@ -3,14 +3,37 @@ project:
   output-dir: _site
 
 website:
-  title: "GeoZarr (in practice)"
-  navbar:
-    left:
+  sidebar:
+    style: "docked"
+    search: true
+    collapse-level: 2
+    title: "GeoZarr"
+    tools:
+      - icon: github
+        href: https://github.com/developmentseed/geozarr-examples
+        text: "Repo"
+    contents:
       - href: index.qmd
         text: Home
       - href: slides.qmd
         text: Slides
+      - section: Pre-requisites
+        contents:
+          - href: examples/00_download_data.ipynb
+            text: Download dataset for examples
+      - section: Examples
+        contents:
+          - href: examples/01_CRS_in_auxiliary_variable.ipynb
+            text: Explicit coordinates
+          - href: examples/02_CRS_and_geotransform_in_auxiliary_variable.ipynb
+            text: GeoTransform
+          - href: examples/03_multiscales_as_WebMercatorQuad_ZarrV2.ipynb
+            text: WebMercatorQuad overviews (Zarr V2)
+          - href: examples/04_multiscales_as_WebMercatorQuad_ZarrV3.ipynb
+            text: WebMercatorQuad overviews (Zarr V3)
+
 format:
+
   html:
     theme:
       light: [cosmo, theme.scss] # from https://github.com/sta210-s22/website/blob/main/_quarto.yml
