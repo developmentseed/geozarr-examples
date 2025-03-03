@@ -38,9 +38,14 @@ build.hooks.vcs.version-file = "src/geozarr_examples/_version.py"
 
 [tool.pixi.pypi-dependencies]
 geozarr_examples = { path = ".", editable = true }
-xarray = { git = "https://github.com/pydata/xarray.git", rev = "4bbab48cacf94ff285475bd7b7abeea3b2ea888f" }
+xarray = { git = "https://github.com/pydata/xarray.git" }
 xproj = { git = "https://github.com/benbovy/xproj.git", branch = "main" }
 rioxarray = { git = "https://github.com/corteva/rioxarray.git" }
+earthaccess = { git = "https://github.com/nsidc/earthaccess" }
+rio-cogeo = "*"
+cf_xarray = "*"
+rio-tiler = "*"
+
 
 [tool.pixi.project]
 channels = ["conda-forge"]
@@ -49,6 +54,7 @@ platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
 [tool.pixi.dependencies]
 proj = ">=9.5.1"
 cftime = ">=1.6.4,<2"
+dask = ">=2025.2.0,<2026"
 
 [tool.pixi.environments]
 default = { solve-group = "default" }
@@ -58,6 +64,7 @@ test = { features = ["test", "io", "analysis"], solve-group = "default" }
 netcdf4 = "*"
 pooch = ">=1.8.2,<2"
 rasterio = ">=1.4.3,<2"
+libgdal-hdf5 = "*"
 
 [tool.pixi.feature.analysis.dependencies]
 jupyter = "*"
@@ -65,6 +72,9 @@ panel = "*"
 matplotlib = "*"
 cartopy = "*"
 hvplot = "*"
+rich = "*"
+jupytext = "*"
+jupyter_bokeh = "*"
 
 [tool.pixi.feature.analysis.pypi-dependencies]
 geoviews = "*"
