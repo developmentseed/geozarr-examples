@@ -85,8 +85,15 @@ tests/.hypothesis
 .pixi
 *.egg-info
 
-# test data
+# Paired notebooks
+examples/*.py
+
+# WIP
+scratch-notebooks/*
+
+# data
 data/*
+output/*
 
 .gitattributes
 
