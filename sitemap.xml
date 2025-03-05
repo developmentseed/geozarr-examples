@@ -2,30 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://developmentseed.github.io/geozarr-examples/examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html</loc>
-    <lastmod>2025-03-03T21:40:29.167Z</lastmod>
+    <lastmod>2025-03-05T02:47:15.052Z</lastmod>
   </url>
   <url>
     <loc>https://developmentseed.github.io/geozarr-examples/examples/02_CRS_and_geotransform_in_auxiliary_variable.html</loc>
-    <lastmod>2025-03-03T21:40:29.165Z</lastmod>
+    <lastmod>2025-03-05T02:47:15.049Z</lastmod>
   </url>
   <url>
     <loc>https://developmentseed.github.io/geozarr-examples/examples/01_CRS_in_auxiliary_variable.html</loc>
-    <lastmod>2025-03-03T21:40:29.164Z</lastmod>
+    <lastmod>2025-03-05T02:47:15.049Z</lastmod>
   </url>
   <url>
     <loc>https://developmentseed.github.io/geozarr-examples/slides.html</loc>
-    <lastmod>2025-03-03T21:40:29.167Z</lastmod>
+    <lastmod>2025-03-05T02:47:15.052Z</lastmod>
   </url>
   <url>
     <loc>https://developmentseed.github.io/geozarr-examples/index.html</loc>
-    <lastmod>2025-03-03T21:40:29.167Z</lastmod>
+    <lastmod>2025-03-05T02:47:15.052Z</lastmod>
   </url>
   <url>
     <loc>https://developmentseed.github.io/geozarr-examples/examples/00_download_data.html</loc>
-    <lastmod>2025-03-03T21:40:29.164Z</lastmod>
+    <lastmod>2025-03-05T02:47:15.049Z</lastmod>
   </url>
   <url>
     <loc>https://developmentseed.github.io/geozarr-examples/examples/03_multiscales_as_WebMercatorQuad_ZarrV2.html</loc>
-    <lastmod>2025-03-03T21:40:29.166Z</lastmod>
+    <lastmod>2025-03-05T02:47:15.051Z</lastmod>
   </url>
 </urlset>
