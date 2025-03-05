@@ -61,6 +61,7 @@ as Zarr-Python 3 supports Zarr specification V3 (see prior question on "How does
 Web-Optimized Zarr (WOZ) right now is just an idea. I hope that the term WOZ will promote the use of overviews in GeoZarr (which are optional in the core spec) and familiarize practitioners with the concept of storing full-resolution "archival" versions in other file formats and reduced resolution versions in "native" zarr. GeoZarr would allow a single "web-optimized" entrypoint to both via virtualization. A prototype will part of this repository.
 
 Depending on initial experimentation, WOZ may involve additional restrictions on top of the GeoZarr spec such as a minimum and maximum chunk size, sharding requirements for V3 data, compression requirements, encoding requirements around, for example, fill values, and rendering metadata (e.g., min and max values).
+
 ## References/Acknowledgements
 
 - [GeoZarr validator](https://github.com/briannapagan/geozarr-validator) by [@briannapagan](https://github.com/briannapagan) [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/)
