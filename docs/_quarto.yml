@@ -15,6 +15,8 @@ website:
     contents:
       - href: index.qmd
         text: Home
+      - href: diagram.qmd
+        text: Visual explainer
       - href: slides.qmd
         text: Slides
       - section: Pre-requisites

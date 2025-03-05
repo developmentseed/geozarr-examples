@@ -8,8 +8,6 @@ title: "GeoZarr examples"
 [Cloud Optimized Geospatial Formats Guide](https://github.com/cloudnativegeo/cloud-optimized-geospatial-formats-guide) or the [GeoZarr spec](https://github.com/zarr-developers/geozarr-spec)
 repository.
 
-<iframe src="https://link.excalidraw.com/readonly/22k271SZdWUXq2hKxPZA" width="100%" height="100%" style="border: none;"></iframe>
-
 ## Goals
 
 - Demonstrate how to write GeoZarr compliant data.
