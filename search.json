@@ -275,6 +275,76 @@
     ]
   },
   {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "GeoZarr examples",
+    "section": "",
+    "text": "GeoZarr examples contains in-progress work towards GeoZarr examples. If useful, the contents will eventually be migrated to a different repository, such as the Cloud Optimized Geospatial Formats Guide or the GeoZarr spec repository.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#overview",
+    "href": "index.html#overview",
+    "title": "GeoZarr examples",
+    "section": "",
+    "text": "GeoZarr examples contains in-progress work towards GeoZarr examples. If useful, the contents will eventually be migrated to a different repository, such as the Cloud Optimized Geospatial Formats Guide or the GeoZarr spec repository.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#goals",
+    "href": "index.html#goals",
+    "title": "GeoZarr examples",
+    "section": "Goals",
+    "text": "Goals\n\nDemonstrate how to write GeoZarr compliant data.\n\nProvide a demonstration of writing only the MUST include metadata (most importantly grid_mapping).\nProvide a demonstration of writing data with a WebMercatorQuad TMS.\nProvide a demonstration of writing data with a Custom TMS that maps to simple downsampled version of the raw data, without any change in extent or CRS.\nProvide a demonstration of storing raw data in NetCDF and overviews in native Zarr, with a virtual GeoZarr compliant entrypoint.\n\nDemonstrate how to read GeoZarr compliant data.\n\nProvide a demonstration of reading in GeoZarr data with only MUST include metadata.\nProvide a demonstration of reading in GeoZarr data with raw data and overviews in “native” zarr.\nProvide a demonstration of reading in GeoZarr data with raw data in archival formats and overviews in “native” zarr via a single virtual GeoZarr compliant entrypoint.\n\nDemonstrate how to work with GeoZarr data in Xarray using the prototypes for flexible coordinates and the xproj extension.\n\nDemonstrate whether the GeoZarr v0.4 and flexible coordinates solve the limitations highlighted in https://discourse.pangeo.io/t/example-which-highlights-the-limitations-of-netcdf-style-coordinates-for-large-geospatial-rasters/4140.\n\nDemonstrate how GeoZarr would need to be adapted for Zarr specification v3.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#feedback-cadence",
+    "href": "index.html#feedback-cadence",
+    "title": "GeoZarr examples",
+    "section": "Feedback cadence",
+    "text": "Feedback cadence\nWe will provide progress and solicit community feedback during the following events:\n\nMarch 05, 2025 GeoZarr Monthly Community Meeting\nMarch 05, 2025 Pangeo Community Meeting\nApril 02, 2025 GeoZarr Monthly Community Meeting\nApril 02, 2025 Pangeo Community Meeting\nApril 02, 2025 posts on Pangeo and CNG forums\nEGU 2025 Conference\nCNG 2025 Conference",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#faq",
+    "href": "index.html#faq",
+    "title": "GeoZarr examples",
+    "section": "FAQ",
+    "text": "FAQ\n\nWhat’s the status of GeoZarr?\nGeoZarr is currently being developed as a Open Geospatial Consortium Standard. There is a GeoZarr Standards Working Group that meets once a month. We now have experimental prototypes of all of the pieces to move GeoZarr out of a discussion phase and into a demonstration phase. This repository stems from the hope that building demonstrations will lead to adoption, iteration, and formalization of a stable GeoZarr specification.\n\n\nHow does Zarr Specification V3 spec influence GeoZarr?\nThe GeoZarr spec is designed for Zarr specification version 2. This repository will demonstrate how the differences between Zarr format 2 and Zarr format 3 would influence GeoZarr. My expectation is that there is not much difference in the metadata requirements between the two formats. However, best practices will likely be impacted by new features available in Zarr specification version 3 (e.g., sharding).\n\n\nHow does the release of Zarr-Python 3 influence GeoZarr?\nThe Zarr-Python 3 release will help GeoZarr users through its increased performance, modernized codebase, and support for extensions. But, it only really interacts with the GeoZarr spec in-so-far as Zarr-Python 3 supports Zarr specification V3 (see prior question on “How does Zarr Specification V3 spec influence GeoZarr”).\n\n\nWhat is the relationship between GeoZarr and Web-Optimized-Zarr?\nWeb-Optimized Zarr (WOZ) right now is just an idea. I hope that the term WOZ will promote the use of overviews in GeoZarr (which are optional in the core spec) and familiarize practitioners with the concept of storing full-resolution “archival” versions in other file formats and reduced resolution versions in “native” zarr. GeoZarr would allow a single “web-optimized” entrypoint to both via virtualization. A prototype will part of this repository.\nDepending on initial experimentation, WOZ may involve additional restrictions on top of the GeoZarr spec such as a minimum and maximum chunk size, sharding requirements for V3 data, compression requirements, encoding requirements around, for example, fill values, and rendering metadata (e.g., min and max values).",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#referencesacknowledgements",
+    "href": "index.html#referencesacknowledgements",
+    "title": "GeoZarr examples",
+    "section": "References/Acknowledgements",
+    "text": "References/Acknowledgements\n\nGeoZarr validator by @briannapagan CC BY 4.0\nGeoZarr spec CC BY 4.0\nQuarto configuration based on Cloud Native Geospatial Formats Guide and Tile Benchmarking.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#license",
+    "href": "index.html#license",
+    "title": "GeoZarr examples",
+    "section": "License",
+    "text": "License\nContent in this repository is licensed under the MIT License.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
     "objectID": "slides.html#goals",
     "href": "slides.html#goals",
     "title": "GeoZarr",
@@ -432,76 +502,6 @@
     "text": "Let’s get going! 🚀\n\nBuild code in GeoZarr examples!",
     "crumbs": [
       "Slides"
-    ]
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "GeoZarr examples",
-    "section": "",
-    "text": "GeoZarr examples contains in-progress work towards GeoZarr examples. If useful, the contents will eventually be migrated to a different repository, such as the Cloud Optimized Geospatial Formats Guide or the GeoZarr spec repository.",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#overview",
-    "href": "index.html#overview",
-    "title": "GeoZarr examples",
-    "section": "",
-    "text": "GeoZarr examples contains in-progress work towards GeoZarr examples. If useful, the contents will eventually be migrated to a different repository, such as the Cloud Optimized Geospatial Formats Guide or the GeoZarr spec repository.",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#goals",
-    "href": "index.html#goals",
-    "title": "GeoZarr examples",
-    "section": "Goals",
-    "text": "Goals\n\nDemonstrate how to write GeoZarr compliant data.\n\nProvide a demonstration of writing only the MUST include metadata (most importantly grid_mapping).\nProvide a demonstration of writing data with a WebMercatorQuad TMS.\nProvide a demonstration of writing data with a Custom TMS that maps to simple downsampled version of the raw data, without any change in extent or CRS.\nProvide a demonstration of storing raw data in NetCDF and overviews in native Zarr, with a virtual GeoZarr compliant entrypoint.\n\nDemonstrate how to read GeoZarr compliant data.\n\nProvide a demonstration of reading in GeoZarr data with only MUST include metadata.\nProvide a demonstration of reading in GeoZarr data with raw data and overviews in “native” zarr.\nProvide a demonstration of reading in GeoZarr data with raw data in archival formats and overviews in “native” zarr via a single virtual GeoZarr compliant entrypoint.\n\nDemonstrate how to work with GeoZarr data in Xarray using the prototypes for flexible coordinates and the xproj extension.\n\nDemonstrate whether the GeoZarr v0.4 and flexible coordinates solve the limitations highlighted in https://discourse.pangeo.io/t/example-which-highlights-the-limitations-of-netcdf-style-coordinates-for-large-geospatial-rasters/4140.\n\nDemonstrate how GeoZarr would need to be adapted for Zarr specification v3.",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#feedback-cadence",
-    "href": "index.html#feedback-cadence",
-    "title": "GeoZarr examples",
-    "section": "Feedback cadence",
-    "text": "Feedback cadence\nWe will provide progress and solicit community feedback during the following events:\n\nMarch 05, 2025 GeoZarr Monthly Community Meeting\nMarch 05, 2025 Pangeo Community Meeting\nApril 02, 2025 GeoZarr Monthly Community Meeting\nApril 02, 2025 Pangeo Community Meeting\nApril 02, 2025 posts on Pangeo and CNG forums\nEGU 2025 Conference\nCNG 2025 Conference",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#faq",
-    "href": "index.html#faq",
-    "title": "GeoZarr examples",
-    "section": "FAQ",
-    "text": "FAQ\n\nWhat’s the status of GeoZarr?\nGeoZarr is currently being developed as a Open Geospatial Consortium Standard. There is a GeoZarr Standards Working Group that meets once a month. We now have experimental prototypes of all of the pieces to move GeoZarr out of a discussion phase and into a demonstration phase. This repository stems from the hope that building demonstrations will lead to adoption, iteration, and formalization of a stable GeoZarr specification.\n\n\nHow does Zarr Specification V3 spec influence GeoZarr?\nThe GeoZarr spec is designed for Zarr specification version 2. This repository will demonstrate how the differences between Zarr format 2 and Zarr format 3 would influence GeoZarr. My expectation is that there is not much difference in the metadata requirements between the two formats. However, best practices will likely be impacted by new features available in Zarr specification version 3 (e.g., sharding).\n\n\nHow does the release of Zarr-Python 3 influence GeoZarr?\nThe Zarr-Python 3 release will help GeoZarr users through its increased performance, modernized codebase, and support for extensions. But, it only really interacts with the GeoZarr spec in-so-far as Zarr-Python 3 supports Zarr specification V3 (see prior question on “How does Zarr Specification V3 spec influence GeoZarr”).\n\n\nWhat is the relationship between GeoZarr and Web-Optimized-Zarr?\nWeb-Optimized Zarr (WOZ) right now is just an idea. I hope that the term WOZ will promote the use of overviews in GeoZarr (which are optional in the core spec) and familiarize practitioners with the concept of storing full-resolution “archival” versions in other file formats and reduced resolution versions in “native” zarr. GeoZarr would allow a single “web-optimized” entrypoint to both via virtualization. A prototype will part of this repository.\nDepending on initial experimentation, WOZ may involve additional restrictions on top of the GeoZarr spec such as a minimum and maximum chunk size, sharding requirements for V3 data, compression requirements, encoding requirements around, for example, fill values, and rendering metadata (e.g., min and max values).",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#referencesacknowledgements",
-    "href": "index.html#referencesacknowledgements",
-    "title": "GeoZarr examples",
-    "section": "References/Acknowledgements",
-    "text": "References/Acknowledgements\n\nGeoZarr validator by @briannapagan CC BY 4.0\nGeoZarr spec CC BY 4.0\nQuarto configuration based on Cloud Native Geospatial Formats Guide and Tile Benchmarking.",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#license",
-    "href": "index.html#license",
-    "title": "GeoZarr examples",
-    "section": "License",
-    "text": "License\nContent in this repository is licensed under the MIT License.",
-    "crumbs": [
-      "Home"
     ]
   },
   {
