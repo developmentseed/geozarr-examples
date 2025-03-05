@@ -145,9 +145,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyproj</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> rioxarray  <span class="co"># noqa</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> xarray <span class="im">as</span> xr</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># For zarr_format=2 encoding</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> rio_tiler.io.xarray <span class="im">import</span> XarrayReader</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot <span class="im">as</span> plt</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> rasterio.rio.overview <span class="im">import</span> get_maximum_overview_level</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># For zarr_format=2 encoding</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> rio_tiler.io.xarray <span class="im">import</span> XarrayReader</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="cell-4" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>fp_base <span class="op">=</span> <span class="st">"20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1"</span></span>
@@ -193,27 +195,47 @@ These variables have a CF-compliant standard name: ['time', 'lat', 'lon', 'analy
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    ds[var].attrs[<span class="st">"grid_mapping"</span>] <span class="op">=</span> <span class="st">"spatial_ref"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="wip-define-a-custom-tms" class="level2">
-<h2 class="anchored" data-anchor-id="wip-define-a-custom-tms">WIP: Define a custom TMS</h2>
-<div id="cell-13" class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> XarrayReader(ds[var]) <span class="im">as</span> dst_wmq:</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    pyproj_crs <span class="op">=</span> pyproj.CRS.from_wkt(dst_wmq.crs.to_wkt())</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"crs: </span><span class="sc">{</span>pyproj_crs<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    bounds <span class="op">=</span> dst_wmq.bounds</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"bounds: </span><span class="sc">{</span>bounds<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    custom_tms <span class="op">=</span> morecantile.TileMatrixSet.custom(</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        extent<span class="op">=</span>bounds,</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        crs<span class="op">=</span>pyproj_crs,</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        tile_width<span class="op">=</span>ds[var].shape[<span class="dv">2</span>],</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        tile_height<span class="op">=</span>ds[var].shape[<span class="dv">1</span>],</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        minzoom<span class="op">=</span><span class="dv">0</span>,</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        maxzoom<span class="op">=</span><span class="dv">0</span>,</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(custom_tms.bounds(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="define-a-custom-tms" class="level2">
+<h2 class="anchored" data-anchor-id="define-a-custom-tms">Define a custom TMS</h2>
+<div id="cell-13" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>x_chunk_size <span class="op">=</span> <span class="dv">512</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>y_chunk_size <span class="op">=</span> <span class="dv">512</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> XarrayReader(ds[var]) <span class="im">as</span> dst_wmq:</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    pyproj_crs <span class="op">=</span> pyproj.CRS.from_wkt(dst_wmq.crs.to_wkt())</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"crs: </span><span class="sc">{</span>pyproj_crs<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    bounds <span class="op">=</span> dst_wmq.bounds</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"bounds: </span><span class="sc">{</span>bounds<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    maxzoom <span class="op">=</span> get_maximum_overview_level(</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        ds[var].shape[<span class="dv">2</span>], ds[var].shape[<span class="dv">1</span>], minsize<span class="op">=</span><span class="bu">min</span>(x_chunk_size, y_chunk_size)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    custom_tms <span class="op">=</span> morecantile.TileMatrixSet.custom(</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        extent<span class="op">=</span>bounds,</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        crs<span class="op">=</span>pyproj_crs,</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        tile_width<span class="op">=</span>x_chunk_size,</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        tile_height<span class="op">=</span>y_chunk_size,</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        minzoom<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>        maxzoom<span class="op">=</span>maxzoom,</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>        matrix_scale<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">1</span>],</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>        decimation_base<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> XarrayReader(ds[var], tms<span class="op">=</span>custom_tms) <span class="im">as</span> dst:</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    tile <span class="op">=</span> dst.tile(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>).data</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>plt.imshow(tile.squeeze())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>crs: GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]
-bounds: (-179.99500549324037, -89.99499786365084, 180.0050000000763, 89.99499786365084)
-BoundingBox(left=-179.99500549324037, bottom=-89.99500488285491, right=180.0050000000763, top=89.99499786365084)</code></pre>
+bounds: (-179.99500549324037, -89.99499786365084, 180.0050000000763, 89.99499786365084)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="05_WIP_multiscales_as_customTMS_ZarrV2_files/figure-html/cell-8-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
 </div>
 </div>
 

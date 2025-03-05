@@ -125,14 +125,14 @@
     "href": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html",
     "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
     "section": "",
-    "text": "import cf_xarray  # noqa\nimport morecantile\nimport pyproj\nimport rioxarray  # noqa\nimport xarray as xr\n\n# For zarr_format=2 encoding\nfrom rio_tiler.io.xarray import XarrayReader\n\n\nfp_base = \"20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1\"\ninput = f\"../data/{fp_base}.nc\"\nv2_output = f\"../output/v2/{fp_base}_custom_multiscales.zarr\"\n\n\nds = xr.open_dataset(input)"
+    "text": "import cf_xarray  # noqa\nimport morecantile\nimport pyproj\nimport rioxarray  # noqa\nimport xarray as xr\nfrom matplotlib import pyplot as plt\nfrom rasterio.rio.overview import get_maximum_overview_level\n\n# For zarr_format=2 encoding\nfrom rio_tiler.io.xarray import XarrayReader\n\n\nfp_base = \"20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1\"\ninput = f\"../data/{fp_base}.nc\"\nv2_output = f\"../output/v2/{fp_base}_custom_multiscales.zarr\"\n\n\nds = xr.open_dataset(input)"
   },
   {
     "objectID": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#load-example-dataset-from-netcdf-into-xarray",
     "href": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#load-example-dataset-from-netcdf-into-xarray",
     "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
     "section": "",
-    "text": "import cf_xarray  # noqa\nimport morecantile\nimport pyproj\nimport rioxarray  # noqa\nimport xarray as xr\n\n# For zarr_format=2 encoding\nfrom rio_tiler.io.xarray import XarrayReader\n\n\nfp_base = \"20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1\"\ninput = f\"../data/{fp_base}.nc\"\nv2_output = f\"../output/v2/{fp_base}_custom_multiscales.zarr\"\n\n\nds = xr.open_dataset(input)"
+    "text": "import cf_xarray  # noqa\nimport morecantile\nimport pyproj\nimport rioxarray  # noqa\nimport xarray as xr\nfrom matplotlib import pyplot as plt\nfrom rasterio.rio.overview import get_maximum_overview_level\n\n# For zarr_format=2 encoding\nfrom rio_tiler.io.xarray import XarrayReader\n\n\nfp_base = \"20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1\"\ninput = f\"../data/{fp_base}.nc\"\nv2_output = f\"../output/v2/{fp_base}_custom_multiscales.zarr\"\n\n\nds = xr.open_dataset(input)"
   },
   {
     "objectID": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#check-that-all-variables-have-a-cf-compliant-standard-name",
@@ -149,11 +149,11 @@
     "text": "Assign CRS information to an auxiliary variable using rioxarray\n\nds = ds.rio.write_crs(\"epsg:4326\")\n# Specify which variable contains CRS information using grid_mapping\nfor var in ds.data_vars:\n    ds[var].attrs[\"grid_mapping\"] = \"spatial_ref\""
   },
   {
-    "objectID": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#wip-define-a-custom-tms",
-    "href": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#wip-define-a-custom-tms",
+    "objectID": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#define-a-custom-tms",
+    "href": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#define-a-custom-tms",
     "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
-    "section": "WIP: Define a custom TMS",
-    "text": "WIP: Define a custom TMS\n\nwith XarrayReader(ds[var]) as dst_wmq:\n    pyproj_crs = pyproj.CRS.from_wkt(dst_wmq.crs.to_wkt())\n    print(f\"crs: {pyproj_crs}\")\n    bounds = dst_wmq.bounds\n    print(f\"bounds: {bounds}\")\n    custom_tms = morecantile.TileMatrixSet.custom(\n        extent=bounds,\n        crs=pyproj_crs,\n        tile_width=ds[var].shape[2],\n        tile_height=ds[var].shape[1],\n        minzoom=0,\n        maxzoom=0,\n    )\n    print(custom_tms.bounds(0, 0, 0))\n\ncrs: GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST],AUTHORITY[\"EPSG\",\"4326\"]]\nbounds: (-179.99500549324037, -89.99499786365084, 180.0050000000763, 89.99499786365084)\nBoundingBox(left=-179.99500549324037, bottom=-89.99500488285491, right=180.0050000000763, top=89.99499786365084)"
+    "section": "Define a custom TMS",
+    "text": "Define a custom TMS\n\nx_chunk_size = 512\ny_chunk_size = 512\n\nwith XarrayReader(ds[var]) as dst_wmq:\n    pyproj_crs = pyproj.CRS.from_wkt(dst_wmq.crs.to_wkt())\n    print(f\"crs: {pyproj_crs}\")\n    bounds = dst_wmq.bounds\n    print(f\"bounds: {bounds}\")\n\n    maxzoom = get_maximum_overview_level(\n        ds[var].shape[2], ds[var].shape[1], minsize=min(x_chunk_size, y_chunk_size)\n    )\n\n    custom_tms = morecantile.TileMatrixSet.custom(\n        extent=bounds,\n        crs=pyproj_crs,\n        tile_width=x_chunk_size,\n        tile_height=y_chunk_size,\n        minzoom=0,\n        maxzoom=maxzoom,\n        matrix_scale=[1, 1],\n        decimation_base=2,\n    )\n\nwith XarrayReader(ds[var], tms=custom_tms) as dst:\n    tile = dst.tile(0, 0, 0).data\n\nplt.imshow(tile.squeeze())\n\ncrs: GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST],AUTHORITY[\"EPSG\",\"4326\"]]\nbounds: (-179.99500549324037, -89.99499786365084, 180.0050000000763, 89.99499786365084)"
   },
   {
     "objectID": "examples/00_download_data.html",
