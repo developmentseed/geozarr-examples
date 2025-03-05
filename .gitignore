@@ -95,6 +95,9 @@ scratch-notebooks/*
 data/*
 output/*
 
+docs/data/*
+docs/output/*
+
 .gitattributes
 
 docs/_site/
