@@ -198,36 +198,90 @@ These variables have a CF-compliant standard name: ['time', 'lat', 'lon', 'analy
 <section id="define-a-custom-tms" class="level2">
 <h2 class="anchored" data-anchor-id="define-a-custom-tms">Define a custom TMS</h2>
 <div id="cell-13" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>x_chunk_size <span class="op">=</span> <span class="dv">512</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>y_chunk_size <span class="op">=</span> <span class="dv">512</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> XarrayReader(ds[var]) <span class="im">as</span> dst_wmq:</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    pyproj_crs <span class="op">=</span> pyproj.CRS.from_wkt(dst_wmq.crs.to_wkt())</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"crs: </span><span class="sc">{</span>pyproj_crs<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    bounds <span class="op">=</span> dst_wmq.bounds</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"bounds: </span><span class="sc">{</span>bounds<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    maxzoom <span class="op">=</span> get_maximum_overview_level(</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        ds[var].shape[<span class="dv">2</span>], ds[var].shape[<span class="dv">1</span>], minsize<span class="op">=</span><span class="bu">min</span>(x_chunk_size, y_chunk_size)</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    custom_tms <span class="op">=</span> morecantile.TileMatrixSet.custom(</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        extent<span class="op">=</span>bounds,</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        crs<span class="op">=</span>pyproj_crs,</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        tile_width<span class="op">=</span>x_chunk_size,</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        tile_height<span class="op">=</span>y_chunk_size,</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        minzoom<span class="op">=</span><span class="dv">0</span>,</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>        maxzoom<span class="op">=</span>maxzoom,</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>        matrix_scale<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">1</span>],</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>        decimation_base<span class="op">=</span><span class="dv">2</span>,</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> XarrayReader(ds[var], tms<span class="op">=</span>custom_tms) <span class="im">as</span> dst:</span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    tile <span class="op">=</span> dst.tile(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>).data</span>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> morecantile.models <span class="im">import</span> TileMatrix, TileMatrixSet, crs_axis_inverted, TMSBoundingBox, CRS_to_uri</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> morecantile.utils <span class="im">import</span> meters_per_unit</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>x_chunk_size <span class="op">=</span> <span class="dv">512</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>y_chunk_size <span class="op">=</span> <span class="dv">512</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>dst_height <span class="op">=</span> ds[var].shape[<span class="dv">1</span>]</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>dst_width <span class="op">=</span> ds[var].shape[<span class="dv">2</span>]</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>decimation_base <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>pyproj_crs <span class="op">=</span> pyproj.CRS.from_epsg(<span class="dv">4326</span>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"crs: </span><span class="sc">{</span>pyproj_crs<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>bounds <span class="op">=</span> <span class="bu">tuple</span>(ds[var].rio.bounds())</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"bounds: </span><span class="sc">{</span>bounds<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>is_inverted <span class="op">=</span> crs_axis_inverted(pyproj_crs)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>overview_level <span class="op">=</span> get_maximum_overview_level(</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    dst_width,</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    dst_height,</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    minsize<span class="op">=</span><span class="bu">min</span>(x_chunk_size, y_chunk_size),</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>mpu <span class="op">=</span> meters_per_unit(pyproj_crs)</span>
 <span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>plt.imshow(tile.squeeze())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Rendering pixel size. 0.28 mm was the actual pixel size of a common display from 2005 and considered as standard by OGC.</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>screen_pixel_size <span class="op">=</span> <span class="fl">0.28e-3</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>x_origin <span class="op">=</span> bounds[<span class="dv">0</span>] <span class="cf">if</span> <span class="kw">not</span> is_inverted <span class="cf">else</span> bounds[<span class="dv">3</span>]</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>y_origin <span class="op">=</span> bounds[<span class="dv">3</span>] <span class="cf">if</span> <span class="kw">not</span> is_inverted <span class="cf">else</span> bounds[<span class="dv">0</span>]</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>width <span class="op">=</span> <span class="bu">abs</span>(bounds[<span class="dv">2</span>] <span class="op">-</span> bounds[<span class="dv">0</span>])</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>height <span class="op">=</span> <span class="bu">abs</span>(bounds[<span class="dv">3</span>] <span class="op">-</span> bounds[<span class="dv">1</span>])</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> <span class="bu">max</span>(width <span class="op">/</span> dst_width, height <span class="op">/</span> dst_height)</span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>matrices <span class="op">=</span> [</span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>    TileMatrix(</span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>        description<span class="op">=</span><span class="st">"TileMatrix for the high resolution data"</span>,</span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>        <span class="bu">id</span><span class="op">=</span><span class="bu">str</span>(overview_level),</span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>        scaleDenominator<span class="op">=</span>res <span class="op">*</span> mpu <span class="op">/</span> screen_pixel_size,</span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>        cellSize<span class="op">=</span>res,</span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>        pointOfOrigin<span class="op">=</span>[x_origin, y_origin],</span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>        tileWidth<span class="op">=</span>x_chunk_size,</span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>        tileHeight<span class="op">=</span>y_chunk_size,</span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>        matrixWidth<span class="op">=</span>math.ceil(dst_width <span class="op">/</span> x_chunk_size),</span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>        matrixHeight<span class="op">=</span>math.ceil(dst_height <span class="op">/</span> y_chunk_size),</span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ovr <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, overview_level <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>    decimation <span class="op">=</span> decimation_base <span class="op">**</span> ovr</span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>    new_res <span class="op">=</span> res <span class="op">*</span> decimation</span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>    matrices.append(</span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>        TileMatrix(</span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>            description<span class="op">=</span><span class="ss">f"TileMatrix for overview </span><span class="sc">{</span>ovr<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a>            <span class="bu">id</span><span class="op">=</span><span class="bu">str</span>(overview_level <span class="op">-</span> ovr),</span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a>            scaleDenominator<span class="op">=</span>new_res <span class="op">*</span> mpu <span class="op">/</span> screen_pixel_size,</span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a>            cellSize<span class="op">=</span>new_res,</span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a>            pointOfOrigin<span class="op">=</span>[x_origin, y_origin],</span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a>            tileWidth<span class="op">=</span>x_chunk_size,</span>
+<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a>            tileHeight<span class="op">=</span>y_chunk_size,</span>
+<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a>            matrixWidth<span class="op">=</span>math.ceil(dst_width <span class="op">/</span> decimation <span class="op">/</span> x_chunk_size),</span>
+<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a>            matrixHeight<span class="op">=</span>math.ceil(dst_height <span class="op">/</span> decimation <span class="op">/</span> y_chunk_size),</span>
+<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a>matrices <span class="op">=</span> <span class="bu">reversed</span>(matrices)</span>
+<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a>custom_tms <span class="op">=</span> TileMatrixSet(</span>
+<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a>    <span class="bu">id</span><span class="op">=</span><span class="st">"custom_tms"</span>,</span>
+<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="ss">f"Custom TMS for </span><span class="sc">{</span>var<span class="sc">}</span><span class="ss"> variable"</span>,</span>
+<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a>    tileMatrices<span class="op">=</span>matrices,</span>
+<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a>    orderedAxes<span class="op">=</span>[<span class="st">"Lat"</span>, <span class="st">"Lon"</span>],</span>
+<span id="cb8-76"><a href="#cb8-76" aria-hidden="true" tabindex="-1"></a>    crs<span class="op">=</span><span class="st">"http://www.opengis.net/def/crs/EPSG/0/4326"</span>,</span>
+<span id="cb8-77"><a href="#cb8-77" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-78"><a href="#cb8-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-79"><a href="#cb8-79" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> XarrayReader(ds[var], tms<span class="op">=</span>custom_tms) <span class="im">as</span> dst:</span>
+<span id="cb8-80"><a href="#cb8-80" aria-hidden="true" tabindex="-1"></a>    tile <span class="op">=</span> dst.tile(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>).data</span>
+<span id="cb8-81"><a href="#cb8-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-82"><a href="#cb8-82" aria-hidden="true" tabindex="-1"></a>plt.imshow(tile.squeeze())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>crs: GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]
+<pre><code>crs: EPSG:4326
 bounds: (-179.99500549324037, -89.99499786365084, 180.0050000000763, 89.99499786365084)</code></pre>
 </div>
 <div class="cell-output cell-output-display">
