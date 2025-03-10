@@ -1,0 +1,20 @@
+# Web-optimized Zarr
+
+Web-optimized zarr provides a set of additional recommendations on top of the GeoZarr specification for optimal browser-based analysis and visualization. The specific recommendations are still
+under development. We anticipate the following to be included as web-optimized Zarr recommendations:
+
+1. The WOZ MUST be chunked in either the spatial or temporal dimensions. The WOZ guide will include a reference to a separate document for recommended chunking schemes and compression algorithms for different use-cases, which will be updated as browsers and infrastructures change.
+2. The dimension order for 2-dimensional data MUST be (y, x) (or the equivalent spatial dimension names) for maximum interoperability.
+3. The dimension order for 3-dimensional data MUST be (time, y, x) (or the equivalent spatial dimension names) for maximum interoperability.
+4. The WOZ MUST include multi-scales.
+5. The WOZ may contain full-resolution "archival" versions in other file formats and reduced resolution versions in "native" zarr.
+
+The following criteria may be included after further evaluation:
+
+1. The multi-scales must align with a well-known TMS.
+2. The WOZ should include sharding to allow clients to request smaller individual chunks or larger shards.
+3. The multi-scales should contain rendering metadata (e.g., min and max values and preferred color mapping representations).
+
+These recommendations will be expanded or updated after additional experimentation.
+
+For a graphical depiction of how WOZ compares to GeoZarr, please see [the excalidraw diagram](woz-diagram.qmd).

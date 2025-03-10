@@ -15,8 +15,12 @@ website:
     contents:
       - href: index.qmd
         text: Home
-      - href: diagram.qmd
+      - href: spec-diagram.qmd
         text: Visual explainer
+      - href: web-optimized-zarr.qmd
+        text: Web-optimized Zarr (WOZ)
+      - href: woz-diagram.qmd
+        text: Visual WOZ comparison
       - href: slides.qmd
         text: Slides
       - section: Pre-requisites
