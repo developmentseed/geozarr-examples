@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>diagram</title>
+<title>web-optimized-zarr</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -82,7 +82,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./diagram.html">Visual explainer</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./web-optimized-zarr.html">Web-optimized Zarr (WOZ)</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -119,8 +119,20 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./diagram.html" class="sidebar-item-text sidebar-link active">
+  <a href="./spec-diagram.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Visual explainer</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./web-optimized-zarr.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Web-optimized Zarr (WOZ)</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./woz-diagram.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Visual WOZ comparison</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -193,10 +205,27 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<iframe src="https://link.excalidraw.com/readonly/22k271SZdWUXq2hKxPZA" width="100%" height="100%" style="border: none;">
-</iframe>
+<section id="web-optimized-zarr" class="level1">
+<h1>Web-optimized Zarr</h1>
+<p>Web-optimized zarr provides a set of additional recommendations on top of the GeoZarr specification for optimal browser-based analysis and visualization. The specific recommendations are still under development. We anticipate the following to be included as web-optimized Zarr recommendations:</p>
+<ol type="1">
+<li>The WOZ MUST be chunked in either the spatial or temporal dimensions. The WOZ guide will include a reference to a separate document for recommended chunking schemes and compression algorithms for different use-cases, which will be updated as browsers and infrastructures change.</li>
+<li>The dimension order for 2-dimensional data MUST be (y, x) (or the equivalent spatial dimension names) for maximum interoperability.</li>
+<li>The dimension order for 3-dimensional data MUST be (time, y, x) (or the equivalent spatial dimension names) for maximum interoperability.</li>
+<li>The WOZ MUST include multi-scales.</li>
+<li>The WOZ may contain full-resolution “archival” versions in other file formats and reduced resolution versions in “native” zarr.</li>
+</ol>
+<p>The following criteria may be included after further evaluation:</p>
+<ol type="1">
+<li>The multi-scales must align with a well-known TMS.</li>
+<li>The WOZ should include sharding to allow clients to request smaller individual chunks or larger shards.</li>
+<li>The multi-scales should contain rendering metadata (e.g., min and max values and preferred color mapping representations).</li>
+</ol>
+<p>These recommendations will be expanded or updated after additional experimentation.</p>
+<p>For a graphical depiction of how WOZ compares to GeoZarr, please see <a href="./woz-diagram.html">the excalidraw diagram</a>.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
