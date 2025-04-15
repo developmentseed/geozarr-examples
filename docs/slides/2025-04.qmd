@@ -81,7 +81,7 @@ Copy event from the [Pangeo calendar](https://pangeo.io/calendar)
 
 ## Upcoming activity
 
-Julia Signell presents on STAC + Zarr, many GeoZarr SWG members and Zarr developers attending
+Cloud Native Geospatial conference including a STAC + Zarr presentation by Julia Signell
 
 ![](_static/CNG-conference.png){fig-alt="Calendar event" fig-align="center" width="60%"}
 
@@ -91,7 +91,9 @@ Julia Signell presents on STAC + Zarr, many GeoZarr SWG members and Zarr develop
 
 ## Upcoming activity
 
-Pangeo session including EOPF Zarr discussion at EGU
+EGU General Assembly
+
+Pangeo session including EOPF Zarr discussion
 
 ![](_static/EGU.png){fig-alt="Calendar event" fig-align="center" width="60%"}
 
