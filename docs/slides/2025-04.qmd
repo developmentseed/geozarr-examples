@@ -61,7 +61,7 @@ See [the GitHub pull request](https://github.com/zarr-developers/geozarr-spec/pu
 
 ## Upcoming activity
 
-Discussion about conformance classes April 16
+Discussion about conformance classes April 17
 
 ![](_static/conformance-class-meeting.png){fig-alt="Calendar event" fig-align="center" width="60%"}
 
