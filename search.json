@@ -177,163 +177,179 @@
     ]
   },
   {
-    "objectID": "slides.html#goals",
-    "href": "slides.html#goals",
+    "objectID": "slides/2025-02.html#goals",
+    "href": "slides/2025-02.html#goals",
     "title": "GeoZarr",
     "section": "Goals",
     "text": "Goals\n\nReinvigorate Building It Out!\n\n🙅‍♂️💭 All benefits from discussion are exhausted\n🚀 GeoZarr can be successful if we act now\n💔 GeoZarr can fail if we don’t",
     "crumbs": [
-      "Slides"
+      "Presentations",
+      "Team week (February 2025)"
     ]
   },
   {
-    "objectID": "slides.html#what-is-zarr",
-    "href": "slides.html#what-is-zarr",
+    "objectID": "slides/2025-02.html#what-is-zarr",
+    "href": "slides/2025-02.html#what-is-zarr",
     "title": "GeoZarr",
     "section": "What is Zarr?",
     "text": "What is Zarr?\nAn community-developed, open-source format for the storage of chunked, compressed, N-dimensional arrays\n\nCloud optimized (concurrent read/writes, “infinitely” scalable)\nCross-disciplinary (originally developed for bio-imaging)\nExtremely extensible (supports any key-value store)\n\n\nFind out more at https://zarr.dev",
     "crumbs": [
-      "Slides"
+      "Presentations",
+      "Team week (February 2025)"
     ]
   },
   {
-    "objectID": "slides.html#whats-going-on-today",
-    "href": "slides.html#whats-going-on-today",
+    "objectID": "slides/2025-02.html#whats-going-on-today",
+    "href": "slides/2025-02.html#whats-going-on-today",
     "title": "GeoZarr",
     "section": "What’s going on today?",
     "text": "What’s going on today?\n\nZarr is growing in popularity\nIcechunk is improving consistency and performance\nVirtualiZarr is simplifying virtualization\nProgressing towards Zarr specification V3 across languages\n\n\nRead more about Zarr-Python, Icechunk (from Earthmover), and VirtualiZarr (community developed, created by Tom Nicholas).",
     "crumbs": [
-      "Slides"
+      "Presentations",
+      "Team week (February 2025)"
     ]
   },
   {
-    "objectID": "slides.html#zarr-implementation-landscape",
-    "href": "slides.html#zarr-implementation-landscape",
+    "objectID": "slides/2025-02.html#zarr-implementation-landscape",
+    "href": "slides/2025-02.html#zarr-implementation-landscape",
     "title": "GeoZarr",
     "section": "Zarr implementation landscape",
     "text": "Zarr implementation landscape\n\nZarr Python 3.0 released in January\nEven Rouault is updating GDAL’s Zarr driver\nLachlan Deakin is updating the Zarrs Rust library\nOpenScapes is coordinating R support (will rely on GDAL driver)\nUnidata has build Zarr support into the NetCDF C library\nTrevor Manz was (is?) trying to consolidate the JavaScript implementations\n\n\nZarr is independently implemented across languages",
     "crumbs": [
-      "Slides"
+      "Presentations",
+      "Team week (February 2025)"
     ]
   },
   {
-    "objectID": "slides.html#what-is-geozarr",
-    "href": "slides.html#what-is-geozarr",
+    "objectID": "slides/2025-02.html#what-is-geozarr",
+    "href": "slides/2025-02.html#what-is-geozarr",
     "title": "GeoZarr",
     "section": "What is GeoZarr?",
     "text": "What is GeoZarr?\nA geospatial extension for the Zarr specification, formalizing metadata expectations.\n\n\n\n\n\n\nRead the spec!",
     "crumbs": [
-      "Slides"
+      "Presentations",
+      "Team week (February 2025)"
     ]
   },
   {
-    "objectID": "slides.html#some-history",
-    "href": "slides.html#some-history",
+    "objectID": "slides/2025-02.html#some-history",
+    "href": "slides/2025-02.html#some-history",
     "title": "GeoZarr",
     "section": "Some history",
     "text": "Some history",
     "crumbs": [
-      "Slides"
+      "Presentations",
+      "Team week (February 2025)"
     ]
   },
   {
-    "objectID": "slides.html#why-is-this-an-exciting-time",
-    "href": "slides.html#why-is-this-an-exciting-time",
+    "objectID": "slides/2025-02.html#why-is-this-an-exciting-time",
+    "href": "slides/2025-02.html#why-is-this-an-exciting-time",
     "title": "GeoZarr",
     "section": "Why is this an exciting time?",
     "text": "Why is this an exciting time?\nMulti-dimensional geospatial solutions can bring real impact across humanitarian, scientific, and industrial needs",
     "crumbs": [
-      "Slides"
+      "Presentations",
+      "Team week (February 2025)"
     ]
   },
   {
-    "objectID": "slides.html#why-is-this-an-exciting-time-1",
-    "href": "slides.html#why-is-this-an-exciting-time-1",
+    "objectID": "slides/2025-02.html#why-is-this-an-exciting-time-1",
+    "href": "slides/2025-02.html#why-is-this-an-exciting-time-1",
     "title": "GeoZarr",
     "section": "Why is this an exciting time?",
     "text": "Why is this an exciting time?\nExperimental CRS handling across the Python ecosystem\n\n\n\n\n\n\nRead more in the xproj docs",
     "crumbs": [
-      "Slides"
+      "Presentations",
+      "Team week (February 2025)"
     ]
   },
   {
-    "objectID": "slides.html#why-is-this-an-exciting-time-2",
-    "href": "slides.html#why-is-this-an-exciting-time-2",
+    "objectID": "slides/2025-02.html#why-is-this-an-exciting-time-2",
+    "href": "slides/2025-02.html#why-is-this-an-exciting-time-2",
     "title": "GeoZarr",
     "section": "Why is this an exciting time?",
     "text": "Why is this an exciting time?\nGeneric support for analytic/functional coordinates in Xarray\n\n\n\n\n\n\nCheck out the pull request",
     "crumbs": [
-      "Slides"
+      "Presentations",
+      "Team week (February 2025)"
     ]
   },
   {
-    "objectID": "slides.html#why-is-this-an-exciting-time-3",
-    "href": "slides.html#why-is-this-an-exciting-time-3",
+    "objectID": "slides/2025-02.html#why-is-this-an-exciting-time-3",
+    "href": "slides/2025-02.html#why-is-this-an-exciting-time-3",
     "title": "GeoZarr",
     "section": "Why is this an exciting time?",
     "text": "Why is this an exciting time?\nDraft ZEP for breaking the stalemate on building Zarr extensions\n\n\n\n\n\n\nCheck out the draft ZEP",
     "crumbs": [
-      "Slides"
+      "Presentations",
+      "Team week (February 2025)"
     ]
   },
   {
-    "objectID": "slides.html#why-is-this-an-exciting-time-4",
-    "href": "slides.html#why-is-this-an-exciting-time-4",
+    "objectID": "slides/2025-02.html#why-is-this-an-exciting-time-4",
+    "href": "slides/2025-02.html#why-is-this-an-exciting-time-4",
     "title": "GeoZarr",
     "section": "Why is this an exciting time?",
     "text": "Why is this an exciting time?\nWe have a deadline!\n\n\n\n\n\n\nCheck out the conference",
     "crumbs": [
-      "Slides"
+      "Presentations",
+      "Team week (February 2025)"
     ]
   },
   {
-    "objectID": "slides.html#what-do-we-need",
-    "href": "slides.html#what-do-we-need",
+    "objectID": "slides/2025-02.html#what-do-we-need",
+    "href": "slides/2025-02.html#what-do-we-need",
     "title": "GeoZarr",
     "section": "What do we need?",
     "text": "What do we need?\nTo prove whether OGC TMS 2.0 is sufficient for performant and reliable rendering and analysis\n\n\n\n\n\n\nCheck out the standard",
     "crumbs": [
-      "Slides"
+      "Presentations",
+      "Team week (February 2025)"
     ]
   },
   {
-    "objectID": "slides.html#what-do-we-need-1",
-    "href": "slides.html#what-do-we-need-1",
+    "objectID": "slides/2025-02.html#what-do-we-need-1",
+    "href": "slides/2025-02.html#what-do-we-need-1",
     "title": "GeoZarr",
     "section": "What do we need?",
     "text": "What do we need?\nTo push forward Xarray functional coordinates for geospatial\n\n\n\n\n\n\nCheck out the Discourse post",
     "crumbs": [
-      "Slides"
+      "Presentations",
+      "Team week (February 2025)"
     ]
   },
   {
-    "objectID": "slides.html#what-do-we-need-2",
-    "href": "slides.html#what-do-we-need-2",
+    "objectID": "slides/2025-02.html#what-do-we-need-2",
+    "href": "slides/2025-02.html#what-do-we-need-2",
     "title": "GeoZarr",
     "section": "What do we need?",
     "text": "What do we need?\nTo demonstrate how XPublish and Titiler’s Xarray extension fit together (or not)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCheck out XPublish and Titiler-Xarray",
     "crumbs": [
-      "Slides"
+      "Presentations",
+      "Team week (February 2025)"
     ]
   },
   {
-    "objectID": "slides.html#what-do-we-need-3",
-    "href": "slides.html#what-do-we-need-3",
+    "objectID": "slides/2025-02.html#what-do-we-need-3",
+    "href": "slides/2025-02.html#what-do-we-need-3",
     "title": "GeoZarr",
     "section": "What do we need?",
     "text": "What do we need?\nTo show how to get the most out of Zarr and STAC\n\n\n\n\n\n\nHelp us tackle this issue",
     "crumbs": [
-      "Slides"
+      "Presentations",
+      "Team week (February 2025)"
     ]
   },
   {
-    "objectID": "slides.html#lets-get-going",
-    "href": "slides.html#lets-get-going",
+    "objectID": "slides/2025-02.html#lets-get-going",
+    "href": "slides/2025-02.html#lets-get-going",
     "title": "GeoZarr",
     "section": "Let’s get going! 🚀",
     "text": "Let’s get going! 🚀\n\nBuild code in GeoZarr examples!",
     "crumbs": [
-      "Slides"
+      "Presentations",
+      "Team week (February 2025)"
     ]
   },
   {
@@ -404,6 +420,105 @@
     "text": "License\nContent in this repository is licensed under the MIT License.",
     "crumbs": [
       "Home"
+    ]
+  },
+  {
+    "objectID": "slides/2025-04.html#goals",
+    "href": "slides/2025-04.html#goals",
+    "title": "GeoZarr",
+    "section": "Goals",
+    "text": "Goals\n\n📍 Provide a status update on the GeoZarr specification\n🧭 Provide entry-points for engaging with GeoZarr",
+    "crumbs": [
+      "Presentations",
+      "STAC & Zarr workshop (April 2025)"
+    ]
+  },
+  {
+    "objectID": "slides/2025-04.html#what-is-geozarr",
+    "href": "slides/2025-04.html#what-is-geozarr",
+    "title": "GeoZarr",
+    "section": "What is GeoZarr?",
+    "text": "What is GeoZarr?\nA geospatial extension for the Zarr specification, formalizing metadata expectations.\n\n\n\n\n\n\nRead the spec!",
+    "crumbs": [
+      "Presentations",
+      "STAC & Zarr workshop (April 2025)"
+    ]
+  },
+  {
+    "objectID": "slides/2025-04.html#some-history",
+    "href": "slides/2025-04.html#some-history",
+    "title": "GeoZarr",
+    "section": "Some history",
+    "text": "Some history\n\n\n\n\n\n\nFigure generated February 2025",
+    "crumbs": [
+      "Presentations",
+      "STAC & Zarr workshop (April 2025)"
+    ]
+  },
+  {
+    "objectID": "slides/2025-04.html#recent-activity",
+    "href": "slides/2025-04.html#recent-activity",
+    "title": "GeoZarr",
+    "section": "Recent activity",
+    "text": "Recent activity\nChristophe Noël conceptualizes GeoZarr based on the Unified Abstract Data Model\n\n\n\n\n\n\nSee the GitHub issue!",
+    "crumbs": [
+      "Presentations",
+      "STAC & Zarr workshop (April 2025)"
+    ]
+  },
+  {
+    "objectID": "slides/2025-04.html#very-recent-activity",
+    "href": "slides/2025-04.html#very-recent-activity",
+    "title": "GeoZarr",
+    "section": "(Very) recent activity",
+    "text": "(Very) recent activity\nChristophe Noël structures the spec based on the Unified Data Model and Conformance Classes\n\n\n\n\n\n\nSee the GitHub pull request!",
+    "crumbs": [
+      "Presentations",
+      "STAC & Zarr workshop (April 2025)"
+    ]
+  },
+  {
+    "objectID": "slides/2025-04.html#upcoming-activity",
+    "href": "slides/2025-04.html#upcoming-activity",
+    "title": "GeoZarr",
+    "section": "Upcoming activity",
+    "text": "Upcoming activity\nDiscussion about conformance classes April 16\n\n\n\n\n\n\nCopy event from the Pangeo calendar",
+    "crumbs": [
+      "Presentations",
+      "STAC & Zarr workshop (April 2025)"
+    ]
+  },
+  {
+    "objectID": "slides/2025-04.html#upcoming-activity-1",
+    "href": "slides/2025-04.html#upcoming-activity-1",
+    "title": "GeoZarr",
+    "section": "Upcoming activity",
+    "text": "Upcoming activity\nMonthly GeoZarr meeting on May 6\n\n\n\n\n\n\nCopy event from the Pangeo calendar",
+    "crumbs": [
+      "Presentations",
+      "STAC & Zarr workshop (April 2025)"
+    ]
+  },
+  {
+    "objectID": "slides/2025-04.html#upcoming-activity-2",
+    "href": "slides/2025-04.html#upcoming-activity-2",
+    "title": "GeoZarr",
+    "section": "Upcoming activity",
+    "text": "Upcoming activity\nJulia Signell presents on STAC + Zarr, many GeoZarr SWG members and Zarr developers attending\n\n\n\n\n\n\nRegister online",
+    "crumbs": [
+      "Presentations",
+      "STAC & Zarr workshop (April 2025)"
+    ]
+  },
+  {
+    "objectID": "slides/2025-04.html#upcoming-activity-3",
+    "href": "slides/2025-04.html#upcoming-activity-3",
+    "title": "GeoZarr",
+    "section": "Upcoming activity",
+    "text": "Upcoming activity\nPangeo EGU session including EOPF Zarr discussion at EGU\n\n\n\n\n\n\nAttend the session",
+    "crumbs": [
+      "Presentations",
+      "STAC & Zarr workshop (April 2025)"
     ]
   },
   {
