@@ -1,0 +1,100 @@
+---
+title: GeoZarr
+subtitle: STAC and Zarr Workshop Update (April 2025)
+footer: "Thanks: Brianna Pagán, Christophe Noël, GeoZarr SWG, Zarr refactor WG"
+format:
+  revealjs:
+    incremental: false
+    auto-stretch: false
+    theme: solarized
+    width: 1600
+    height: 900
+    slideNumber: true
+---
+
+## Goals {footer=false}
+
+- 📍 Provide a status update on the GeoZarr specification
+- 🧭 Provide entry-points for engaging with GeoZarr
+
+::: footer
+:::
+
+## What is GeoZarr?
+
+A geospatial extension for the Zarr specification, formalizing metadata expectations.
+
+![](_static/geozarr-repo.png){fig-alt="GeoZarr repository" fig-align="center" width="60%"}
+
+::: footer
+Read [the spec](https://github.com/zarr-developers/geozarr-spec/)!
+:::
+
+## Some history
+
+![](_static/geozarr-activity.png){fig-alt="GeoZarr commit activity" fig-align="center" width="95%"}
+
+::: footer
+Figure generated February 2025
+:::
+
+## Recent activity
+
+Christophe Noël conceptualizes GeoZarr based on the Unified Abstract Data Model
+
+![](_static/CDM-issue.png){fig-alt="Unified data model presentation" fig-align="center" width="90%"}
+
+::: footer
+See [the GitHub issue](https://github.com/zarr-developers/geozarr-spec/issues/63)!
+:::
+
+## (Very) recent activity
+
+Christophe Noël structures the spec based on the Unified Data Model and Conformance Classes
+
+![](_static/CDM-PR.png){fig-alt="Unified data model proposal" fig-align="center" width="90%"}
+
+
+::: footer
+See [the GitHub pull request](https://github.com/zarr-developers/geozarr-spec/pull/64)!
+:::
+
+## Upcoming activity
+
+Discussion about conformance classes April 16
+
+![](_static/conformance-class-meeting.png){fig-alt="Calendar event" fig-align="center" width="90%"}
+
+::: footer
+Copy event from the [Pangeo calendar](https://pangeo.io/calendar)
+:::
+
+## Upcoming activity
+
+Monthly GeoZarr meeting on May 6
+
+![](_static/recurring-meeting.png){fig-alt="Calendar event" fig-align="center" width="90%"}
+
+::: footer
+Copy event from the [Pangeo calendar](https://pangeo.io/calendar)
+:::
+
+## Upcoming activity
+
+Julia Signell presents on STAC + Zarr, many GeoZarr SWG members and Zarr developers attending
+
+![](_static/CNG-conference.png){fig-alt="Calendar event" fig-align="center" width="90%"}
+
+::: footer
+[Register online](https://conference.cloudnativegeo.org/CNGConference2025#/?lang=en)
+:::
+
+## Upcoming activity
+
+Pangeo EGU session including EOPF Zarr discussion at EGU
+
+![](_static/EGU.png){fig-alt="Calendar event" fig-align="center" width="90%"}
+
+::: footer
+[Attend the session](https://meetingorganizer.copernicus.org/EGU25/session/52079)
+:::
