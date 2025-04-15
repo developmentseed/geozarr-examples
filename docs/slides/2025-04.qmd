@@ -42,7 +42,7 @@ Figure generated February 2025
 
 Christophe Noël conceptualizes GeoZarr based on the Unified Abstract Data Model
 
-![](_static/CDM-issue.png){fig-alt="Unified data model presentation" fig-align="center" width="90%"}
+![](_static/CDM-issue.png){fig-alt="Unified data model presentation" fig-align="center" width="60%"}
 
 ::: footer
 See [the GitHub issue](https://github.com/zarr-developers/geozarr-spec/issues/63)!
@@ -52,7 +52,7 @@ See [the GitHub issue](https://github.com/zarr-developers/geozarr-spec/issues/63
 
 Christophe Noël structures the spec based on the Unified Data Model and Conformance Classes
 
-![](_static/CDM-PR.png){fig-alt="Unified data model proposal" fig-align="center" width="90%"}
+![](_static/CDM-PR.png){fig-alt="Unified data model proposal" fig-align="center" width="60%"}
 
 
 ::: footer
@@ -63,7 +63,7 @@ See [the GitHub pull request](https://github.com/zarr-developers/geozarr-spec/pu
 
 Discussion about conformance classes April 16
 
-![](_static/conformance-class-meeting.png){fig-alt="Calendar event" fig-align="center" width="90%"}
+![](_static/conformance-class-meeting.png){fig-alt="Calendar event" fig-align="center" width="60%"}
 
 ::: footer
 Copy event from the [Pangeo calendar](https://pangeo.io/calendar)
@@ -73,7 +73,7 @@ Copy event from the [Pangeo calendar](https://pangeo.io/calendar)
 
 Monthly GeoZarr meeting on May 6
 
-![](_static/recurring-meeting.png){fig-alt="Calendar event" fig-align="center" width="90%"}
+![](_static/recurring-meeting.png){fig-alt="Calendar event" fig-align="center" width="60%"}
 
 ::: footer
 Copy event from the [Pangeo calendar](https://pangeo.io/calendar)
@@ -83,7 +83,7 @@ Copy event from the [Pangeo calendar](https://pangeo.io/calendar)
 
 Julia Signell presents on STAC + Zarr, many GeoZarr SWG members and Zarr developers attending
 
-![](_static/CNG-conference.png){fig-alt="Calendar event" fig-align="center" width="90%"}
+![](_static/CNG-conference.png){fig-alt="Calendar event" fig-align="center" width="60%"}
 
 ::: footer
 [Register online](https://conference.cloudnativegeo.org/CNGConference2025#/?lang=en)
@@ -93,7 +93,7 @@ Julia Signell presents on STAC + Zarr, many GeoZarr SWG members and Zarr develop
 
 Pangeo EGU session including EOPF Zarr discussion at EGU
 
-![](_static/EGU.png){fig-alt="Calendar event" fig-align="center" width="90%"}
+![](_static/EGU.png){fig-alt="Calendar event" fig-align="center" width="60%"}
 
 ::: footer
 [Attend the session](https://meetingorganizer.copernicus.org/EGU25/session/52079)
