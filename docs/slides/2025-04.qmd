@@ -91,7 +91,7 @@ Julia Signell presents on STAC + Zarr, many GeoZarr SWG members and Zarr develop
 
 ## Upcoming activity
 
-Pangeo EGU session including EOPF Zarr discussion at EGU
+Pangeo session including EOPF Zarr discussion at EGU
 
 ![](_static/EGU.png){fig-alt="Calendar event" fig-align="center" width="60%"}
 
