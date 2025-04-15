@@ -15,7 +15,7 @@ format:
 ## Goals {footer=false}
 
 - 📍 Provide a status update on the GeoZarr specification
-- 🧭 Provide entry-points for engaging with GeoZarr
+- 🧭 Provide entry-points for contributing to GeoZarr development
 
 ::: footer
 :::
