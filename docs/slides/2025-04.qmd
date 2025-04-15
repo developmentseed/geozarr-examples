@@ -71,7 +71,7 @@ Copy event from the [Pangeo calendar](https://pangeo.io/calendar)
 
 ## Upcoming activity
 
-Monthly GeoZarr meeting on May 6
+Monthly GeoZarr meeting on May 7
 
 ![](_static/recurring-meeting.png){fig-alt="Calendar event" fig-align="center" width="60%"}
 
