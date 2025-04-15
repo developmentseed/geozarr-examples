@@ -460,7 +460,7 @@
     "href": "slides/2025-04.html#recent-activity",
     "title": "GeoZarr",
     "section": "Recent activity",
-    "text": "Recent activity\nChristophe Noël conceptualizes GeoZarr based on the Unified Abstract Data Model\n\n\n\n\n\n\nSee the GitHub issue!",
+    "text": "Recent activity\nChristophe Noël proposes structuring GeoZarr around the Unified Abstract Data Model\n\n\n\n\n\n\nSee the GitHub issue!",
     "crumbs": [
       "Presentations",
       "STAC & Zarr workshop (April 2025)"
@@ -516,6 +516,17 @@
     "title": "GeoZarr",
     "section": "Upcoming activity",
     "text": "Upcoming activity\nPangeo session including EOPF Zarr discussion at EGU\n\n\n\n\n\n\nAttend the session",
+    "crumbs": [
+      "Presentations",
+      "STAC & Zarr workshop (April 2025)"
+    ]
+  },
+  {
+    "objectID": "slides/2025-04.html#thanks",
+    "href": "slides/2025-04.html#thanks",
+    "title": "GeoZarr",
+    "section": "Thanks! 🚀",
+    "text": "Thanks! 🚀\n\nSlides and source available online",
     "crumbs": [
       "Presentations",
       "STAC & Zarr workshop (April 2025)"
