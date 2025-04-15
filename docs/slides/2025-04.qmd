@@ -40,7 +40,7 @@ Figure generated February 2025
 
 ## Recent activity
 
-Christophe Noël conceptualizes GeoZarr based on the Unified Abstract Data Model
+Christophe Noël proposes structuring GeoZarr around the Unified Abstract Data Model
 
 ![](_static/CDM-issue.png){fig-alt="Unified data model presentation" fig-align="center" width="60%"}
 
@@ -97,4 +97,10 @@ Pangeo session including EOPF Zarr discussion at EGU
 
 ::: footer
 [Attend the session](https://meetingorganizer.copernicus.org/EGU25/session/52079)
+:::
+
+## Thanks! 🚀
+
+::: footer
+[Slides](https://developmentseed.org/geozarr-examples/slides/2025-04.html#/title-slide) and [source](https://github.com/developmentseed/geozarr-examples) available online
 :::
