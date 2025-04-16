@@ -148,7 +148,7 @@ Pangeo showcase immediately following the workshop will include a presentation a
 
 ## Shameless plug
 
-Pangeo showcase immediately following the workshop will include a presentation about new Zarr optimizations!
+Pangeo showcase in 3 hours will include a presentation about new Zarr optimizations!
 
 ![](_static/zarr-obstore.png){fig-alt="Performance difference" fig-align="center" width="60%"}
 
