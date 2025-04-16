@@ -478,6 +478,50 @@
     ]
   },
   {
+    "objectID": "slides/2025-04.html#background",
+    "href": "slides/2025-04.html#background",
+    "title": "GeoZarr",
+    "section": "Background",
+    "text": "Background\nUnidata’s Common Data Model is an abstract data model that merges the NetCDF, OPenDAP, and HDF5 data models to create a common API for many types of scientific data.\n\n\n\n\n\n\nBased on Christophe Noël’s ideas",
+    "crumbs": [
+      "Presentations",
+      "STAC & Zarr workshop (April 2025)"
+    ]
+  },
+  {
+    "objectID": "slides/2025-04.html#unified-abstract-data-model",
+    "href": "slides/2025-04.html#unified-abstract-data-model",
+    "title": "GeoZarr",
+    "section": "Unified Abstract Data Model",
+    "text": "Unified Abstract Data Model\nA Unified Abstract Data Model would encapsulate traditional models from the modelling (NetCDF, CF) plus models from the earth observation (GeoTIFF, GDAL) communities\n\n\n\n\n\n\nBased on Christophe Noël’s ideas",
+    "crumbs": [
+      "Presentations",
+      "STAC & Zarr workshop (April 2025)"
+    ]
+  },
+  {
+    "objectID": "slides/2025-04.html#n-d-functionality-with-e-o-optimizations",
+    "href": "slides/2025-04.html#n-d-functionality-with-e-o-optimizations",
+    "title": "GeoZarr",
+    "section": "N-D functionality with E-O optimizations",
+    "text": "N-D functionality with E-O optimizations",
+    "crumbs": [
+      "Presentations",
+      "STAC & Zarr workshop (April 2025)"
+    ]
+  },
+  {
+    "objectID": "slides/2025-04.html#unified-abstract-data-model-implementation",
+    "href": "slides/2025-04.html#unified-abstract-data-model-implementation",
+    "title": "GeoZarr",
+    "section": "Unified Abstract Data Model Implementation",
+    "text": "Unified Abstract Data Model Implementation\nThe VirtualiZarr library could be an implementation of the Unified Abstract Data Model\n\n\n\n\n\n\nCheck it out on GitHub",
+    "crumbs": [
+      "Presentations",
+      "STAC & Zarr workshop (April 2025)"
+    ]
+  },
+  {
     "objectID": "slides/2025-04.html#upcoming-activity",
     "href": "slides/2025-04.html#upcoming-activity",
     "title": "GeoZarr",
@@ -522,11 +566,22 @@
     ]
   },
   {
+    "objectID": "slides/2025-04.html#shameless-plug",
+    "href": "slides/2025-04.html#shameless-plug",
+    "title": "GeoZarr",
+    "section": "Shameless plug",
+    "text": "Shameless plug\nPangeo showcase immediately following the workshop will include a presentation about new Zarr optimizations!\n\n\n\n\n\n\nAttend the showcase",
+    "crumbs": [
+      "Presentations",
+      "STAC & Zarr workshop (April 2025)"
+    ]
+  },
+  {
     "objectID": "slides/2025-04.html#thanks",
     "href": "slides/2025-04.html#thanks",
     "title": "GeoZarr",
     "section": "Thanks! 🚀",
-    "text": "Thanks! 🚀\n\nSlides and source available online",
+    "text": "Thanks! 🚀\n\n\n\n\n\n\nSlides and source available online",
     "crumbs": [
       "Presentations",
       "STAC & Zarr workshop (April 2025)"
