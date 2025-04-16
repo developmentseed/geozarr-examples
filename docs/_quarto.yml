@@ -21,8 +21,12 @@ website:
         text: Web-optimized Zarr (WOZ)
       - href: woz-diagram.qmd
         text: Visual WOZ comparison
-      - href: slides.qmd
-        text: Slides
+      - section: Presentations
+        contents:
+        - href: slides/2025-02.qmd
+          text: Team week (February 2025)
+        - href: slides/2025-04.qmd
+          text: STAC & Zarr workshop (April 2025)
       - section: Pre-requisites
         contents:
           - href: examples/00_download_data.ipynb
