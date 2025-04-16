@@ -91,9 +91,7 @@ Cloud Native Geospatial conference including a STAC + Zarr presentation by Julia
 
 ## Upcoming activity
 
-EGU General Assembly
-
-Pangeo session including EOPF Zarr discussion
+EGU General Assembly including a EOPF Zarr discussion at the Pangeo session
 
 ![](_static/EGU.png){fig-alt="Calendar event" fig-align="center" width="60%"}
 
