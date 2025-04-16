@@ -515,7 +515,7 @@
     "href": "slides/2025-04.html#unified-abstract-data-model-implementation",
     "title": "GeoZarr",
     "section": "Unified Abstract Data Model Implementation",
-    "text": "Unified Abstract Data Model Implementation\nThe VirtualiZarr library could be an implementation of the Unified Abstract Data Model\n\n\n\n\n\n\nCheck it out on GitHub",
+    "text": "Unified Abstract Data Model Implementation\nThe VirtualiZarr library could be an implementation of the Unified Abstract Data Model\n\n\n\n\n\n\nCheck out VirtualiZarr on GitHub",
     "crumbs": [
       "Presentations",
       "STAC & Zarr workshop (April 2025)"
