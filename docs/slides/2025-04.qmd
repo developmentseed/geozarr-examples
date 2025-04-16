@@ -146,9 +146,18 @@ Pangeo showcase immediately following the workshop will include a presentation a
 [Attend the showcase](https://discourse.pangeo.io/t/spring-showcase-close-out-lightning-talks-april-16-2025-at-12-pm-et/5047)
 :::
 
+## Shameless plug
+
+Pangeo showcase immediately following the workshop will include a presentation about new Zarr optimizations!
+
+![](_static/zarr-obstore.png){fig-alt="Performance difference" fig-align="center" width="60%"}
+
+::: footer
+[Attend the showcase](https://discourse.pangeo.io/t/spring-showcase-close-out-lightning-talks-april-16-2025-at-12-pm-et/5047)
+:::
 ## Thanks! 🚀
 
-![](_static/geozarr-examples-repo.png){fig-alt="GitHub source" fig-align="center" width="60%"}
+![](_static/geozarr-examples-request.png){fig-alt="GitHub source" fig-align="center" width="60%"}
 
 ::: footer
 [Slides](https://developmentseed.org/geozarr-examples/slides/2025-04.html#/title-slide) and [source](https://github.com/developmentseed/geozarr-examples) available online
