@@ -138,7 +138,7 @@ EGU General Assembly including a EOPF Zarr discussion at the Pangeo session
 
 ## Shameless plug
 
-Pangeo showcase immediately following the workshop will include a presentation about new Zarr optimizations!
+Pangeo showcase in 3 hours will include a presentation about new Zarr optimizations!
 
 ![](_static/pangeo-showcase.png){fig-alt="Calendar event" fig-align="center" width="60%"}
 
