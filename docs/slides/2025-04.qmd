@@ -93,7 +93,7 @@ The VirtualiZarr library could be an implementation of the Unified Abstract Data
 ![](_static/virtualizarr.png){fig-alt="Virtualizarr diagram" fig-align="center" width="60%"}
 
 ::: footer
-Check it out on [GitHub](https://github.com/zarr-developers/VirtualiZarr)
+Check out VirtualiZarr on [GitHub](https://github.com/zarr-developers/VirtualiZarr)
 :::
 
 ## Upcoming activity
