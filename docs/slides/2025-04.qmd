@@ -10,6 +10,7 @@ format:
     width: 1600
     height: 900
     slideNumber: true
+    pdf-max-pages-per-slide: 1
 ---
 
 ## Goals {footer=false}
