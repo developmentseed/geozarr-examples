@@ -1,169 +1,167 @@
 [
   {
-    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html",
-    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html",
-    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
-    "section": "",
-    "text": "While GeoZarr v0.4 is Zarr V2 specific, let’s write a Zarr V3 store to get an idea about how GeoZarr could be adapted for Zarr format 3.",
-    "crumbs": [
-      "Examples",
-      "WebMercatorQuad overviews (Zarr V3)"
-    ]
-  },
-  {
-    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#load-example-dataset-from-netcdf-into-xarray",
-    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#load-example-dataset-from-netcdf-into-xarray",
-    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
-    "section": "Load example dataset from NetCDF into Xarray",
-    "text": "Load example dataset from NetCDF into Xarray\n\nimport json\n\nimport cf_xarray  # noqa\nimport dask.array as da\nimport matplotlib.pyplot as plt\nimport morecantile\nimport numpy as np\nimport panel\nimport rasterio\nimport rioxarray  # noqa\nimport xarray as xr\nimport zarr\nfrom rio_tiler.io.xarray import XarrayReader\n\n\nfp_base = \"20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1\"\ninput = f\"../data/{fp_base}.nc\"\nv3_output = f\"../output/v3/{fp_base}_multiscales.zarr\"\n\n\nds = xr.open_dataset(input)",
-    "crumbs": [
-      "Examples",
-      "WebMercatorQuad overviews (Zarr V3)"
-    ]
-  },
-  {
-    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#check-that-all-variables-have-a-cf-compliant-standard-name",
-    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#check-that-all-variables-have-a-cf-compliant-standard-name",
-    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
-    "section": "Check that all variables have a CF-compliant standard name",
-    "text": "Check that all variables have a CF-compliant standard name\n\nstandard_names = ds.cf.standard_names\nvars_with_standard_names = [v[0] for v in ds.cf.standard_names.values()]\ncompliant_vars = []\nnon_complaint_vars = []\nfor var in ds.variables:\n    if var not in vars_with_standard_names:\n        non_complaint_vars.append(var)\n    else:\n        compliant_vars.append(var)\n        assert ds[var].attrs[\"standard_name\"]\n\nprint(f\"These variables do NOT have a CF-compliant standard name: {non_complaint_vars}\")\nprint(f\"These variables have a CF-compliant standard name: {compliant_vars}\")\n\nThese variables do NOT have a CF-compliant standard name: ['analysis_error', 'mask']\nThese variables have a CF-compliant standard name: ['time', 'lat', 'lon', 'analysed_sst', 'sea_ice_fraction']\n\n\nNot all the variables in this dataset have a CF-compliant standard name. See https://github.com/zarr-developers/geozarr-spec/issues/60 for a recommendation that CF-compliant standard names should be a “SHOULD” rather than a “MUST” condition in the GeoZarr spec. For now, let’s subset to the variables that do use CF-compliant standard names.\n\nds = ds[compliant_vars]",
-    "crumbs": [
-      "Examples",
-      "WebMercatorQuad overviews (Zarr V3)"
-    ]
-  },
-  {
-    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#assign-crs-information-to-an-auxiliary-variable-using-rioxarray",
-    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#assign-crs-information-to-an-auxiliary-variable-using-rioxarray",
-    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
-    "section": "Assign CRS information to an auxiliary variable using rioxarray",
-    "text": "Assign CRS information to an auxiliary variable using rioxarray\n\nds = ds.rio.write_crs(\"epsg:4326\")\n# Specify which variable contains CRS information using grid_mapping\nfor var in ds.data_vars:\n    ds[var].attrs[\"grid_mapping\"] = \"spatial_ref\"",
-    "crumbs": [
-      "Examples",
-      "WebMercatorQuad overviews (Zarr V3)"
-    ]
-  },
-  {
-    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#specify-that-the-analysed_sst-variable-will-contain-multiscales",
-    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#specify-that-the-analysed_sst-variable-will-contain-multiscales",
-    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
-    "section": "Specify that the analysed_sst variable will contain multiscales",
-    "text": "Specify that the analysed_sst variable will contain multiscales\n\nds[\"analysed_sst\"].attrs[\"multiscales\"] = {\n    \"tile_matrix_set\": \"WebMercatorQuad\",\n    \"resampling_method\": \"nearest\",\n    \"tile_matrix_limits\": {\"0\": {}, \"1\": {}, \"2\": {}},\n}",
-    "crumbs": [
-      "Examples",
-      "WebMercatorQuad overviews (Zarr V3)"
-    ]
-  },
-  {
-    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#specify-encoding-and-write-to-zarr-v3-format",
-    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#specify-encoding-and-write-to-zarr-v3-format",
-    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
-    "section": "Specify encoding and write to Zarr V3 format",
-    "text": "Specify encoding and write to Zarr V3 format\n\nspatial_chunk = 4096\ncompressor = zarr.codecs.ZstdCodec(level=1)\nencoding = {\n    \"analysed_sst\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressors\": compressor,\n    },\n    \"sea_ice_fraction\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressors\": compressor,\n    },\n}\nds.to_zarr(v3_output, mode=\"w\", consolidated=True, zarr_format=3, encoding=encoding)\n\n/Users/max/Documents/Code/developmentseed/geozarr-examples/.pixi/envs/test/lib/python3.13/site-packages/zarr/api/asynchronous.py:203: UserWarning: Consolidated metadata is currently not part in the Zarr format 3 specification. It may not be supported by other zarr implementations and may change in the future.\n  warnings.warn(\n\n\n&lt;xarray.backends.zarr.ZarrStore at 0x1655de710&gt;",
-    "crumbs": [
-      "Examples",
-      "WebMercatorQuad overviews (Zarr V3)"
-    ]
-  },
-  {
-    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#create-an-empty-xarray-dataset-for-each-zoom-level",
-    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#create-an-empty-xarray-dataset-for-each-zoom-level",
-    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
-    "section": "Create an empty xarray Dataset for each zoom level",
-    "text": "Create an empty xarray Dataset for each zoom level\n\ntms = morecantile.tms.get(\"WebMercatorQuad\")\ntileWidth = 256\nvar = \"analysed_sst\"\ndataset_length = ds[var].sizes[\"time\"]\nzoom_levels = [0, 1, 2]\n\n\ndef create_overview_template(var, standard_name, *, tileWidth, dataset_length, zoom):\n    width = 2**zoom * tileWidth\n    overview_da = xr.DataArray(\n        da.empty(\n            shape=(dataset_length, width, width),\n            dtype=np.float32,\n            chunks=(1, tileWidth, tileWidth),\n        ),\n        dims=ds[var].dims,\n    )\n    template = overview_da.to_dataset(name=var)\n    template = template.rio.write_crs(\"epsg:3857\")\n    # Convert transform to GDAL's format\n    transform = rasterio.transform.from_bounds(*tms.xy_bbox, width, width)\n    transform = transform.to_gdal()\n    # Convert transform to space separated string\n    transform = \" \".join([str(i) for i in transform])\n    # Save as an attribute in the `spatial_ref` variable\n    template[\"spatial_ref\"].attrs[\"GeoTransform\"] = transform\n    template[var].attrs[\"grid_mapping\"] = \"spatial_ref\"\n    template[var].attrs[\"standard_name\"] = standard_name\n    return template",
-    "crumbs": [
-      "Examples",
-      "WebMercatorQuad overviews (Zarr V3)"
-    ]
-  },
-  {
-    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#write-overview-template-with-no-data-to-zarr-store",
-    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#write-overview-template-with-no-data-to-zarr-store",
-    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
-    "section": "Write overview template (with no data) to zarr store",
-    "text": "Write overview template (with no data) to zarr store\n\nfor zoom in zoom_levels:\n    template = create_overview_template(\n        var,\n        ds[var].attrs[\"standard_name\"],\n        tileWidth=tileWidth,\n        dataset_length=dataset_length,\n        zoom=zoom,\n    )\n    template.to_zarr(\n        v3_output,\n        group=str(zoom),\n        compute=False,\n        consolidated=False,\n        mode=\"w\",\n        zarr_format=3,\n    )",
-    "crumbs": [
-      "Examples",
-      "WebMercatorQuad overviews (Zarr V3)"
-    ]
-  },
-  {
-    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#populate-zarr-array-with-overview-data",
-    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#populate-zarr-array-with-overview-data",
-    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
-    "section": "Populate Zarr array with overview data",
-    "text": "Populate Zarr array with overview data\n\ndef populate_tile_data(dst: XarrayReader, za: zarr.Array, x: int, y: int, zoom: int):\n    x_start = x * tileWidth\n    x_stop = (x + 1) * tileWidth\n    y_start = y * tileWidth\n    y_stop = (y + 1) * tileWidth\n    tile = dst.tile(x, y, zoom).data\n    za[:, y_start:y_stop, x_start:x_stop] = tile\n\n\nmatrices = tms.tileMatrices\n\nwith XarrayReader(ds[var]) as dst:\n    for zoom in zoom_levels:\n        tm = matrices[zoom]\n        za = zarr.open_array(v3_output, path=f\"{zoom}/{var}\", zarr_version=3)\n        for x in range(tm.matrixWidth):\n            for y in range(tm.matrixHeight):\n                populate_tile_data(dst, za, x, y, zoom)",
-    "crumbs": [
-      "Examples",
-      "WebMercatorQuad overviews (Zarr V3)"
-    ]
-  },
-  {
-    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#inspect-zarr-v3-store",
-    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#inspect-zarr-v3-store",
-    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
-    "section": "Inspect Zarr V3 store",
-    "text": "Inspect Zarr V3 store\nFirst, let’s look at the structure of Zarr arrays using zarr’s Group.tree() method\n\nroot = zarr.open_group(v3_output, mode=\"r\")\nroot.tree()\n\n/\n├── 0\n│   ├── analysed_sst (1, 256, 256) float32\n│   └── spatial_ref () int64\n├── 1\n│   ├── analysed_sst (1, 512, 512) float32\n│   └── spatial_ref () int64\n├── 2\n│   ├── analysed_sst (1, 1024, 1024) float32\n│   └── spatial_ref () int64\n├── analysed_sst (1, 17999, 36000) float64\n├── lat (17999,) float32\n├── lon (36000,) float32\n├── sea_ice_fraction (1, 17999, 36000) float64\n├── spatial_ref () int64\n└── time (1,) int32\n\n\n\nSecond, let’s look at what’s actually recorded in the Zarr metadata using the consolidated metadata at the root of the Zarr store.\nIn order to match valid JSON, we convert the nan fill_value entries to “nan”.\n\nKey observations\n\nFor each group and array, metadata is stored under the ‘attributes’ key in ‘zarr.json’\nAll arrays contain a attributes/standard_name\nThe dimensions associated with an array are stored under zarr.json/dimension_names (separately from the attributes) rather than _ARRAY_DIMENSIONS\nthe node_type specifies whether the key holds a Zarr Array or a Zarr Group\nThe coordinates associated with an array are still specified within the array metadata. Currently this is an Xarray implementation detail rather than a part of the GeoZarr specification.\nThe fill_value for sea_ice_fraction and analysed_sst is 0 instead of nan. This is likely an error with the fill value not being explicitly specified.\nmetadata/multiscales for analysed_sst contains information about the multiscales, specifying that they are a WebMercatorQuad TMS created using nearest resampling\nThe 0, 1, and 2 groups contain GeoZarr compliant overviews for the analysed_sst variable, including the required standard_name and grid_mapping attributes.\n\n\npanel.extension()\nconsolidated_metadata_file = f\"{v3_output}/zarr.json\"\nwith open(consolidated_metadata_file) as f:\n    metadata = json.load(f)[\"consolidated_metadata\"][\"metadata\"]\npanel.pane.JSON(metadata, name=\"JSON\")",
-    "crumbs": [
-      "Examples",
-      "WebMercatorQuad overviews (Zarr V3)"
-    ]
-  },
-  {
-    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#plot-one-of-the-zoom-levels",
-    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#plot-one-of-the-zoom-levels",
-    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
-    "section": "Plot one of the zoom levels",
-    "text": "Plot one of the zoom levels\n\nvar = \"analysed_sst\"\nzoom = 2\narr = zarr.open_array(v3_output, path=f\"{zoom}/{var}\")\narr = arr[:]\nplt.imshow(arr.squeeze())",
-    "crumbs": [
-      "Examples",
-      "WebMercatorQuad overviews (Zarr V3)"
-    ]
-  },
-  {
-    "objectID": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html",
-    "href": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html",
-    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
-    "section": "",
-    "text": "import cf_xarray  # noqa\nimport morecantile\nimport pyproj\nimport rioxarray  # noqa\nimport xarray as xr\nfrom matplotlib import pyplot as plt\nfrom rasterio.rio.overview import get_maximum_overview_level\n\n# For zarr_format=2 encoding\nfrom rio_tiler.io.xarray import XarrayReader\n\n\nfp_base = \"20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1\"\ninput = f\"../data/{fp_base}.nc\"\nv2_output = f\"../output/v2/{fp_base}_custom_multiscales.zarr\"\n\n\nds = xr.open_dataset(input)"
-  },
-  {
-    "objectID": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#load-example-dataset-from-netcdf-into-xarray",
-    "href": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#load-example-dataset-from-netcdf-into-xarray",
-    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
-    "section": "",
-    "text": "import cf_xarray  # noqa\nimport morecantile\nimport pyproj\nimport rioxarray  # noqa\nimport xarray as xr\nfrom matplotlib import pyplot as plt\nfrom rasterio.rio.overview import get_maximum_overview_level\n\n# For zarr_format=2 encoding\nfrom rio_tiler.io.xarray import XarrayReader\n\n\nfp_base = \"20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1\"\ninput = f\"../data/{fp_base}.nc\"\nv2_output = f\"../output/v2/{fp_base}_custom_multiscales.zarr\"\n\n\nds = xr.open_dataset(input)"
-  },
-  {
-    "objectID": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#check-that-all-variables-have-a-cf-compliant-standard-name",
-    "href": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#check-that-all-variables-have-a-cf-compliant-standard-name",
-    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
-    "section": "Check that all variables have a CF-compliant standard name",
-    "text": "Check that all variables have a CF-compliant standard name\n\nstandard_names = ds.cf.standard_names\nvars_with_standard_names = [v[0] for v in ds.cf.standard_names.values()]\ncompliant_vars = []\nnon_complaint_vars = []\nfor var in ds.variables:\n    if var not in vars_with_standard_names:\n        non_complaint_vars.append(var)\n    else:\n        compliant_vars.append(var)\n        assert ds[var].attrs[\"standard_name\"]\n\nprint(f\"These variables do NOT have a CF-compliant standard name: {non_complaint_vars}\")\nprint(f\"These variables have a CF-compliant standard name: {compliant_vars}\")\n\nThese variables do NOT have a CF-compliant standard name: ['analysis_error', 'mask']\nThese variables have a CF-compliant standard name: ['time', 'lat', 'lon', 'analysed_sst', 'sea_ice_fraction']\n\n\nNot all the variables in this dataset have a CF-compliant standard name. See https://github.com/zarr-developers/geozarr-spec/issues/60 for a recommendation that CF-compliant standard names should be a “SHOULD” rather than a “MUST” condition in the GeoZarr spec. For now, let’s subset to the variables that do use CF-compliant standard names.\n\nds = ds[compliant_vars]"
-  },
-  {
-    "objectID": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#assign-crs-information-to-an-auxiliary-variable-using-rioxarray",
-    "href": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#assign-crs-information-to-an-auxiliary-variable-using-rioxarray",
-    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
-    "section": "Assign CRS information to an auxiliary variable using rioxarray",
-    "text": "Assign CRS information to an auxiliary variable using rioxarray\n\nds = ds.rio.write_crs(\"epsg:4326\")\n# Specify which variable contains CRS information using grid_mapping\nfor var in ds.data_vars:\n    ds[var].attrs[\"grid_mapping\"] = \"spatial_ref\""
-  },
-  {
-    "objectID": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#define-a-custom-tms",
-    "href": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#define-a-custom-tms",
-    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
-    "section": "Define a custom TMS",
-    "text": "Define a custom TMS\n\nfrom morecantile.models import TileMatrix, TileMatrixSet, crs_axis_inverted, TMSBoundingBox, CRS_to_uri\nfrom morecantile.utils import meters_per_unit\nimport math\n\nx_chunk_size = 512\ny_chunk_size = 512\n\ndst_height = ds[var].shape[1]\ndst_width = ds[var].shape[2]\n\ndecimation_base = 2\n\npyproj_crs = pyproj.CRS.from_epsg(4326)\nprint(f\"crs: {pyproj_crs}\")\n\nbounds = tuple(ds[var].rio.bounds())\nprint(f\"bounds: {bounds}\")\n\nis_inverted = crs_axis_inverted(pyproj_crs)\n\noverview_level = get_maximum_overview_level(\n    dst_width,\n    dst_height,\n    minsize=min(x_chunk_size, y_chunk_size),\n)\nmpu = meters_per_unit(pyproj_crs)\n\n# Rendering pixel size. 0.28 mm was the actual pixel size of a common display from 2005 and considered as standard by OGC.\nscreen_pixel_size = 0.28e-3\n\nx_origin = bounds[0] if not is_inverted else bounds[3]\ny_origin = bounds[3] if not is_inverted else bounds[0]\n\nwidth = abs(bounds[2] - bounds[0])\nheight = abs(bounds[3] - bounds[1])\nres = max(width / dst_width, height / dst_height)\n\nmatrices = [\n    TileMatrix(\n        description=\"TileMatrix for the high resolution data\",\n        id=str(overview_level),\n        scaleDenominator=res * mpu / screen_pixel_size,\n        cellSize=res,\n        pointOfOrigin=[x_origin, y_origin],\n        tileWidth=x_chunk_size,\n        tileHeight=y_chunk_size,\n        matrixWidth=math.ceil(dst_width / x_chunk_size),\n        matrixHeight=math.ceil(dst_height / y_chunk_size),\n    )\n]\n\nfor ovr in range(1, overview_level + 1):\n    decimation = decimation_base ** ovr\n    new_res = res * decimation\n    matrices.append(\n        TileMatrix(\n            description=f\"TileMatrix for overview {ovr}\",\n            id=str(overview_level - ovr),\n            scaleDenominator=new_res * mpu / screen_pixel_size,\n            cellSize=new_res,\n            pointOfOrigin=[x_origin, y_origin],\n            tileWidth=x_chunk_size,\n            tileHeight=y_chunk_size,\n            matrixWidth=math.ceil(dst_width / decimation / x_chunk_size),\n            matrixHeight=math.ceil(dst_height / decimation / y_chunk_size),\n        )\n    )\n\nmatrices = reversed(matrices)\n\ncustom_tms = TileMatrixSet(\n    id=\"custom_tms\",\n    title=f\"Custom TMS for {var} variable\",\n    tileMatrices=matrices,\n    orderedAxes=[\"Lat\", \"Lon\"],\n    crs=\"http://www.opengis.net/def/crs/EPSG/0/4326\",\n)\n\nwith XarrayReader(ds[var], tms=custom_tms) as dst:\n    tile = dst.tile(0, 0, 0).data\n\nplt.imshow(tile.squeeze())\n\ncrs: EPSG:4326\nbounds: (-179.99500549324037, -89.99499786365084, 180.0050000000763, 89.99499786365084)"
-  },
-  {
     "objectID": "examples/00_download_data.html",
     "href": "examples/00_download_data.html",
     "title": "Download data",
     "section": "",
-    "text": "We’ll use the earthaccess library to download a single file for the MUR-SST dataset to use for these examples.\n\nimport earthaccess\n\n\nresults = earthaccess.search_data(\n    concept_id=\"C1996881146-POCLOUD\", count=1, temporal=(\"2002-06-01\", \"2002-06-01\")\n)\nearthaccess.download(results, \"../data\")[0]\n\n\n\n\n\n\n\n\n\n\n'../data/20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.nc'",
+    "text": "We’ll use the earthaccess library to download a single file for the MUR-SST dataset to use for these examples.\n\nimport earthaccess\n\n\nresults = earthaccess.search_data(\n    concept_id=\"C1996881146-POCLOUD\", count=3, temporal=(\"2002-06-01\", \"2002-06-30\")\n)\nearthaccess.download(results, \"../data\")[0]",
     "crumbs": [
       "Pre-requisites",
       "Download dataset for examples"
+    ]
+  },
+  {
+    "objectID": "examples/01_CRS_in_auxiliary_variable.html",
+    "href": "examples/01_CRS_in_auxiliary_variable.html",
+    "title": "Store CRS information in a auxiliary variable specified in grid_mapping",
+    "section": "",
+    "text": "import json\n\nimport cf_xarray  # noqa\nimport panel\nimport rioxarray  # noqa\nimport xarray as xr\nimport zarr\n\n# For zarr_format=2 encoding\nfrom numcodecs import Zstd\n\n\nfp_base = \"20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1\"\ninput = f\"../data/{fp_base}.nc\"\nv2_output = f\"../output/v2/{fp_base}.zarr\"\nv3_output = f\"../output/v3/{fp_base}.zarr\"\n\n\nds = xr.open_dataset(input)",
+    "crumbs": [
+      "Examples",
+      "Explicit coordinates"
+    ]
+  },
+  {
+    "objectID": "examples/01_CRS_in_auxiliary_variable.html#load-example-dataset-from-netcdf-into-xarray",
+    "href": "examples/01_CRS_in_auxiliary_variable.html#load-example-dataset-from-netcdf-into-xarray",
+    "title": "Store CRS information in a auxiliary variable specified in grid_mapping",
+    "section": "",
+    "text": "import json\n\nimport cf_xarray  # noqa\nimport panel\nimport rioxarray  # noqa\nimport xarray as xr\nimport zarr\n\n# For zarr_format=2 encoding\nfrom numcodecs import Zstd\n\n\nfp_base = \"20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1\"\ninput = f\"../data/{fp_base}.nc\"\nv2_output = f\"../output/v2/{fp_base}.zarr\"\nv3_output = f\"../output/v3/{fp_base}.zarr\"\n\n\nds = xr.open_dataset(input)",
+    "crumbs": [
+      "Examples",
+      "Explicit coordinates"
+    ]
+  },
+  {
+    "objectID": "examples/01_CRS_in_auxiliary_variable.html#check-that-all-variables-have-a-cf-compliant-standard-name",
+    "href": "examples/01_CRS_in_auxiliary_variable.html#check-that-all-variables-have-a-cf-compliant-standard-name",
+    "title": "Store CRS information in a auxiliary variable specified in grid_mapping",
+    "section": "Check that all variables have a CF-compliant standard name",
+    "text": "Check that all variables have a CF-compliant standard name\n\nstandard_names = ds.cf.standard_names\nvars_with_standard_names = [v[0] for v in ds.cf.standard_names.values()]\ncompliant_vars = []\nnon_complaint_vars = []\nfor var in ds.variables:\n    if var not in vars_with_standard_names:\n        non_complaint_vars.append(var)\n    else:\n        compliant_vars.append(var)\n        assert ds[var].attrs[\"standard_name\"]\n\nprint(f\"These variables do NOT have a CF-compliant standard name: {non_complaint_vars}\")\nprint(f\"These variables have a CF-compliant standard name: {compliant_vars}\")\n\nThese variables do NOT have a CF-compliant standard name: ['analysis_error', 'mask']\nThese variables have a CF-compliant standard name: ['time', 'lat', 'lon', 'analysed_sst', 'sea_ice_fraction']\n\n\nNot all the variables in this dataset have a CF-compliant standard name. See https://github.com/zarr-developers/geozarr-spec/issues/60 for a recommendation that CF-compliant standard names should be a “SHOULD” rather than a “MUST” condition in the GeoZarr spec. For now, let’s subset to the variables that do use CF-compliant standard names.\n\nds = ds[compliant_vars]",
+    "crumbs": [
+      "Examples",
+      "Explicit coordinates"
+    ]
+  },
+  {
+    "objectID": "examples/01_CRS_in_auxiliary_variable.html#assign-crs-information-to-an-auxiliary-variable-using-rioxarray",
+    "href": "examples/01_CRS_in_auxiliary_variable.html#assign-crs-information-to-an-auxiliary-variable-using-rioxarray",
+    "title": "Store CRS information in a auxiliary variable specified in grid_mapping",
+    "section": "Assign CRS information to an auxiliary variable using rioxarray",
+    "text": "Assign CRS information to an auxiliary variable using rioxarray\n\nds = ds.rio.write_crs(\"epsg:4326\")\n# Specify which variable contains CRS information using grid_mapping\nfor var in ds.data_vars:\n    ds[var].attrs[\"grid_mapping\"] = \"spatial_ref\"",
+    "crumbs": [
+      "Examples",
+      "Explicit coordinates"
+    ]
+  },
+  {
+    "objectID": "examples/01_CRS_in_auxiliary_variable.html#specify-encoding-and-write-to-zarr-v2-format",
+    "href": "examples/01_CRS_in_auxiliary_variable.html#specify-encoding-and-write-to-zarr-v2-format",
+    "title": "Store CRS information in a auxiliary variable specified in grid_mapping",
+    "section": "Specify encoding and write to Zarr V2 format",
+    "text": "Specify encoding and write to Zarr V2 format\n\nspatial_chunk = 4096\ncompressor = Zstd(level=1)\nencoding = {\n    \"analysed_sst\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressor\": compressor,\n    },\n    \"sea_ice_fraction\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressor\": compressor,\n    },\n}\nds.to_zarr(v2_output, mode=\"w\", consolidated=True, zarr_format=2, encoding=encoding)\n\n&lt;xarray.backends.zarr.ZarrStore at 0x16a11e560&gt;",
+    "crumbs": [
+      "Examples",
+      "Explicit coordinates"
+    ]
+  },
+  {
+    "objectID": "examples/01_CRS_in_auxiliary_variable.html#inspect-zarr-v2-store",
+    "href": "examples/01_CRS_in_auxiliary_variable.html#inspect-zarr-v2-store",
+    "title": "Store CRS information in a auxiliary variable specified in grid_mapping",
+    "section": "Inspect Zarr V2 store",
+    "text": "Inspect Zarr V2 store\nFirst, let’s look at the structure of Zarr arrays using zarr’s Group.tree() method\n\nroot = zarr.open_group(v2_output)\nroot.tree()\n\n/\n├── analysed_sst (1, 17999, 36000) float64\n├── lat (17999,) float32\n├── lon (36000,) float32\n├── sea_ice_fraction (1, 17999, 36000) float64\n├── spatial_ref () int64\n└── time (1,) int32\n\n\n\nSecond, let’s look at what’s actually recorded in the Zarr metadata using the consolidated metadata at the root of the Zarr store.\nIn order to match valid JSON, we convert the nan fill_value entries to “nan”.\n\nKey observations\n\nFor each array, metadata is stored under ‘.zattrs’\nAll arrays contain a .zattrs/standard_name\nThe root group specifies that the metadata follows CF conventions, which should be validated.\n.zattrs/_ARRAY_DIMENSIONS for lat, lon, and time contains a list with only the the name of the array, indicating that they are coordinates variables.\n.zattrs/_ARRAY_DIMENSIONS for spatial_ref contains an empty list, indicating that it is an auxiliary coordinate.\n.zattrs/_ARRAY_DIMENSIONS for analysed_sst, sea_ice_fraction contain a list referring to other arrays, indicating that they are data variables rather than coordinate variables.\n.zattrs/grid_mapping for analysed_sst, sea_ice_fraction is \"spatial_ref\" indicating that CRS information is included in that auxiliary variable’s metadata.\nspatial_ref/.zattrs contains the OGC WKT for the CRS.\n\n\npanel.extension()\nconsolidated_metadata_file = f\"{v2_output}/.zmetadata\"\nwith open(consolidated_metadata_file) as f:\n    metadata = json.load(f)[\"metadata\"]\nmetadata[\"sea_ice_fraction/.zarray\"][\"fill_value\"] = str(\n    metadata[\"sea_ice_fraction/.zarray\"][\"fill_value\"]\n)\nmetadata[\"analysed_sst/.zarray\"][\"fill_value\"] = str(\n    metadata[\"sea_ice_fraction/.zarray\"][\"fill_value\"]\n)\npanel.pane.JSON(metadata, name=\"JSON\")",
+    "crumbs": [
+      "Examples",
+      "Explicit coordinates"
+    ]
+  },
+  {
+    "objectID": "examples/01_CRS_in_auxiliary_variable.html#specify-encoding-and-write-to-zarr-v3-format",
+    "href": "examples/01_CRS_in_auxiliary_variable.html#specify-encoding-and-write-to-zarr-v3-format",
+    "title": "Store CRS information in a auxiliary variable specified in grid_mapping",
+    "section": "Specify encoding and write to Zarr V3 format",
+    "text": "Specify encoding and write to Zarr V3 format\nWhile GeoZarr v0.4 is Zarr V2 specific, let’s write a Zarr V3 store to get an idea about how GeoZarr could be adapted for Zarr format 3.\n\nspatial_chunk = 4096\ncompressor = zarr.codecs.ZstdCodec(level=1)\nencoding = {\n    \"analysed_sst\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressors\": compressor,\n    },\n    \"sea_ice_fraction\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressors\": compressor,\n    },\n}\nds.to_zarr(v3_output, mode=\"w\", consolidated=True, zarr_format=3, encoding=encoding)\n\n/Users/max/Documents/Code/developmentseed/geozarr-examples/.pixi/envs/test/lib/python3.13/site-packages/zarr/api/asynchronous.py:203: UserWarning: Consolidated metadata is currently not part in the Zarr format 3 specification. It may not be supported by other zarr implementations and may change in the future.\n  warnings.warn(\n\n\n&lt;xarray.backends.zarr.ZarrStore at 0x16a11f910&gt;\n\n\n\nKey observations\n\nFor each group and array, metadata is stored under the ‘attributes’ key in ‘zarr.json’.\nAll arrays contain a attributes/standard_name.\nThe dimensions associated with an array are stored under zarr.json/dimension_names (separately from the attributes) rather than _ARRAY_DIMENSIONS.\nthe node_type specifies whether the key holds a Zarr Array or a Zarr Group.\nThe coordinates associated with an array are still specified within the array metadata. Currently this is an Xarray implementation detail rather than a part of the GeoZarr specification.\nThe fill_value for sea_ice_fraction and analysed_sst is 0 instead of nan. This is likely an error with the fill value not being explicitly specified.\n\n\npanel.extension()\nconsolidated_metadata_file = f\"{v3_output}/zarr.json\"\nwith open(consolidated_metadata_file) as f:\n    metadata = json.load(f)[\"consolidated_metadata\"][\"metadata\"]\npanel.pane.JSON(metadata, name=\"JSON\")",
+    "crumbs": [
+      "Examples",
+      "Explicit coordinates"
+    ]
+  },
+  {
+    "objectID": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html",
+    "href": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html",
+    "title": "Store Affine GeoTransform and CRS in grid_mapping variable",
+    "section": "",
+    "text": "import json\n\nimport cf_xarray  # noqa\nimport panel\nimport rasterio\nimport rioxarray  # noqa\nimport xarray as xr\nimport zarr\n\n# For zarr_format=2 encoding\nfrom numcodecs import Zstd\n\n\nfp_base = \"20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1\"\ninput = f\"../data/{fp_base}.nc\"\nv2_output = f\"../output/v2/{fp_base}_geotransform.zarr\"\nv3_output = f\"../output/v3/{fp_base}_geotransform.zarr\"\n\n\nds = xr.open_dataset(input)",
+    "crumbs": [
+      "Examples",
+      "GeoTransform"
+    ]
+  },
+  {
+    "objectID": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#load-example-dataset-from-netcdf-into-xarray",
+    "href": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#load-example-dataset-from-netcdf-into-xarray",
+    "title": "Store Affine GeoTransform and CRS in grid_mapping variable",
+    "section": "",
+    "text": "import json\n\nimport cf_xarray  # noqa\nimport panel\nimport rasterio\nimport rioxarray  # noqa\nimport xarray as xr\nimport zarr\n\n# For zarr_format=2 encoding\nfrom numcodecs import Zstd\n\n\nfp_base = \"20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1\"\ninput = f\"../data/{fp_base}.nc\"\nv2_output = f\"../output/v2/{fp_base}_geotransform.zarr\"\nv3_output = f\"../output/v3/{fp_base}_geotransform.zarr\"\n\n\nds = xr.open_dataset(input)",
+    "crumbs": [
+      "Examples",
+      "GeoTransform"
+    ]
+  },
+  {
+    "objectID": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#check-that-all-variables-have-a-cf-compliant-standard-name",
+    "href": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#check-that-all-variables-have-a-cf-compliant-standard-name",
+    "title": "Store Affine GeoTransform and CRS in grid_mapping variable",
+    "section": "Check that all variables have a CF-compliant standard name",
+    "text": "Check that all variables have a CF-compliant standard name\n\nstandard_names = ds.cf.standard_names\nvars_with_standard_names = [v[0] for v in ds.cf.standard_names.values()]\ncompliant_vars = []\nnon_complaint_vars = []\nfor var in ds.variables:\n    if var not in vars_with_standard_names:\n        non_complaint_vars.append(var)\n    else:\n        compliant_vars.append(var)\n        assert ds[var].attrs[\"standard_name\"]\n\nprint(f\"These variables do NOT have a CF-compliant standard name: {non_complaint_vars}\")\nprint(f\"These variables have a CF-compliant standard name: {compliant_vars}\")\n\nThese variables do NOT have a CF-compliant standard name: ['analysis_error', 'mask']\nThese variables have a CF-compliant standard name: ['time', 'lat', 'lon', 'analysed_sst', 'sea_ice_fraction']\n\n\nNot all the variables in this dataset have a CF-compliant standard name. See https://github.com/zarr-developers/geozarr-spec/issues/60 for a recommendation that CF-compliant standard names should be a “SHOULD” rather than a “MUST” condition in the GeoZarr spec. For now, let’s subset to the variables that do use CF-compliant standard names.\n\nds = ds[compliant_vars]",
+    "crumbs": [
+      "Examples",
+      "GeoTransform"
+    ]
+  },
+  {
+    "objectID": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#assign-crs-and-geotransform-using-rioxarray-and-rasterio",
+    "href": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#assign-crs-and-geotransform-using-rioxarray-and-rasterio",
+    "title": "Store Affine GeoTransform and CRS in grid_mapping variable",
+    "section": "Assign CRS and geotransform using rioxarray and rasterio",
+    "text": "Assign CRS and geotransform using rioxarray and rasterio\nFirst, let’s specify the CRS for the dataset\n\nds = ds.rio.write_crs(\"epsg:4326\")\n\n\n# Specify which variable contains CRS information using grid_mapping\nfor var in ds.data_vars:\n    ds[var].attrs[\"grid_mapping\"] = \"spatial_ref\"\n\nNext, let’s get the appropriate GeoTransform from the bounds, width, and height of one of the data variables.\n\nlength, height, width = ds.analysed_sst.shape\ntransform = rasterio.transform.from_bounds(*ds.analysed_sst.rio.bounds(), width, height)\n\nNow, let’s store the GeoTransform as a space separated string in the GeoTransform attribute of the spatial_ref auxiliary variable.\n\n# Convert transform to GDAL's format\ntransform = transform.to_gdal()\n# Convert transform to space separated string\ntransform = \" \".join([str(i) for i in transform])\n# Save as an attribute in the `spatial_ref` variable\nds[\"spatial_ref\"].attrs[\"GeoTransform\"] = transform\n\nFinally, we’ll remove the explicit coordinates that are redundant with the GeoTransform.\n\nds = ds.drop_vars([\"lat\", \"lon\"])\nds\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n&lt;xarray.Dataset&gt; Size: 10GB\nDimensions:           (time: 1, lat: 17999, lon: 36000)\nCoordinates:\n  * time              (time) datetime64[ns] 8B 2002-06-01T09:00:00\n    spatial_ref       int64 8B 0\nDimensions without coordinates: lat, lon\nData variables:\n    analysed_sst      (time, lat, lon) float64 5GB ...\n    sea_ice_fraction  (time, lat, lon) float64 5GB ...\nAttributes: (12/47)\n    Conventions:                CF-1.5\n    title:                      Daily MUR SST, Final product\n    summary:                    A merged, multi-sensor L4 Foundation SST anal...\n    references:                 http://podaac.jpl.nasa.gov/Multi-scale_Ultra-...\n    institution:                Jet Propulsion Laboratory\n    history:                    created at nominal 4-day latency; replaced nr...\n    ...                         ...\n    project:                    NASA Making Earth Science Data Records for Us...\n    publisher_name:             GHRSST Project Office\n    publisher_url:              http://www.ghrsst.org\n    publisher_email:            ghrsst-po@nceo.ac.uk\n    processing_level:           L4\n    cdm_data_type:              gridxarray.DatasetDimensions:time: 1lat: 17999lon: 36000Coordinates: (2)time(time)datetime64[ns]2002-06-01T09:00:00long_name :reference time of sst fieldstandard_name :timeaxis :Tcomment :Nominal time of analyzed fieldsarray(['2002-06-01T09:00:00.000000000'], dtype='datetime64[ns]')spatial_ref()int640crs_wkt :GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST],AUTHORITY[\"EPSG\",\"4326\"]]semi_major_axis :6378137.0semi_minor_axis :6356752.314245179inverse_flattening :298.257223563reference_ellipsoid_name :WGS 84longitude_of_prime_meridian :0.0prime_meridian_name :Greenwichgeographic_crs_name :WGS 84horizontal_datum_name :World Geodetic System 1984grid_mapping_name :latitude_longitudespatial_ref :GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST],AUTHORITY[\"EPSG\",\"4326\"]]GeoTransform :-179.99500549324037 0.01000000015259213 0.0 89.99499786365084 0.0 -0.009999999762614682array(0)Data variables: (2)analysed_sst(time, lat, lon)float64...long_name :analysed sea surface temperaturestandard_name :sea_surface_foundation_temperatureunits :kelvinvalid_min :-32767valid_max :32767comment :\"Final\" version using Multi-Resolution Variational Analysis (MRVA) method for interpolationsource :AMSRE-REMSS, AVHRR_Pathfinder-PFV5.2-NODC_day, AVHRR_Pathfinder-PFV5.2-NODC_night, MODIS_T-JPL, iQUAM-NOAA/NESDIS, Ice_Conc-OSISAFgrid_mapping :spatial_ref[647964000 values with dtype=float64]sea_ice_fraction(time, lat, lon)float64...long_name :sea ice area fractionstandard_name :sea ice area fractionunits :fraction (between 0 and 1)valid_min :0valid_max :100source :EUMETSAT OSI-SAF, copyright EUMETSATcomment :ice data interpolated by a nearest neighbor approach.grid_mapping :spatial_ref[647964000 values with dtype=float64]Indexes: (1)timePandasIndexPandasIndex(DatetimeIndex(['2002-06-01 09:00:00'], dtype='datetime64[ns]', name='time', freq=None))Attributes: (47)Conventions :CF-1.5title :Daily MUR SST, Final productsummary :A merged, multi-sensor L4 Foundation SST analysis product from JPL.references :http://podaac.jpl.nasa.gov/Multi-scale_Ultra-high_Resolution_MUR-SSTinstitution :Jet Propulsion Laboratoryhistory :created at nominal 4-day latency; replaced nrt (1-day latency) version.comment :MUR = \"Multi-scale Ultra-high Reolution\"license :These data are available free of charge under data policy of JPL PO.DAAC.id :MUR-JPL-L4-GLOB-v04.1naming_authority :org.ghrsstproduct_version :04.1uuid :27665bc0-d5fc-11e1-9b23-0800200c9a66gds_version_id :2.0netcdf_version_id :4.1date_created :20150819T103929Zstart_time :20020601T090000Zstop_time :20020601T090000Ztime_coverage_start :20020531T210000Ztime_coverage_end :20020601T210000Zfile_quality_level :1source :AMSRE-REMSS, AVHRR_Pathfinder-PFV5.2-NODC_day, AVHRR_Pathfinder-PFV5.2-NODC_night, MODIS_T-JPL, iQUAM-NOAA/NESDIS, Ice_Conc-OSISAFplatform :Aqua, DMSP, NOAA-POES, Suomi-NPP, Terrasensor :AMSR-E, AVHRR, MODIS, SSM/I, VIIRS, in-situMetadata_Conventions :Unidata Observation Dataset v1.0metadata_link :http://podaac.jpl.nasa.gov/ws/metadata/dataset/?format=iso&shortName=MUR-JPL-L4-GLOB-v04.1keywords :Oceans &gt; Ocean Temperature &gt; Sea Surface Temperaturekeywords_vocabulary :NASA Global Change Master Directory (GCMD) Science Keywordsstandard_name_vocabulary :NetCDF Climate and Forecast (CF) Metadata Conventionsouthernmost_latitude :-90.0northernmost_latitude :90.0westernmost_longitude :-180.0easternmost_longitude :180.0spatial_resolution :0.01 degreesgeospatial_lat_units :degrees northgeospatial_lat_resolution :0.01 degreesgeospatial_lon_units :degrees eastgeospatial_lon_resolution :0.01 degreesacknowledgment :Please acknowledge the use of these data with the following statement:  These data were provided by JPL under support by NASA MEaSUREs program.creator_name :JPL MUR SST projectcreator_email :ghrsst@podaac.jpl.nasa.govcreator_url :http://mur.jpl.nasa.govproject :NASA Making Earth Science Data Records for Use in Research Environments (MEaSUREs) Programpublisher_name :GHRSST Project Officepublisher_url :http://www.ghrsst.orgpublisher_email :ghrsst-po@nceo.ac.ukprocessing_level :L4cdm_data_type :grid",
+    "crumbs": [
+      "Examples",
+      "GeoTransform"
+    ]
+  },
+  {
+    "objectID": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#specify-encoding-and-write-to-zarr-v2-format",
+    "href": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#specify-encoding-and-write-to-zarr-v2-format",
+    "title": "Store Affine GeoTransform and CRS in grid_mapping variable",
+    "section": "Specify encoding and write to Zarr V2 format",
+    "text": "Specify encoding and write to Zarr V2 format\n\nspatial_chunk = 4096\ncompressor = Zstd(level=1)\nencoding = {\n    \"analysed_sst\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressor\": compressor,\n    },\n    \"sea_ice_fraction\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressor\": compressor,\n    },\n}\nds.to_zarr(v2_output, mode=\"w\", consolidated=True, zarr_format=2, encoding=encoding)\n\n&lt;xarray.backends.zarr.ZarrStore at 0x16aacde10&gt;",
+    "crumbs": [
+      "Examples",
+      "GeoTransform"
+    ]
+  },
+  {
+    "objectID": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#inspect-zarr-v2-store",
+    "href": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#inspect-zarr-v2-store",
+    "title": "Store Affine GeoTransform and CRS in grid_mapping variable",
+    "section": "Inspect Zarr V2 store",
+    "text": "Inspect Zarr V2 store\nFirst, let’s look at the structure of Zarr arrays using zarr’s Group.tree() method\n\nroot = zarr.open_group(v2_output)\nroot.tree()\n\n/\n├── analysed_sst (1, 17999, 36000) float64\n├── sea_ice_fraction (1, 17999, 36000) float64\n├── spatial_ref () int64\n└── time (1,) int32\n\n\n\nSecond, let’s look at what’s actually recorded in the Zarr metadata using the consolidated metadata at the root of the Zarr store.\nIn order to match valid JSON, we convert the nan fill_value entries to “nan”.\n\nKey observations\n\nFor each array, metadata is stored under '.zattrs'.\nAll arrays contain a .zattrs/standard_name.\nThe root group specifies that the metadata follows CF conventions, which should be validated.\n.zattrs/_ARRAY_DIMENSIONS for time contains a list with only the the name of the array, indicating that it is a coordinates variable.\n.zattrs/_ARRAY_DIMENSIONS for spatial_ref contains an empty list, indicating that it is an auxiliary coordinate.\n.zattrs/_ARRAY_DIMENSIONS for analysed_sst, sea_ice_fraction contain a list referring to other arrays, indicating that they are data variables rather than coordinate variables.\n.zattrs/grid_mapping for analysed_sst, sea_ice_fraction is \"spatial_ref\" indicating that CRS information is included in that auxiliary variable’s metadata.\nspatial_ref/.zattrs contains the OGC WKT for the CRS with a GeoTransform attribute containing a string separated GDAL format Affine GeoTransform\n.zattrs/coordinates for analysed_sst, sea_ice_fraction include lat and lon indicating that the GeoTransform produces those coordinates. The part of the stack that adds this metadata coordinates should be further investigated.\n\n\npanel.extension()\nconsolidated_metadata_file = f\"{v2_output}/.zmetadata\"\nwith open(consolidated_metadata_file) as f:\n    metadata = json.load(f)[\"metadata\"]\nmetadata[\"sea_ice_fraction/.zarray\"][\"fill_value\"] = str(\n    metadata[\"sea_ice_fraction/.zarray\"][\"fill_value\"]\n)\nmetadata[\"analysed_sst/.zarray\"][\"fill_value\"] = str(\n    metadata[\"sea_ice_fraction/.zarray\"][\"fill_value\"]\n)\npanel.pane.JSON(metadata, name=\"JSON\")",
+    "crumbs": [
+      "Examples",
+      "GeoTransform"
+    ]
+  },
+  {
+    "objectID": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#specify-encoding-and-write-to-zarr-v3-format",
+    "href": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#specify-encoding-and-write-to-zarr-v3-format",
+    "title": "Store Affine GeoTransform and CRS in grid_mapping variable",
+    "section": "Specify encoding and write to Zarr V3 format",
+    "text": "Specify encoding and write to Zarr V3 format\nWhile GeoZarr v0.4 is Zarr V2 specific, let’s write a Zarr V3 store to get an idea about how GeoZarr could be adapted for Zarr format 3.\n\nspatial_chunk = 4096\ncompressor = zarr.codecs.ZstdCodec(level=1)\nencoding = {\n    \"analysed_sst\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressors\": compressor,\n    },\n    \"sea_ice_fraction\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressors\": compressor,\n    },\n}\nds.to_zarr(v3_output, mode=\"w\", consolidated=True, zarr_format=3, encoding=encoding)\n\n/Users/max/Documents/Code/developmentseed/geozarr-examples/.pixi/envs/test/lib/python3.13/site-packages/zarr/api/asynchronous.py:203: UserWarning: Consolidated metadata is currently not part in the Zarr format 3 specification. It may not be supported by other zarr implementations and may change in the future.\n  warnings.warn(\n\n\n&lt;xarray.backends.zarr.ZarrStore at 0x16aacd510&gt;\n\n\n\nKey observations\n\nFor each group and array, metadata is stored under the ‘attributes’ key in ‘zarr.json’\nAll arrays contain a attributes/standard_name\nThe dimensions associated with an array are stored under zarr.json/dimension_names (separately from the attributes) rather than _ARRAY_DIMENSIONS\nthe node_type specifies whether the key holds a Zarr Array or a Zarr Group\nThe coordinates associated with an array are still specified within the array metadata. Currently this is an Xarray implementation detail rather than a part of the GeoZarr specification.\nThe fill_value for sea_ice_fraction and analysed_sst is 0 instead of nan. This is likely an error with the fill value not being explicitly specified.\n\n\npanel.extension()\nconsolidated_metadata_file = f\"{v3_output}/zarr.json\"\nwith open(consolidated_metadata_file) as f:\n    metadata = json.load(f)[\"consolidated_metadata\"][\"metadata\"]\npanel.pane.JSON(metadata, name=\"JSON\")",
+    "crumbs": [
+      "Examples",
+      "GeoTransform"
     ]
   },
   {
@@ -353,76 +351,6 @@
     ]
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "GeoZarr examples",
-    "section": "",
-    "text": "GeoZarr examples contains in-progress work towards GeoZarr examples. If useful, the contents will eventually be migrated to a different repository, such as the Cloud Optimized Geospatial Formats Guide or the GeoZarr spec repository.",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#overview",
-    "href": "index.html#overview",
-    "title": "GeoZarr examples",
-    "section": "",
-    "text": "GeoZarr examples contains in-progress work towards GeoZarr examples. If useful, the contents will eventually be migrated to a different repository, such as the Cloud Optimized Geospatial Formats Guide or the GeoZarr spec repository.",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#goals",
-    "href": "index.html#goals",
-    "title": "GeoZarr examples",
-    "section": "Goals",
-    "text": "Goals\n\nDemonstrate how to write GeoZarr compliant data.\n\nProvide a demonstration of writing only the MUST include metadata (most importantly grid_mapping).\nProvide a demonstration of writing data with a WebMercatorQuad TMS.\nProvide a demonstration of writing data with a Custom TMS that maps to simple downsampled version of the raw data, without any change in extent or CRS.\nProvide a demonstration of storing raw data in NetCDF and overviews in native Zarr, with a virtual GeoZarr compliant entrypoint.\n\nDemonstrate how to read GeoZarr compliant data.\n\nProvide a demonstration of reading in GeoZarr data with only MUST include metadata.\nProvide a demonstration of reading in GeoZarr data with raw data and overviews in “native” zarr.\nProvide a demonstration of reading in GeoZarr data with raw data in archival formats and overviews in “native” zarr via a single virtual GeoZarr compliant entrypoint.\n\nDemonstrate how to work with GeoZarr data in Xarray using the prototypes for flexible coordinates and the xproj extension.\n\nDemonstrate whether the GeoZarr v0.4 and flexible coordinates solve the limitations highlighted in https://discourse.pangeo.io/t/example-which-highlights-the-limitations-of-netcdf-style-coordinates-for-large-geospatial-rasters/4140.\n\nDemonstrate how GeoZarr would need to be adapted for Zarr specification v3.",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#feedback-cadence",
-    "href": "index.html#feedback-cadence",
-    "title": "GeoZarr examples",
-    "section": "Feedback cadence",
-    "text": "Feedback cadence\nWe will provide progress and solicit community feedback during the following events:\n\nMarch 05, 2025 GeoZarr Monthly Community Meeting\nMarch 05, 2025 Pangeo Community Meeting\nApril 02, 2025 GeoZarr Monthly Community Meeting\nApril 02, 2025 Pangeo Community Meeting\nApril 02, 2025 posts on Pangeo and CNG forums\nEGU 2025 Conference\nCNG 2025 Conference",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#faq",
-    "href": "index.html#faq",
-    "title": "GeoZarr examples",
-    "section": "FAQ",
-    "text": "FAQ\n\nWhat’s the status of GeoZarr?\nGeoZarr is currently being developed as a Open Geospatial Consortium Standard. There is a GeoZarr Standards Working Group that meets once a month. We now have experimental prototypes of all of the pieces to move GeoZarr out of a discussion phase and into a demonstration phase. This repository stems from the hope that building demonstrations will lead to adoption, iteration, and formalization of a stable GeoZarr specification.\n\n\nHow does Zarr Specification V3 spec influence GeoZarr?\nThe GeoZarr spec is designed for Zarr specification version 2. This repository will demonstrate how the differences between Zarr format 2 and Zarr format 3 would influence GeoZarr. My expectation is that there is not much difference in the metadata requirements between the two formats. However, best practices will likely be impacted by new features available in Zarr specification version 3 (e.g., sharding).\n\n\nHow does the release of Zarr-Python 3 influence GeoZarr?\nThe Zarr-Python 3 release will help GeoZarr users through its increased performance, modernized codebase, and support for extensions. But, it only really interacts with the GeoZarr spec in-so-far as Zarr-Python 3 supports Zarr specification V3 (see prior question on “How does Zarr Specification V3 spec influence GeoZarr”).\n\n\nWhat is the relationship between GeoZarr and Web-Optimized-Zarr?\nPlease see the web-optimized Zarr overview page.",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#referencesacknowledgements",
-    "href": "index.html#referencesacknowledgements",
-    "title": "GeoZarr examples",
-    "section": "References/Acknowledgements",
-    "text": "References/Acknowledgements\n\nGeoZarr validator by @briannapagan CC BY 4.0\nGeoZarr spec CC BY 4.0\nQuarto configuration based on Cloud Native Geospatial Formats Guide and Tile Benchmarking.",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#license",
-    "href": "index.html#license",
-    "title": "GeoZarr examples",
-    "section": "License",
-    "text": "License\nContent in this repository is licensed under the MIT License.",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
     "objectID": "slides/2025-04.html#goals",
     "href": "slides/2025-04.html#goals",
     "title": "GeoZarr",
@@ -599,158 +527,109 @@
     ]
   },
   {
-    "objectID": "examples/01_CRS_in_auxiliary_variable.html",
-    "href": "examples/01_CRS_in_auxiliary_variable.html",
-    "title": "Store CRS information in a auxiliary variable specified in grid_mapping",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "GeoZarr examples",
     "section": "",
-    "text": "import json\n\nimport cf_xarray  # noqa\nimport panel\nimport rioxarray  # noqa\nimport xarray as xr\nimport zarr\n\n# For zarr_format=2 encoding\nfrom numcodecs import Zstd\n\n\nfp_base = \"20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1\"\ninput = f\"../data/{fp_base}.nc\"\nv2_output = f\"../output/v2/{fp_base}.zarr\"\nv3_output = f\"../output/v3/{fp_base}.zarr\"\n\n\nds = xr.open_dataset(input)",
+    "text": "GeoZarr examples contains in-progress work towards GeoZarr examples. If useful, the contents will eventually be migrated to a different repository, such as the Cloud Optimized Geospatial Formats Guide or the GeoZarr spec repository.",
     "crumbs": [
-      "Examples",
-      "Explicit coordinates"
+      "Home"
     ]
   },
   {
-    "objectID": "examples/01_CRS_in_auxiliary_variable.html#load-example-dataset-from-netcdf-into-xarray",
-    "href": "examples/01_CRS_in_auxiliary_variable.html#load-example-dataset-from-netcdf-into-xarray",
-    "title": "Store CRS information in a auxiliary variable specified in grid_mapping",
+    "objectID": "index.html#overview",
+    "href": "index.html#overview",
+    "title": "GeoZarr examples",
     "section": "",
-    "text": "import json\n\nimport cf_xarray  # noqa\nimport panel\nimport rioxarray  # noqa\nimport xarray as xr\nimport zarr\n\n# For zarr_format=2 encoding\nfrom numcodecs import Zstd\n\n\nfp_base = \"20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1\"\ninput = f\"../data/{fp_base}.nc\"\nv2_output = f\"../output/v2/{fp_base}.zarr\"\nv3_output = f\"../output/v3/{fp_base}.zarr\"\n\n\nds = xr.open_dataset(input)",
+    "text": "GeoZarr examples contains in-progress work towards GeoZarr examples. If useful, the contents will eventually be migrated to a different repository, such as the Cloud Optimized Geospatial Formats Guide or the GeoZarr spec repository.",
     "crumbs": [
-      "Examples",
-      "Explicit coordinates"
+      "Home"
     ]
   },
   {
-    "objectID": "examples/01_CRS_in_auxiliary_variable.html#check-that-all-variables-have-a-cf-compliant-standard-name",
-    "href": "examples/01_CRS_in_auxiliary_variable.html#check-that-all-variables-have-a-cf-compliant-standard-name",
-    "title": "Store CRS information in a auxiliary variable specified in grid_mapping",
+    "objectID": "index.html#goals",
+    "href": "index.html#goals",
+    "title": "GeoZarr examples",
+    "section": "Goals",
+    "text": "Goals\n\nDemonstrate how to write GeoZarr compliant data.\n\nProvide a demonstration of writing only the MUST include metadata (most importantly grid_mapping).\nProvide a demonstration of writing data with a WebMercatorQuad TMS.\nProvide a demonstration of writing data with a Custom TMS that maps to simple downsampled version of the raw data, without any change in extent or CRS.\nProvide a demonstration of storing raw data in NetCDF and overviews in native Zarr, with a virtual GeoZarr compliant entrypoint.\n\nDemonstrate how to read GeoZarr compliant data.\n\nProvide a demonstration of reading in GeoZarr data with only MUST include metadata.\nProvide a demonstration of reading in GeoZarr data with raw data and overviews in “native” zarr.\nProvide a demonstration of reading in GeoZarr data with raw data in archival formats and overviews in “native” zarr via a single virtual GeoZarr compliant entrypoint.\n\nDemonstrate how to work with GeoZarr data in Xarray using the prototypes for flexible coordinates and the xproj extension.\n\nDemonstrate whether the GeoZarr v0.4 and flexible coordinates solve the limitations highlighted in https://discourse.pangeo.io/t/example-which-highlights-the-limitations-of-netcdf-style-coordinates-for-large-geospatial-rasters/4140.\n\nDemonstrate how GeoZarr would need to be adapted for Zarr specification v3.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#feedback-cadence",
+    "href": "index.html#feedback-cadence",
+    "title": "GeoZarr examples",
+    "section": "Feedback cadence",
+    "text": "Feedback cadence\nWe will provide progress and solicit community feedback during the following events:\n\nMarch 05, 2025 GeoZarr Monthly Community Meeting\nMarch 05, 2025 Pangeo Community Meeting\nApril 02, 2025 GeoZarr Monthly Community Meeting\nApril 02, 2025 Pangeo Community Meeting\nApril 02, 2025 posts on Pangeo and CNG forums\nEGU 2025 Conference\nCNG 2025 Conference",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#faq",
+    "href": "index.html#faq",
+    "title": "GeoZarr examples",
+    "section": "FAQ",
+    "text": "FAQ\n\nWhat’s the status of GeoZarr?\nGeoZarr is currently being developed as a Open Geospatial Consortium Standard. There is a GeoZarr Standards Working Group that meets once a month. We now have experimental prototypes of all of the pieces to move GeoZarr out of a discussion phase and into a demonstration phase. This repository stems from the hope that building demonstrations will lead to adoption, iteration, and formalization of a stable GeoZarr specification.\n\n\nHow does Zarr Specification V3 spec influence GeoZarr?\nThe GeoZarr spec is designed for Zarr specification version 2. This repository will demonstrate how the differences between Zarr format 2 and Zarr format 3 would influence GeoZarr. My expectation is that there is not much difference in the metadata requirements between the two formats. However, best practices will likely be impacted by new features available in Zarr specification version 3 (e.g., sharding).\n\n\nHow does the release of Zarr-Python 3 influence GeoZarr?\nThe Zarr-Python 3 release will help GeoZarr users through its increased performance, modernized codebase, and support for extensions. But, it only really interacts with the GeoZarr spec in-so-far as Zarr-Python 3 supports Zarr specification V3 (see prior question on “How does Zarr Specification V3 spec influence GeoZarr”).\n\n\nWhat is the relationship between GeoZarr and Web-Optimized-Zarr?\nPlease see the web-optimized Zarr overview page.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#referencesacknowledgements",
+    "href": "index.html#referencesacknowledgements",
+    "title": "GeoZarr examples",
+    "section": "References/Acknowledgements",
+    "text": "References/Acknowledgements\n\nGeoZarr validator by @briannapagan CC BY 4.0\nGeoZarr spec CC BY 4.0\nQuarto configuration based on Cloud Native Geospatial Formats Guide and Tile Benchmarking.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#license",
+    "href": "index.html#license",
+    "title": "GeoZarr examples",
+    "section": "License",
+    "text": "License\nContent in this repository is licensed under the MIT License.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html",
+    "href": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html",
+    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
+    "section": "",
+    "text": "import cf_xarray  # noqa\nimport morecantile\nimport pyproj\nimport rioxarray  # noqa\nimport xarray as xr\nfrom matplotlib import pyplot as plt\nfrom rasterio.rio.overview import get_maximum_overview_level\n\n# For zarr_format=2 encoding\nfrom rio_tiler.io.xarray import XarrayReader\n\n\nfp_base = \"20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1\"\ninput = f\"../data/{fp_base}.nc\"\nv2_output = f\"../output/v2/{fp_base}_custom_multiscales.zarr\"\n\n\nds = xr.open_dataset(input)"
+  },
+  {
+    "objectID": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#load-example-dataset-from-netcdf-into-xarray",
+    "href": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#load-example-dataset-from-netcdf-into-xarray",
+    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
+    "section": "",
+    "text": "import cf_xarray  # noqa\nimport morecantile\nimport pyproj\nimport rioxarray  # noqa\nimport xarray as xr\nfrom matplotlib import pyplot as plt\nfrom rasterio.rio.overview import get_maximum_overview_level\n\n# For zarr_format=2 encoding\nfrom rio_tiler.io.xarray import XarrayReader\n\n\nfp_base = \"20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1\"\ninput = f\"../data/{fp_base}.nc\"\nv2_output = f\"../output/v2/{fp_base}_custom_multiscales.zarr\"\n\n\nds = xr.open_dataset(input)"
+  },
+  {
+    "objectID": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#check-that-all-variables-have-a-cf-compliant-standard-name",
+    "href": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#check-that-all-variables-have-a-cf-compliant-standard-name",
+    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
     "section": "Check that all variables have a CF-compliant standard name",
-    "text": "Check that all variables have a CF-compliant standard name\n\nstandard_names = ds.cf.standard_names\nvars_with_standard_names = [v[0] for v in ds.cf.standard_names.values()]\ncompliant_vars = []\nnon_complaint_vars = []\nfor var in ds.variables:\n    if var not in vars_with_standard_names:\n        non_complaint_vars.append(var)\n    else:\n        compliant_vars.append(var)\n        assert ds[var].attrs[\"standard_name\"]\n\nprint(f\"These variables do NOT have a CF-compliant standard name: {non_complaint_vars}\")\nprint(f\"These variables have a CF-compliant standard name: {compliant_vars}\")\n\nThese variables do NOT have a CF-compliant standard name: ['analysis_error', 'mask']\nThese variables have a CF-compliant standard name: ['time', 'lat', 'lon', 'analysed_sst', 'sea_ice_fraction']\n\n\nNot all the variables in this dataset have a CF-compliant standard name. See https://github.com/zarr-developers/geozarr-spec/issues/60 for a recommendation that CF-compliant standard names should be a “SHOULD” rather than a “MUST” condition in the GeoZarr spec. For now, let’s subset to the variables that do use CF-compliant standard names.\n\nds = ds[compliant_vars]",
-    "crumbs": [
-      "Examples",
-      "Explicit coordinates"
-    ]
+    "text": "Check that all variables have a CF-compliant standard name\n\nstandard_names = ds.cf.standard_names\nvars_with_standard_names = [v[0] for v in ds.cf.standard_names.values()]\ncompliant_vars = []\nnon_complaint_vars = []\nfor var in ds.variables:\n    if var not in vars_with_standard_names:\n        non_complaint_vars.append(var)\n    else:\n        compliant_vars.append(var)\n        assert ds[var].attrs[\"standard_name\"]\n\nprint(f\"These variables do NOT have a CF-compliant standard name: {non_complaint_vars}\")\nprint(f\"These variables have a CF-compliant standard name: {compliant_vars}\")\n\nThese variables do NOT have a CF-compliant standard name: ['analysis_error', 'mask']\nThese variables have a CF-compliant standard name: ['time', 'lat', 'lon', 'analysed_sst', 'sea_ice_fraction']\n\n\nNot all the variables in this dataset have a CF-compliant standard name. See https://github.com/zarr-developers/geozarr-spec/issues/60 for a recommendation that CF-compliant standard names should be a “SHOULD” rather than a “MUST” condition in the GeoZarr spec. For now, let’s subset to the variables that do use CF-compliant standard names.\n\nds = ds[compliant_vars]"
   },
   {
-    "objectID": "examples/01_CRS_in_auxiliary_variable.html#assign-crs-information-to-an-auxiliary-variable-using-rioxarray",
-    "href": "examples/01_CRS_in_auxiliary_variable.html#assign-crs-information-to-an-auxiliary-variable-using-rioxarray",
-    "title": "Store CRS information in a auxiliary variable specified in grid_mapping",
+    "objectID": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#assign-crs-information-to-an-auxiliary-variable-using-rioxarray",
+    "href": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#assign-crs-information-to-an-auxiliary-variable-using-rioxarray",
+    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
     "section": "Assign CRS information to an auxiliary variable using rioxarray",
-    "text": "Assign CRS information to an auxiliary variable using rioxarray\n\nds = ds.rio.write_crs(\"epsg:4326\")\n# Specify which variable contains CRS information using grid_mapping\nfor var in ds.data_vars:\n    ds[var].attrs[\"grid_mapping\"] = \"spatial_ref\"",
-    "crumbs": [
-      "Examples",
-      "Explicit coordinates"
-    ]
+    "text": "Assign CRS information to an auxiliary variable using rioxarray\n\nds = ds.rio.write_crs(\"epsg:4326\")\n# Specify which variable contains CRS information using grid_mapping\nfor var in ds.data_vars:\n    ds[var].attrs[\"grid_mapping\"] = \"spatial_ref\""
   },
   {
-    "objectID": "examples/01_CRS_in_auxiliary_variable.html#specify-encoding-and-write-to-zarr-v2-format",
-    "href": "examples/01_CRS_in_auxiliary_variable.html#specify-encoding-and-write-to-zarr-v2-format",
-    "title": "Store CRS information in a auxiliary variable specified in grid_mapping",
-    "section": "Specify encoding and write to Zarr V2 format",
-    "text": "Specify encoding and write to Zarr V2 format\n\nspatial_chunk = 4096\ncompressor = Zstd(level=1)\nencoding = {\n    \"analysed_sst\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressor\": compressor,\n    },\n    \"sea_ice_fraction\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressor\": compressor,\n    },\n}\nds.to_zarr(v2_output, mode=\"w\", consolidated=True, zarr_format=2, encoding=encoding)\n\n&lt;xarray.backends.zarr.ZarrStore at 0x16a11e560&gt;",
-    "crumbs": [
-      "Examples",
-      "Explicit coordinates"
-    ]
-  },
-  {
-    "objectID": "examples/01_CRS_in_auxiliary_variable.html#inspect-zarr-v2-store",
-    "href": "examples/01_CRS_in_auxiliary_variable.html#inspect-zarr-v2-store",
-    "title": "Store CRS information in a auxiliary variable specified in grid_mapping",
-    "section": "Inspect Zarr V2 store",
-    "text": "Inspect Zarr V2 store\nFirst, let’s look at the structure of Zarr arrays using zarr’s Group.tree() method\n\nroot = zarr.open_group(v2_output)\nroot.tree()\n\n/\n├── analysed_sst (1, 17999, 36000) float64\n├── lat (17999,) float32\n├── lon (36000,) float32\n├── sea_ice_fraction (1, 17999, 36000) float64\n├── spatial_ref () int64\n└── time (1,) int32\n\n\n\nSecond, let’s look at what’s actually recorded in the Zarr metadata using the consolidated metadata at the root of the Zarr store.\nIn order to match valid JSON, we convert the nan fill_value entries to “nan”.\n\nKey observations\n\nFor each array, metadata is stored under ‘.zattrs’\nAll arrays contain a .zattrs/standard_name\nThe root group specifies that the metadata follows CF conventions, which should be validated.\n.zattrs/_ARRAY_DIMENSIONS for lat, lon, and time contains a list with only the the name of the array, indicating that they are coordinates variables.\n.zattrs/_ARRAY_DIMENSIONS for spatial_ref contains an empty list, indicating that it is an auxiliary coordinate.\n.zattrs/_ARRAY_DIMENSIONS for analysed_sst, sea_ice_fraction contain a list referring to other arrays, indicating that they are data variables rather than coordinate variables.\n.zattrs/grid_mapping for analysed_sst, sea_ice_fraction is \"spatial_ref\" indicating that CRS information is included in that auxiliary variable’s metadata.\nspatial_ref/.zattrs contains the OGC WKT for the CRS.\n\n\npanel.extension()\nconsolidated_metadata_file = f\"{v2_output}/.zmetadata\"\nwith open(consolidated_metadata_file) as f:\n    metadata = json.load(f)[\"metadata\"]\nmetadata[\"sea_ice_fraction/.zarray\"][\"fill_value\"] = str(\n    metadata[\"sea_ice_fraction/.zarray\"][\"fill_value\"]\n)\nmetadata[\"analysed_sst/.zarray\"][\"fill_value\"] = str(\n    metadata[\"sea_ice_fraction/.zarray\"][\"fill_value\"]\n)\npanel.pane.JSON(metadata, name=\"JSON\")",
-    "crumbs": [
-      "Examples",
-      "Explicit coordinates"
-    ]
-  },
-  {
-    "objectID": "examples/01_CRS_in_auxiliary_variable.html#specify-encoding-and-write-to-zarr-v3-format",
-    "href": "examples/01_CRS_in_auxiliary_variable.html#specify-encoding-and-write-to-zarr-v3-format",
-    "title": "Store CRS information in a auxiliary variable specified in grid_mapping",
-    "section": "Specify encoding and write to Zarr V3 format",
-    "text": "Specify encoding and write to Zarr V3 format\nWhile GeoZarr v0.4 is Zarr V2 specific, let’s write a Zarr V3 store to get an idea about how GeoZarr could be adapted for Zarr format 3.\n\nspatial_chunk = 4096\ncompressor = zarr.codecs.ZstdCodec(level=1)\nencoding = {\n    \"analysed_sst\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressors\": compressor,\n    },\n    \"sea_ice_fraction\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressors\": compressor,\n    },\n}\nds.to_zarr(v3_output, mode=\"w\", consolidated=True, zarr_format=3, encoding=encoding)\n\n/Users/max/Documents/Code/developmentseed/geozarr-examples/.pixi/envs/test/lib/python3.13/site-packages/zarr/api/asynchronous.py:203: UserWarning: Consolidated metadata is currently not part in the Zarr format 3 specification. It may not be supported by other zarr implementations and may change in the future.\n  warnings.warn(\n\n\n&lt;xarray.backends.zarr.ZarrStore at 0x16a11f910&gt;\n\n\n\nKey observations\n\nFor each group and array, metadata is stored under the ‘attributes’ key in ‘zarr.json’.\nAll arrays contain a attributes/standard_name.\nThe dimensions associated with an array are stored under zarr.json/dimension_names (separately from the attributes) rather than _ARRAY_DIMENSIONS.\nthe node_type specifies whether the key holds a Zarr Array or a Zarr Group.\nThe coordinates associated with an array are still specified within the array metadata. Currently this is an Xarray implementation detail rather than a part of the GeoZarr specification.\nThe fill_value for sea_ice_fraction and analysed_sst is 0 instead of nan. This is likely an error with the fill value not being explicitly specified.\n\n\npanel.extension()\nconsolidated_metadata_file = f\"{v3_output}/zarr.json\"\nwith open(consolidated_metadata_file) as f:\n    metadata = json.load(f)[\"consolidated_metadata\"][\"metadata\"]\npanel.pane.JSON(metadata, name=\"JSON\")",
-    "crumbs": [
-      "Examples",
-      "Explicit coordinates"
-    ]
-  },
-  {
-    "objectID": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html",
-    "href": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html",
-    "title": "Store Affine GeoTransform and CRS in grid_mapping variable",
-    "section": "",
-    "text": "import json\n\nimport cf_xarray  # noqa\nimport panel\nimport rasterio\nimport rioxarray  # noqa\nimport xarray as xr\nimport zarr\n\n# For zarr_format=2 encoding\nfrom numcodecs import Zstd\n\n\nfp_base = \"20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1\"\ninput = f\"../data/{fp_base}.nc\"\nv2_output = f\"../output/v2/{fp_base}_geotransform.zarr\"\nv3_output = f\"../output/v3/{fp_base}_geotransform.zarr\"\n\n\nds = xr.open_dataset(input)",
-    "crumbs": [
-      "Examples",
-      "GeoTransform"
-    ]
-  },
-  {
-    "objectID": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#load-example-dataset-from-netcdf-into-xarray",
-    "href": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#load-example-dataset-from-netcdf-into-xarray",
-    "title": "Store Affine GeoTransform and CRS in grid_mapping variable",
-    "section": "",
-    "text": "import json\n\nimport cf_xarray  # noqa\nimport panel\nimport rasterio\nimport rioxarray  # noqa\nimport xarray as xr\nimport zarr\n\n# For zarr_format=2 encoding\nfrom numcodecs import Zstd\n\n\nfp_base = \"20020601090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1\"\ninput = f\"../data/{fp_base}.nc\"\nv2_output = f\"../output/v2/{fp_base}_geotransform.zarr\"\nv3_output = f\"../output/v3/{fp_base}_geotransform.zarr\"\n\n\nds = xr.open_dataset(input)",
-    "crumbs": [
-      "Examples",
-      "GeoTransform"
-    ]
-  },
-  {
-    "objectID": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#check-that-all-variables-have-a-cf-compliant-standard-name",
-    "href": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#check-that-all-variables-have-a-cf-compliant-standard-name",
-    "title": "Store Affine GeoTransform and CRS in grid_mapping variable",
-    "section": "Check that all variables have a CF-compliant standard name",
-    "text": "Check that all variables have a CF-compliant standard name\n\nstandard_names = ds.cf.standard_names\nvars_with_standard_names = [v[0] for v in ds.cf.standard_names.values()]\ncompliant_vars = []\nnon_complaint_vars = []\nfor var in ds.variables:\n    if var not in vars_with_standard_names:\n        non_complaint_vars.append(var)\n    else:\n        compliant_vars.append(var)\n        assert ds[var].attrs[\"standard_name\"]\n\nprint(f\"These variables do NOT have a CF-compliant standard name: {non_complaint_vars}\")\nprint(f\"These variables have a CF-compliant standard name: {compliant_vars}\")\n\nThese variables do NOT have a CF-compliant standard name: ['analysis_error', 'mask']\nThese variables have a CF-compliant standard name: ['time', 'lat', 'lon', 'analysed_sst', 'sea_ice_fraction']\n\n\nNot all the variables in this dataset have a CF-compliant standard name. See https://github.com/zarr-developers/geozarr-spec/issues/60 for a recommendation that CF-compliant standard names should be a “SHOULD” rather than a “MUST” condition in the GeoZarr spec. For now, let’s subset to the variables that do use CF-compliant standard names.\n\nds = ds[compliant_vars]",
-    "crumbs": [
-      "Examples",
-      "GeoTransform"
-    ]
-  },
-  {
-    "objectID": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#assign-crs-and-geotransform-using-rioxarray-and-rasterio",
-    "href": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#assign-crs-and-geotransform-using-rioxarray-and-rasterio",
-    "title": "Store Affine GeoTransform and CRS in grid_mapping variable",
-    "section": "Assign CRS and geotransform using rioxarray and rasterio",
-    "text": "Assign CRS and geotransform using rioxarray and rasterio\nFirst, let’s specify the CRS for the dataset\n\nds = ds.rio.write_crs(\"epsg:4326\")\n\n\n# Specify which variable contains CRS information using grid_mapping\nfor var in ds.data_vars:\n    ds[var].attrs[\"grid_mapping\"] = \"spatial_ref\"\n\nNext, let’s get the appropriate GeoTransform from the bounds, width, and height of one of the data variables.\n\nlength, height, width = ds.analysed_sst.shape\ntransform = rasterio.transform.from_bounds(*ds.analysed_sst.rio.bounds(), width, height)\n\nNow, let’s store the GeoTransform as a space separated string in the GeoTransform attribute of the spatial_ref auxiliary variable.\n\n# Convert transform to GDAL's format\ntransform = transform.to_gdal()\n# Convert transform to space separated string\ntransform = \" \".join([str(i) for i in transform])\n# Save as an attribute in the `spatial_ref` variable\nds[\"spatial_ref\"].attrs[\"GeoTransform\"] = transform\n\nFinally, we’ll remove the explicit coordinates that are redundant with the GeoTransform.\n\nds = ds.drop_vars([\"lat\", \"lon\"])\nds\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n&lt;xarray.Dataset&gt; Size: 10GB\nDimensions:           (time: 1, lat: 17999, lon: 36000)\nCoordinates:\n  * time              (time) datetime64[ns] 8B 2002-06-01T09:00:00\n    spatial_ref       int64 8B 0\nDimensions without coordinates: lat, lon\nData variables:\n    analysed_sst      (time, lat, lon) float64 5GB ...\n    sea_ice_fraction  (time, lat, lon) float64 5GB ...\nAttributes: (12/47)\n    Conventions:                CF-1.5\n    title:                      Daily MUR SST, Final product\n    summary:                    A merged, multi-sensor L4 Foundation SST anal...\n    references:                 http://podaac.jpl.nasa.gov/Multi-scale_Ultra-...\n    institution:                Jet Propulsion Laboratory\n    history:                    created at nominal 4-day latency; replaced nr...\n    ...                         ...\n    project:                    NASA Making Earth Science Data Records for Us...\n    publisher_name:             GHRSST Project Office\n    publisher_url:              http://www.ghrsst.org\n    publisher_email:            ghrsst-po@nceo.ac.uk\n    processing_level:           L4\n    cdm_data_type:              gridxarray.DatasetDimensions:time: 1lat: 17999lon: 36000Coordinates: (2)time(time)datetime64[ns]2002-06-01T09:00:00long_name :reference time of sst fieldstandard_name :timeaxis :Tcomment :Nominal time of analyzed fieldsarray(['2002-06-01T09:00:00.000000000'], dtype='datetime64[ns]')spatial_ref()int640crs_wkt :GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST],AUTHORITY[\"EPSG\",\"4326\"]]semi_major_axis :6378137.0semi_minor_axis :6356752.314245179inverse_flattening :298.257223563reference_ellipsoid_name :WGS 84longitude_of_prime_meridian :0.0prime_meridian_name :Greenwichgeographic_crs_name :WGS 84horizontal_datum_name :World Geodetic System 1984grid_mapping_name :latitude_longitudespatial_ref :GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST],AUTHORITY[\"EPSG\",\"4326\"]]GeoTransform :-179.99500549324037 0.01000000015259213 0.0 89.99499786365084 0.0 -0.009999999762614682array(0)Data variables: (2)analysed_sst(time, lat, lon)float64...long_name :analysed sea surface temperaturestandard_name :sea_surface_foundation_temperatureunits :kelvinvalid_min :-32767valid_max :32767comment :\"Final\" version using Multi-Resolution Variational Analysis (MRVA) method for interpolationsource :AMSRE-REMSS, AVHRR_Pathfinder-PFV5.2-NODC_day, AVHRR_Pathfinder-PFV5.2-NODC_night, MODIS_T-JPL, iQUAM-NOAA/NESDIS, Ice_Conc-OSISAFgrid_mapping :spatial_ref[647964000 values with dtype=float64]sea_ice_fraction(time, lat, lon)float64...long_name :sea ice area fractionstandard_name :sea ice area fractionunits :fraction (between 0 and 1)valid_min :0valid_max :100source :EUMETSAT OSI-SAF, copyright EUMETSATcomment :ice data interpolated by a nearest neighbor approach.grid_mapping :spatial_ref[647964000 values with dtype=float64]Indexes: (1)timePandasIndexPandasIndex(DatetimeIndex(['2002-06-01 09:00:00'], dtype='datetime64[ns]', name='time', freq=None))Attributes: (47)Conventions :CF-1.5title :Daily MUR SST, Final productsummary :A merged, multi-sensor L4 Foundation SST analysis product from JPL.references :http://podaac.jpl.nasa.gov/Multi-scale_Ultra-high_Resolution_MUR-SSTinstitution :Jet Propulsion Laboratoryhistory :created at nominal 4-day latency; replaced nrt (1-day latency) version.comment :MUR = \"Multi-scale Ultra-high Reolution\"license :These data are available free of charge under data policy of JPL PO.DAAC.id :MUR-JPL-L4-GLOB-v04.1naming_authority :org.ghrsstproduct_version :04.1uuid :27665bc0-d5fc-11e1-9b23-0800200c9a66gds_version_id :2.0netcdf_version_id :4.1date_created :20150819T103929Zstart_time :20020601T090000Zstop_time :20020601T090000Ztime_coverage_start :20020531T210000Ztime_coverage_end :20020601T210000Zfile_quality_level :1source :AMSRE-REMSS, AVHRR_Pathfinder-PFV5.2-NODC_day, AVHRR_Pathfinder-PFV5.2-NODC_night, MODIS_T-JPL, iQUAM-NOAA/NESDIS, Ice_Conc-OSISAFplatform :Aqua, DMSP, NOAA-POES, Suomi-NPP, Terrasensor :AMSR-E, AVHRR, MODIS, SSM/I, VIIRS, in-situMetadata_Conventions :Unidata Observation Dataset v1.0metadata_link :http://podaac.jpl.nasa.gov/ws/metadata/dataset/?format=iso&shortName=MUR-JPL-L4-GLOB-v04.1keywords :Oceans &gt; Ocean Temperature &gt; Sea Surface Temperaturekeywords_vocabulary :NASA Global Change Master Directory (GCMD) Science Keywordsstandard_name_vocabulary :NetCDF Climate and Forecast (CF) Metadata Conventionsouthernmost_latitude :-90.0northernmost_latitude :90.0westernmost_longitude :-180.0easternmost_longitude :180.0spatial_resolution :0.01 degreesgeospatial_lat_units :degrees northgeospatial_lat_resolution :0.01 degreesgeospatial_lon_units :degrees eastgeospatial_lon_resolution :0.01 degreesacknowledgment :Please acknowledge the use of these data with the following statement:  These data were provided by JPL under support by NASA MEaSUREs program.creator_name :JPL MUR SST projectcreator_email :ghrsst@podaac.jpl.nasa.govcreator_url :http://mur.jpl.nasa.govproject :NASA Making Earth Science Data Records for Use in Research Environments (MEaSUREs) Programpublisher_name :GHRSST Project Officepublisher_url :http://www.ghrsst.orgpublisher_email :ghrsst-po@nceo.ac.ukprocessing_level :L4cdm_data_type :grid",
-    "crumbs": [
-      "Examples",
-      "GeoTransform"
-    ]
-  },
-  {
-    "objectID": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#specify-encoding-and-write-to-zarr-v2-format",
-    "href": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#specify-encoding-and-write-to-zarr-v2-format",
-    "title": "Store Affine GeoTransform and CRS in grid_mapping variable",
-    "section": "Specify encoding and write to Zarr V2 format",
-    "text": "Specify encoding and write to Zarr V2 format\n\nspatial_chunk = 4096\ncompressor = Zstd(level=1)\nencoding = {\n    \"analysed_sst\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressor\": compressor,\n    },\n    \"sea_ice_fraction\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressor\": compressor,\n    },\n}\nds.to_zarr(v2_output, mode=\"w\", consolidated=True, zarr_format=2, encoding=encoding)\n\n&lt;xarray.backends.zarr.ZarrStore at 0x16aacde10&gt;",
-    "crumbs": [
-      "Examples",
-      "GeoTransform"
-    ]
-  },
-  {
-    "objectID": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#inspect-zarr-v2-store",
-    "href": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#inspect-zarr-v2-store",
-    "title": "Store Affine GeoTransform and CRS in grid_mapping variable",
-    "section": "Inspect Zarr V2 store",
-    "text": "Inspect Zarr V2 store\nFirst, let’s look at the structure of Zarr arrays using zarr’s Group.tree() method\n\nroot = zarr.open_group(v2_output)\nroot.tree()\n\n/\n├── analysed_sst (1, 17999, 36000) float64\n├── sea_ice_fraction (1, 17999, 36000) float64\n├── spatial_ref () int64\n└── time (1,) int32\n\n\n\nSecond, let’s look at what’s actually recorded in the Zarr metadata using the consolidated metadata at the root of the Zarr store.\nIn order to match valid JSON, we convert the nan fill_value entries to “nan”.\n\nKey observations\n\nFor each array, metadata is stored under '.zattrs'.\nAll arrays contain a .zattrs/standard_name.\nThe root group specifies that the metadata follows CF conventions, which should be validated.\n.zattrs/_ARRAY_DIMENSIONS for time contains a list with only the the name of the array, indicating that it is a coordinates variable.\n.zattrs/_ARRAY_DIMENSIONS for spatial_ref contains an empty list, indicating that it is an auxiliary coordinate.\n.zattrs/_ARRAY_DIMENSIONS for analysed_sst, sea_ice_fraction contain a list referring to other arrays, indicating that they are data variables rather than coordinate variables.\n.zattrs/grid_mapping for analysed_sst, sea_ice_fraction is \"spatial_ref\" indicating that CRS information is included in that auxiliary variable’s metadata.\nspatial_ref/.zattrs contains the OGC WKT for the CRS with a GeoTransform attribute containing a string separated GDAL format Affine GeoTransform\n.zattrs/coordinates for analysed_sst, sea_ice_fraction include lat and lon indicating that the GeoTransform produces those coordinates. The part of the stack that adds this metadata coordinates should be further investigated.\n\n\npanel.extension()\nconsolidated_metadata_file = f\"{v2_output}/.zmetadata\"\nwith open(consolidated_metadata_file) as f:\n    metadata = json.load(f)[\"metadata\"]\nmetadata[\"sea_ice_fraction/.zarray\"][\"fill_value\"] = str(\n    metadata[\"sea_ice_fraction/.zarray\"][\"fill_value\"]\n)\nmetadata[\"analysed_sst/.zarray\"][\"fill_value\"] = str(\n    metadata[\"sea_ice_fraction/.zarray\"][\"fill_value\"]\n)\npanel.pane.JSON(metadata, name=\"JSON\")",
-    "crumbs": [
-      "Examples",
-      "GeoTransform"
-    ]
-  },
-  {
-    "objectID": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#specify-encoding-and-write-to-zarr-v3-format",
-    "href": "examples/02_CRS_and_geotransform_in_auxiliary_variable.html#specify-encoding-and-write-to-zarr-v3-format",
-    "title": "Store Affine GeoTransform and CRS in grid_mapping variable",
-    "section": "Specify encoding and write to Zarr V3 format",
-    "text": "Specify encoding and write to Zarr V3 format\nWhile GeoZarr v0.4 is Zarr V2 specific, let’s write a Zarr V3 store to get an idea about how GeoZarr could be adapted for Zarr format 3.\n\nspatial_chunk = 4096\ncompressor = zarr.codecs.ZstdCodec(level=1)\nencoding = {\n    \"analysed_sst\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressors\": compressor,\n    },\n    \"sea_ice_fraction\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressors\": compressor,\n    },\n}\nds.to_zarr(v3_output, mode=\"w\", consolidated=True, zarr_format=3, encoding=encoding)\n\n/Users/max/Documents/Code/developmentseed/geozarr-examples/.pixi/envs/test/lib/python3.13/site-packages/zarr/api/asynchronous.py:203: UserWarning: Consolidated metadata is currently not part in the Zarr format 3 specification. It may not be supported by other zarr implementations and may change in the future.\n  warnings.warn(\n\n\n&lt;xarray.backends.zarr.ZarrStore at 0x16aacd510&gt;\n\n\n\nKey observations\n\nFor each group and array, metadata is stored under the ‘attributes’ key in ‘zarr.json’\nAll arrays contain a attributes/standard_name\nThe dimensions associated with an array are stored under zarr.json/dimension_names (separately from the attributes) rather than _ARRAY_DIMENSIONS\nthe node_type specifies whether the key holds a Zarr Array or a Zarr Group\nThe coordinates associated with an array are still specified within the array metadata. Currently this is an Xarray implementation detail rather than a part of the GeoZarr specification.\nThe fill_value for sea_ice_fraction and analysed_sst is 0 instead of nan. This is likely an error with the fill value not being explicitly specified.\n\n\npanel.extension()\nconsolidated_metadata_file = f\"{v3_output}/zarr.json\"\nwith open(consolidated_metadata_file) as f:\n    metadata = json.load(f)[\"consolidated_metadata\"][\"metadata\"]\npanel.pane.JSON(metadata, name=\"JSON\")",
-    "crumbs": [
-      "Examples",
-      "GeoTransform"
-    ]
+    "objectID": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#define-a-custom-tms",
+    "href": "examples/05_WIP_multiscales_as_customTMS_ZarrV2.html#define-a-custom-tms",
+    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
+    "section": "Define a custom TMS",
+    "text": "Define a custom TMS\n\nfrom morecantile.models import TileMatrix, TileMatrixSet, crs_axis_inverted, TMSBoundingBox, CRS_to_uri\nfrom morecantile.utils import meters_per_unit\nimport math\n\nx_chunk_size = 512\ny_chunk_size = 512\n\ndst_height = ds[var].shape[1]\ndst_width = ds[var].shape[2]\n\ndecimation_base = 2\n\npyproj_crs = pyproj.CRS.from_epsg(4326)\nprint(f\"crs: {pyproj_crs}\")\n\nbounds = tuple(ds[var].rio.bounds())\nprint(f\"bounds: {bounds}\")\n\nis_inverted = crs_axis_inverted(pyproj_crs)\n\noverview_level = get_maximum_overview_level(\n    dst_width,\n    dst_height,\n    minsize=min(x_chunk_size, y_chunk_size),\n)\nmpu = meters_per_unit(pyproj_crs)\n\n# Rendering pixel size. 0.28 mm was the actual pixel size of a common display from 2005 and considered as standard by OGC.\nscreen_pixel_size = 0.28e-3\n\nx_origin = bounds[0] if not is_inverted else bounds[3]\ny_origin = bounds[3] if not is_inverted else bounds[0]\n\nwidth = abs(bounds[2] - bounds[0])\nheight = abs(bounds[3] - bounds[1])\nres = max(width / dst_width, height / dst_height)\n\nmatrices = [\n    TileMatrix(\n        description=\"TileMatrix for the high resolution data\",\n        id=str(overview_level),\n        scaleDenominator=res * mpu / screen_pixel_size,\n        cellSize=res,\n        pointOfOrigin=[x_origin, y_origin],\n        tileWidth=x_chunk_size,\n        tileHeight=y_chunk_size,\n        matrixWidth=math.ceil(dst_width / x_chunk_size),\n        matrixHeight=math.ceil(dst_height / y_chunk_size),\n    )\n]\n\nfor ovr in range(1, overview_level + 1):\n    decimation = decimation_base ** ovr\n    new_res = res * decimation\n    matrices.append(\n        TileMatrix(\n            description=f\"TileMatrix for overview {ovr}\",\n            id=str(overview_level - ovr),\n            scaleDenominator=new_res * mpu / screen_pixel_size,\n            cellSize=new_res,\n            pointOfOrigin=[x_origin, y_origin],\n            tileWidth=x_chunk_size,\n            tileHeight=y_chunk_size,\n            matrixWidth=math.ceil(dst_width / decimation / x_chunk_size),\n            matrixHeight=math.ceil(dst_height / decimation / y_chunk_size),\n        )\n    )\n\nmatrices = reversed(matrices)\n\ncustom_tms = TileMatrixSet(\n    id=\"custom_tms\",\n    title=f\"Custom TMS for {var} variable\",\n    tileMatrices=matrices,\n    orderedAxes=[\"Lat\", \"Lon\"],\n    crs=\"http://www.opengis.net/def/crs/EPSG/0/4326\",\n)\n\nwith XarrayReader(ds[var], tms=custom_tms) as dst:\n    tile = dst.tile(0, 0, 0).data\n\nplt.imshow(tile.squeeze())\n\ncrs: EPSG:4326\nbounds: (-179.99500549324037, -89.99499786365084, 180.0050000000763, 89.99499786365084)"
   },
   {
     "objectID": "examples/03_multiscales_as_WebMercatorQuad_ZarrV2.html",
@@ -871,6 +750,127 @@
     "crumbs": [
       "Examples",
       "WebMercatorQuad overviews (Zarr V2)"
+    ]
+  },
+  {
+    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html",
+    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html",
+    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
+    "section": "",
+    "text": "While GeoZarr v0.4 is Zarr V2 specific, let’s write a Zarr V3 store to get an idea about how GeoZarr could be adapted for Zarr format 3.",
+    "crumbs": [
+      "Examples",
+      "WebMercatorQuad overviews (Zarr V3)"
+    ]
+  },
+  {
+    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#load-example-dataset-from-netcdf-into-xarray",
+    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#load-example-dataset-from-netcdf-into-xarray",
+    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
+    "section": "Load example dataset from NetCDF into Xarray",
+    "text": "Load example dataset from NetCDF into Xarray\n\nimport glob\nimport json\n\nimport cf_xarray  # noqa\nimport dask.array as da\nimport matplotlib.pyplot as plt\nimport morecantile\nimport numpy as np\nimport panel\nimport rasterio\nimport rioxarray  # noqa\nimport xarray as xr\nimport zarr\nfrom rio_tiler.io.xarray import XarrayReader\n\n\nfiles = glob.glob(\"../data/2002060*.nc\")\ndatasets = [\n    xr.open_dataset(filepath, engine=\"h5netcdf\", chunks={}) for filepath in files[:3]\n]\n\n\nds = xr.concat(\n    datasets,\n    dim=\"time\",\n    data_vars=\"minimal\",\n    coords=\"minimal\",\n    join=\"exact\",\n    compat=\"override\",\n)\n\n\n# v3_output = \"s3://ds-maxrjones/geozarr-test/output/v3/200206-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1_multiscales.zarr/\"\nv3_output = (\n    \"../output/v3/200206-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1_multiscales.zarr\"\n)",
+    "crumbs": [
+      "Examples",
+      "WebMercatorQuad overviews (Zarr V3)"
+    ]
+  },
+  {
+    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#check-that-all-variables-have-a-cf-compliant-standard-name",
+    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#check-that-all-variables-have-a-cf-compliant-standard-name",
+    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
+    "section": "Check that all variables have a CF-compliant standard name",
+    "text": "Check that all variables have a CF-compliant standard name\n\nstandard_names = ds.cf.standard_names\nvars_with_standard_names = [v[0] for v in ds.cf.standard_names.values()]\ncompliant_vars = []\nnon_complaint_vars = []\nfor var in ds.variables:\n    if var not in vars_with_standard_names:\n        non_complaint_vars.append(var)\n    else:\n        compliant_vars.append(var)\n        assert ds[var].attrs[\"standard_name\"]\n\nprint(f\"These variables do NOT have a CF-compliant standard name: {non_complaint_vars}\")\nprint(f\"These variables have a CF-compliant standard name: {compliant_vars}\")\n\nNot all the variables in this dataset have a CF-compliant standard name. See https://github.com/zarr-developers/geozarr-spec/issues/60 for a recommendation that CF-compliant standard names should be a “SHOULD” rather than a “MUST” condition in the GeoZarr spec. For now, let’s subset to the variables that do use CF-compliant standard names.\n\nds = ds[compliant_vars]",
+    "crumbs": [
+      "Examples",
+      "WebMercatorQuad overviews (Zarr V3)"
+    ]
+  },
+  {
+    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#assign-crs-information-to-an-auxiliary-variable-using-rioxarray",
+    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#assign-crs-information-to-an-auxiliary-variable-using-rioxarray",
+    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
+    "section": "Assign CRS information to an auxiliary variable using rioxarray",
+    "text": "Assign CRS information to an auxiliary variable using rioxarray\n\nds = ds.rio.write_crs(\"epsg:4326\")\n# Specify which variable contains CRS information using grid_mapping\nfor var in ds.data_vars:\n    ds[var].attrs[\"grid_mapping\"] = \"spatial_ref\"",
+    "crumbs": [
+      "Examples",
+      "WebMercatorQuad overviews (Zarr V3)"
+    ]
+  },
+  {
+    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#specify-that-the-analysed_sst-variable-will-contain-multiscales",
+    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#specify-that-the-analysed_sst-variable-will-contain-multiscales",
+    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
+    "section": "Specify that the analysed_sst variable will contain multiscales",
+    "text": "Specify that the analysed_sst variable will contain multiscales\n\nds[\"analysed_sst\"].attrs[\"multiscales\"] = {\n    \"tile_matrix_set\": \"WebMercatorQuad\",\n    \"resampling_method\": \"nearest\",\n    \"tile_matrix_limits\": {\"0\": {}, \"1\": {}, \"2\": {}},\n}",
+    "crumbs": [
+      "Examples",
+      "WebMercatorQuad overviews (Zarr V3)"
+    ]
+  },
+  {
+    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#specify-encoding-and-write-to-zarr-v3-format",
+    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#specify-encoding-and-write-to-zarr-v3-format",
+    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
+    "section": "Specify encoding and write to Zarr V3 format",
+    "text": "Specify encoding and write to Zarr V3 format\n\nspatial_chunk = 4096\ncompressor = zarr.codecs.ZstdCodec(level=1)\nencoding = {\n    \"analysed_sst\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressors\": compressor,\n    },\n    \"sea_ice_fraction\": {\n        \"chunks\": (1, spatial_chunk, spatial_chunk),\n        \"compressors\": compressor,\n    },\n}\nds = ds.chunk({\"time\": 1, \"lat\": spatial_chunk, \"lon\": spatial_chunk})\nds.to_zarr(v3_output, mode=\"w\", consolidated=True, zarr_format=3, encoding=encoding)",
+    "crumbs": [
+      "Examples",
+      "WebMercatorQuad overviews (Zarr V3)"
+    ]
+  },
+  {
+    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#create-an-empty-xarray-dataset-for-each-zoom-level",
+    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#create-an-empty-xarray-dataset-for-each-zoom-level",
+    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
+    "section": "Create an empty xarray Dataset for each zoom level",
+    "text": "Create an empty xarray Dataset for each zoom level\n\ntms = morecantile.tms.get(\"WebMercatorQuad\")\ntileWidth = 256\nvar = \"analysed_sst\"\ndataset_length = ds[var].sizes[\"time\"]\nzoom_levels = [0, 1, 2]\n\n\ndef create_overview_template(var, standard_name, *, tileWidth, dataset_length, zoom):\n    width = 2**zoom * tileWidth\n    overview_da = xr.DataArray(\n        da.empty(\n            shape=(dataset_length, width, width),\n            dtype=np.float32,\n            chunks=(1, tileWidth, tileWidth),\n        ),\n        dims=ds[var].dims,\n    )\n    template = overview_da.to_dataset(name=var)\n    template = template.rio.write_crs(\"epsg:3857\")\n    # Convert transform to GDAL's format\n    transform = rasterio.transform.from_bounds(*tms.xy_bbox, width, width)\n    transform = transform.to_gdal()\n    # Convert transform to space separated string\n    transform = \" \".join([str(i) for i in transform])\n    # Save as an attribute in the `spatial_ref` variable\n    template[\"spatial_ref\"].attrs[\"GeoTransform\"] = transform\n    template[var].attrs[\"grid_mapping\"] = \"spatial_ref\"\n    template[var].attrs[\"standard_name\"] = standard_name\n    return template",
+    "crumbs": [
+      "Examples",
+      "WebMercatorQuad overviews (Zarr V3)"
+    ]
+  },
+  {
+    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#write-overview-template-with-no-data-to-zarr-store",
+    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#write-overview-template-with-no-data-to-zarr-store",
+    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
+    "section": "Write overview template (with no data) to zarr store",
+    "text": "Write overview template (with no data) to zarr store\n\nfor zoom in zoom_levels:\n    template = create_overview_template(\n        var,\n        ds[var].attrs[\"standard_name\"],\n        tileWidth=tileWidth,\n        dataset_length=dataset_length,\n        zoom=zoom,\n    )\n    template.to_zarr(\n        v3_output,\n        group=str(zoom),\n        compute=False,\n        consolidated=False,\n        mode=\"w\",\n        zarr_format=3,\n    )",
+    "crumbs": [
+      "Examples",
+      "WebMercatorQuad overviews (Zarr V3)"
+    ]
+  },
+  {
+    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#populate-zarr-array-with-overview-data",
+    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#populate-zarr-array-with-overview-data",
+    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
+    "section": "Populate Zarr array with overview data",
+    "text": "Populate Zarr array with overview data\n\ndef populate_tile_data(dst: XarrayReader, za: zarr.Array, x: int, y: int, zoom: int):\n    x_start = x * tileWidth\n    x_stop = (x + 1) * tileWidth\n    y_start = y * tileWidth\n    y_stop = (y + 1) * tileWidth\n    tile = dst.tile(x, y, zoom).data\n    za[:, y_start:y_stop, x_start:x_stop] = tile\n\n\nmatrices = tms.tileMatrices\n\nwith XarrayReader(ds[var]) as dst:\n    for zoom in zoom_levels:\n        tm = matrices[zoom]\n        za = zarr.open_array(v3_output, path=f\"{zoom}/{var}\", zarr_version=3)\n        for x in range(tm.matrixWidth):\n            for y in range(tm.matrixHeight):\n                populate_tile_data(dst, za, x, y, zoom)",
+    "crumbs": [
+      "Examples",
+      "WebMercatorQuad overviews (Zarr V3)"
+    ]
+  },
+  {
+    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#inspect-zarr-v3-store",
+    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#inspect-zarr-v3-store",
+    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
+    "section": "Inspect Zarr V3 store",
+    "text": "Inspect Zarr V3 store\nFirst, let’s look at the structure of Zarr arrays using zarr’s Group.tree() method\n\nroot = zarr.open_group(v3_output, mode=\"r\")\nroot.tree()\n\nSecond, let’s look at what’s actually recorded in the Zarr metadata using the consolidated metadata at the root of the Zarr store.\nIn order to match valid JSON, we convert the nan fill_value entries to “nan”.\n\nKey observations\n\nFor each group and array, metadata is stored under the ‘attributes’ key in ‘zarr.json’\nAll arrays contain a attributes/standard_name\nThe dimensions associated with an array are stored under zarr.json/dimension_names (separately from the attributes) rather than _ARRAY_DIMENSIONS\nthe node_type specifies whether the key holds a Zarr Array or a Zarr Group\nThe coordinates associated with an array are still specified within the array metadata. Currently this is an Xarray implementation detail rather than a part of the GeoZarr specification.\nThe fill_value for sea_ice_fraction and analysed_sst is 0 instead of nan. This is likely an error with the fill value not being explicitly specified.\nmetadata/multiscales for analysed_sst contains information about the multiscales, specifying that they are a WebMercatorQuad TMS created using nearest resampling\nThe 0, 1, and 2 groups contain GeoZarr compliant overviews for the analysed_sst variable, including the required standard_name and grid_mapping attributes.\n\n\npanel.extension()\nconsolidated_metadata_file = f\"{v3_output}/zarr.json\"\nwith open(consolidated_metadata_file) as f:\n    metadata = json.load(f)[\"consolidated_metadata\"][\"metadata\"]\npanel.pane.JSON(metadata, name=\"JSON\")",
+    "crumbs": [
+      "Examples",
+      "WebMercatorQuad overviews (Zarr V3)"
+    ]
+  },
+  {
+    "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#plot-one-of-the-zoom-levels",
+    "href": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html#plot-one-of-the-zoom-levels",
+    "title": "Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS",
+    "section": "Plot one of the zoom levels",
+    "text": "Plot one of the zoom levels\n\nvar = \"analysed_sst\"\nzoom = 2\narr = zarr.open_array(v3_output, path=f\"{zoom}/{var}\")\narr = arr[:]\nplt.imshow(arr.squeeze())",
+    "crumbs": [
+      "Examples",
+      "WebMercatorQuad overviews (Zarr V3)"
     ]
   }
 ]
