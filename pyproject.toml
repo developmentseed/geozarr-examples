@@ -81,3 +81,6 @@ geoviews = "*"
 
 [dependency-groups]
 test = ["pytest"]
+
+[project.entry-points."xarray.chunkmanagers"]
+dask = "xarray.namedarray.daskmanager:DaskManager"
