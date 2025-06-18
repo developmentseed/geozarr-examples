@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS</title>
+<title>Create a GeoZarr with multi-scales for Sentinel-2 EOPF</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -290,7 +290,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Create a GeoZarr with multi-scales containing the WebMercatorQuad TMS</h1>
+<h1 class="title">Create a GeoZarr with multi-scales for Sentinel-2 EOPF</h1>
 </div>
 
 
@@ -309,8 +309,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <p>While GeoZarr v0.4 is Zarr V2 specific, let’s write a Zarr V3 store to get an idea about how GeoZarr could be adapted for Zarr format 3.</p>
 <p>Following COG (Cloud Optimized GeoTIFF) conventions, the overviews maintain the native projection and use /2 downsampling logic.</p>
-<section id="load-example-dataset-from-netcdf-into-xarray" class="level2">
-<h2 class="anchored" data-anchor-id="load-example-dataset-from-netcdf-into-xarray">Load example dataset from NetCDF into Xarray</h2>
+<section id="load-example-dataset-from-eopf-zarr-into-xarray" class="level2">
+<h2 class="anchored" data-anchor-id="load-example-dataset-from-eopf-zarr-into-xarray">Load example dataset from EOPF Zarr into Xarray</h2>
 <div id="cell-3" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>os.environ[<span class="st">"ZARR_V3_EXPERIMENTAL_API"</span>] <span class="op">=</span> <span class="st">"1"</span></span>
