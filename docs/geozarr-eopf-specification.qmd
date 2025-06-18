@@ -1,0 +1,304 @@
+---
+title: "GeoZarr for EOPF - Experimental Specification"
+subtitle: "Transforming Earth Observation Processing Framework Zarr to GeoZarr V3"
+author: "GeoZarr Examples Project"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: false
+    code-tools: true
+---
+
+## Overview
+
+This document outlines the experimental GeoZarr specification for transforming EOPF (Earth Observation Processing Framework) Zarr stores into GeoZarr V3 compliant datasets. The specification is based on the implementation in `06_multiscales_as_WebMercatorQuad_EOPFZarrV3.ipynb` and demonstrates how GeoZarr could be adapted for Zarr format 3 while maintaining compatibility with existing geospatial tools.
+
+GeoZarr V3 extends the Zarr V3 format to support geospatial data with proper coordinate reference systems, multiscale overviews, and CF-compliant metadata, specifically addressing the gaps found in EOPF Zarr format.
+
+## Gaps in EOPF Zarr Format
+
+The current EOPF Zarr stores have several gaps that prevent them from being fully GeoZarr compliant:
+
+### Issues Identified
+
+| Issue | Description | Impact |
+|-------|-------------|---------|
+| **Missing CF Standard Names** | Variables lack `standard_name` attributes | Reduces interoperability with CF-compliant tools |
+| **Incomplete CRS Information** | CRS stored only as `proj:epsg` attribute | Limited compatibility with rioxarray and geospatial tools |
+| **Missing Grid Mapping** | No `grid_mapping` attribute linking to spatial reference | Geospatial tools can't detect coordinate system |
+| **No Multiscale Support** | Lacks overview levels and multiscale metadata | Poor performance for multi-scale visualization |
+| **Missing Coordinate Arrays** | Overview levels lack proper x/y coordinate arrays | Cannot perform spatial operations on overview data |
+| **Inconsistent Geotransform** | Geotransform not in CF-compliant format | Spatial referencing may not work across tools |
+
+## GeoZarr V3 for EOPF - Core Requirements
+
+### 1. CF Convention Compliance
+
+All GeoZarr V3 datasets MUST follow CF (Climate and Forecast) conventions:
+
+```json
+{
+  "standard_name": "toa_bidirectional_reflectance",
+  "grid_mapping": "spatial_ref"
+}
+```
+
+**Requirements:**
+- All data variables MUST have a `standard_name` attribute
+- All geospatial data variables MUST reference a spatial reference system via `grid_mapping`
+
+### 2. Enhanced Spatial Reference System
+
+Every GeoZarr V3 dataset MUST include a `spatial_ref` coordinate variable with comprehensive CRS information:
+
+```json
+{
+  "spatial_ref": {
+    "attrs": {
+      "crs_wkt": "PROJCS[\"WGS 84 / UTM zone 32N\"...]",
+      "spatial_ref": "PROJCS[\"WGS 84 / UTM zone 32N\"...]", 
+      "epsg": 32632,
+      "proj4": "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs",
+      "GeoTransform": "300000.0 60.0 0.0 5000040.0 0.0 -60.0"
+    }
+  }
+}
+```
+
+**Requirements:**
+- MUST include `crs_wkt` in Well-Known Text format
+- SHOULD include `epsg` code when available (preserving EOPF's `proj:epsg`)
+- SHOULD include `proj4` string for additional compatibility
+- MUST include `GeoTransform` in GDAL format for pixel-to-coordinate transformation
+
+### 3. Coordinate Arrays for All Levels
+
+All GeoZarr V3 datasets MUST include proper coordinate arrays at every resolution level:
+
+```python
+{
+  "x": {
+    "dims": ["x"],
+    "data": [300000.0, 300060.0, 300120.0, ...],
+    "attrs": {
+      "units": "m",
+      "long_name": "x coordinate of projection"
+    }
+  },
+  "y": {
+    "dims": ["y"], 
+    "data": [5000040.0, 4999980.0, 4999920.0, ...],
+    "attrs": {
+      "units": "m",
+      "long_name": "y coordinate of projection"
+    }
+  }
+}
+```
+
+**Requirements:**
+- MUST include `x` and `y` coordinate arrays in the native CRS
+- Coordinates MUST be in the same units as the CRS
+- MUST include appropriate `units` and `long_name` attributes
+
+### 4. COG-Style Multiscale Support
+
+GeoZarr V3 for EOPF implements Cloud Optimized GeoTIFF (COG) style multiscale overviews:
+
+```
+eopf_dataset.zarr/
+├── zarr.json                 # Root metadata
+├── b01/                      # Native resolution (level 0)
+│   ├── zarr.json
+│   └── chunks/
+├── 1/                        # Overview level 1 (1:2 scale)
+│   ├── b01/
+│   ├── spatial_ref/
+│   ├── x/
+│   └── y/
+├── 2/                        # Overview level 2 (1:4 scale)
+│   └── ...
+└── 3/                        # Overview level 3 (1:8 scale)
+    └── ...
+```
+
+#### Multiscale Metadata
+
+Data variables with multiscale support MUST include multiscale metadata:
+
+```json
+{
+  "multiscales": {
+    "tile_matrix_set": "WebMercatorQuad",
+    "resampling_method": "nearest",
+    "tile_matrix_limits": {
+      "0": {},
+      "1": {},
+      "2": {},
+      "3": {}
+    }
+  }
+}
+```
+
+#### Overview Level Requirements
+
+Each overview level MUST:
+- Follow COG-style /2 downsampling (1:1, 1:2, 1:4, 1:8, etc.)
+- Maintain the native CRS (typically UTM for Sentinel-2)
+- Include proper coordinate arrays for the overview resolution
+- Include the same `spatial_ref` variable with identical CRS information
+- Stop when dimensions become smaller than 256 pixels
+
+### 5. Zarr V3 Format Requirements
+
+#### Encoding and Compression
+
+```python
+encoding = {
+    "b01": {
+        "chunks": (1, 4096, 4096),
+        "compressors": BloscCodec(cname="zstd", clevel=3, shuffle='shuffle'),
+        "grid_mapping": "spatial_ref"
+    },
+    "x": {"compressors": None},
+    "y": {"compressors": None}
+}
+```
+
+**Requirements:**
+- MUST use Zarr V3 format (`zarr_format=3`)
+- SHOULD use efficient compression (recommended: Blosc with zstd)
+- MUST use appropriate chunking for cloud-optimized access
+- Coordinate arrays SHOULD NOT be compressed
+
+## Implementation Process
+
+### Step 1: Enhance EOPF Metadata
+
+Transform EOPF-specific attributes to CF-compliant format:
+
+```python
+# Add CF standard names
+for band in reflectance_ds[group].data_vars:
+    reflectance_ds[group][band].attrs["standard_name"] = "toa_bidirectional_reflectance"
+    
+# Convert proj:epsg to proper CRS
+if "proj:epsg" in band_attrs:
+    epsg = band_attrs["proj:epsg"]
+    ds = ds.rio.write_crs(f"epsg:{epsg}")
+    band.attrs["grid_mapping"] = "spatial_ref"
+```
+
+### Step 2: Create COG-Style Overviews
+
+Use the helper functions from `geozarr_examples.cog_multiscales`:
+
+```python
+from geozarr_examples.cog_multiscales import create_cog_style_overviews
+
+overview_levels = create_cog_style_overviews(
+    ds=dataset,
+    var="b01",
+    v3_output="output.zarr",
+    min_dimension=256,
+    tileWidth=256
+)
+```
+
+### Step 3: Validate Compliance
+
+Verify the transformation using validation functions:
+
+```python
+from geozarr_examples.cog_multiscales import verify_overview_coordinates
+
+verify_overview_coordinates(
+    v3_output="output.zarr",
+    overview_levels=overview_levels,
+    native_crs=dataset.rio.crs
+)
+```
+
+## Validation Checklist
+
+A valid GeoZarr V3 dataset transformed from EOPF MUST pass:
+
+- [ ] All data variables have `standard_name` attributes
+- [ ] All geospatial variables reference `spatial_ref` via `grid_mapping`
+- [ ] `spatial_ref` variable includes comprehensive CRS information
+- [ ] Original `proj:epsg` information is preserved and enhanced
+- [ ] Proper x/y coordinate arrays present at all levels
+- [ ] Overview levels follow COG-style /2 downsampling
+- [ ] Native CRS (typically UTM) preserved across all overview levels
+- [ ] Zarr V3 format with consolidated metadata
+- [ ] Compatible with xarray.plot() for automatic spatial plotting
+- [ ] Works with rioxarray for geospatial operations
+
+## Tool Compatibility
+
+GeoZarr V3 datasets transformed from EOPF MUST be compatible with:
+
+- **xarray**: Native plotting with automatic coordinate recognition
+- **rioxarray**: CRS operations and spatial indexing
+- **GDAL/rasterio**: Reading and writing operations
+- **TMS servers**: Serving via WebMercatorQuad or custom TMS
+- **STAC**: Integration with SpatioTemporal Asset Catalog
+
+## Comparison: EOPF Zarr vs GeoZarr V3
+
+| Aspect | EOPF Zarr | GeoZarr V3 for EOPF |
+|--------|-----------|---------------------|
+| **CF Standard Names** | ❌ Missing | ✅ Required (`toa_bidirectional_reflectance`) |
+| **CRS Storage** | ⚠️ `proj:epsg` only | ✅ Multiple formats (WKT, EPSG, PROJ4) |
+| **Grid Mapping** | ❌ Missing | ✅ Required (`grid_mapping: spatial_ref`) |
+| **Multiscale Support** | ❌ None | ✅ COG-style overviews |
+| **Coordinate Arrays** | ❌ Missing in overviews | ✅ All levels with proper coordinates |
+| **Geotransform** | ⚠️ Inconsistent | ✅ GDAL format in `spatial_ref` |
+| **Tool Compatibility** | ⚠️ Limited | ✅ Full geospatial ecosystem |
+| **Visualization** | ❌ Manual coordinate handling | ✅ Automatic with xarray.plot() |
+
+## Benefits of Transformation
+
+### For Data Providers
+- **Standards Compliance**: Meets CF conventions and geospatial best practices
+- **Tool Compatibility**: Works with entire Python geospatial ecosystem
+- **Performance**: Efficient multiscale access for visualization and analysis
+- **Future-Proof**: Based on Zarr V3 and industry standards
+
+### For Data Users
+- **Seamless Integration**: Drop-in replacement for existing workflows
+- **Automatic Visualization**: xarray.plot() works out of the box
+- **Spatial Operations**: Full rioxarray compatibility
+- **Multi-Scale Analysis**: Efficient access at different resolutions
+
+### For the Ecosystem
+- **Interoperability**: Bridges EOPF and broader geospatial communities
+- **Standardization**: Promotes consistent geospatial data formats
+- **Innovation**: Enables new tools and applications
+
+## Example Implementation
+
+See the complete implementation in:
+- **Notebook**: `docs/examples/06_multiscales_as_WebMercatorQuad_EOPFZarrV3.ipynb`
+- **Helper Functions**: `src/geozarr_examples/cog_multiscales.py`
+
+## Future Considerations
+
+- **STAC Integration**: Embedding STAC metadata for catalog compatibility
+- **Temporal Dimensions**: Handling time-series Sentinel data
+- **Additional Sensors**: Extending to other EOPF-supported sensors
+- **Performance Optimization**: Zarr V3 sharding for improved access patterns
+- **Standards Adoption**: Working with OGC and other standards bodies
+
+## Conclusion
+
+This experimental specification demonstrates how EOPF Zarr stores can be transformed into fully GeoZarr V3 compliant datasets. The transformation addresses all identified gaps while preserving the original EOPF metadata and enhancing it with CF-compliant geospatial information.
+
+The result is a format that maintains compatibility with EOPF workflows while enabling seamless integration with the broader geospatial Python ecosystem, providing a path forward for standardized Earth observation data formats.
+
+---
+
+*This specification is experimental and based on the implementation in the geozarr-examples repository. It serves as a foundation for discussion and potential standardization efforts within the Earth observation and geospatial communities.*
