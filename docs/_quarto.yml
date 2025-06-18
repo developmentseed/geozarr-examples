@@ -21,6 +21,8 @@ website:
         text: Web-optimized Zarr (WOZ)
       - href: woz-diagram.qmd
         text: Visual WOZ comparison
+      - href: geozarr-eopf-specification.qmd
+        text: GeoZarr EOPF specification
       - section: Presentations
         contents:
         - href: slides/2025-02.qmd
@@ -41,6 +43,8 @@ website:
             text: WebMercatorQuad overviews (Zarr V2)
           - href: examples/04_multiscales_as_WebMercatorQuad_ZarrV3.ipynb
             text: WebMercatorQuad overviews (Zarr V3)
+          - href: examples/06_multiscales_EOPF_ZarrV3.ipynb
+            text: GeoZarr for EOPF
 
 format:
 
