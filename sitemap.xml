@@ -2,62 +2,54 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://developmentseed.github.io/geozarr-examples/examples/00_download_data.html</loc>
-    <lastmod>2025-06-18T10:02:52.959Z</lastmod>
-  </url>
-  <url>
-    <loc>https://developmentseed.github.io/geozarr-examples/examples/06_multiscales_EOPF_ZarrV3.html</loc>
-    <lastmod>2025-06-18T10:02:52.971Z</lastmod>
-  </url>
-  <url>
-    <loc>https://developmentseed.github.io/geozarr-examples/examples/06_embedded_STAC_block.html</loc>
-    <lastmod>2025-06-18T10:02:52.962Z</lastmod>
-  </url>
-  <url>
-    <loc>https://developmentseed.github.io/geozarr-examples/examples/02_CRS_and_geotransform_in_auxiliary_variable.html</loc>
-    <lastmod>2025-06-18T10:02:52.959Z</lastmod>
-  </url>
-  <url>
-    <loc>https://developmentseed.github.io/geozarr-examples/web-optimized-zarr.html</loc>
-    <lastmod>2025-06-18T10:02:53.032Z</lastmod>
-  </url>
-  <url>
-    <loc>https://developmentseed.github.io/geozarr-examples/slides/2025-02.html</loc>
-    <lastmod>2025-06-18T10:02:52.972Z</lastmod>
-  </url>
-  <url>
-    <loc>https://developmentseed.github.io/geozarr-examples/geozarr-eopf-specification.html</loc>
-    <lastmod>2025-06-18T10:02:52.971Z</lastmod>
-  </url>
-  <url>
-    <loc>https://developmentseed.github.io/geozarr-examples/woz-diagram.html</loc>
-    <lastmod>2025-06-18T10:02:53.032Z</lastmod>
-  </url>
-  <url>
-    <loc>https://developmentseed.github.io/geozarr-examples/spec-diagram.html</loc>
-    <lastmod>2025-06-18T10:02:53.032Z</lastmod>
-  </url>
-  <url>
-    <loc>https://developmentseed.github.io/geozarr-examples/slides/2025-04.html</loc>
-    <lastmod>2025-06-18T10:02:52.972Z</lastmod>
-  </url>
-  <url>
-    <loc>https://developmentseed.github.io/geozarr-examples/index.html</loc>
-    <lastmod>2025-06-18T10:02:52.972Z</lastmod>
-  </url>
-  <url>
-    <loc>https://developmentseed.github.io/geozarr-examples/examples/05_WIP_multiscales_as_customTMS_ZarrV2.html</loc>
-    <lastmod>2025-06-18T10:02:52.962Z</lastmod>
-  </url>
-  <url>
-    <loc>https://developmentseed.github.io/geozarr-examples/examples/03_multiscales_as_WebMercatorQuad_ZarrV2.html</loc>
-    <lastmod>2025-06-18T10:02:52.961Z</lastmod>
+    <lastmod>2025-06-21T21:13:34.098Z</lastmod>
   </url>
   <url>
     <loc>https://developmentseed.github.io/geozarr-examples/examples/01_CRS_in_auxiliary_variable.html</loc>
-    <lastmod>2025-06-18T10:02:52.959Z</lastmod>
+    <lastmod>2025-06-21T21:13:34.099Z</lastmod>
+  </url>
+  <url>
+    <loc>https://developmentseed.github.io/geozarr-examples/examples/03_multiscales_as_WebMercatorQuad_ZarrV2.html</loc>
+    <lastmod>2025-06-21T21:13:34.100Z</lastmod>
+  </url>
+  <url>
+    <loc>https://developmentseed.github.io/geozarr-examples/examples/05_WIP_multiscales_as_customTMS_ZarrV2.html</loc>
+    <lastmod>2025-06-21T21:13:34.102Z</lastmod>
+  </url>
+  <url>
+    <loc>https://developmentseed.github.io/geozarr-examples/index.html</loc>
+    <lastmod>2025-06-21T21:13:34.102Z</lastmod>
+  </url>
+  <url>
+    <loc>https://developmentseed.github.io/geozarr-examples/slides/2025-04.html</loc>
+    <lastmod>2025-06-21T21:13:34.102Z</lastmod>
+  </url>
+  <url>
+    <loc>https://developmentseed.github.io/geozarr-examples/woz-diagram.html</loc>
+    <lastmod>2025-06-21T21:13:34.163Z</lastmod>
+  </url>
+  <url>
+    <loc>https://developmentseed.github.io/geozarr-examples/spec-diagram.html</loc>
+    <lastmod>2025-06-21T21:13:34.162Z</lastmod>
+  </url>
+  <url>
+    <loc>https://developmentseed.github.io/geozarr-examples/slides/2025-02.html</loc>
+    <lastmod>2025-06-21T21:13:34.102Z</lastmod>
+  </url>
+  <url>
+    <loc>https://developmentseed.github.io/geozarr-examples/web-optimized-zarr.html</loc>
+    <lastmod>2025-06-21T21:13:34.163Z</lastmod>
+  </url>
+  <url>
+    <loc>https://developmentseed.github.io/geozarr-examples/examples/02_CRS_and_geotransform_in_auxiliary_variable.html</loc>
+    <lastmod>2025-06-21T21:13:34.099Z</lastmod>
+  </url>
+  <url>
+    <loc>https://developmentseed.github.io/geozarr-examples/examples/06_embedded_STAC_block.html</loc>
+    <lastmod>2025-06-21T21:13:34.102Z</lastmod>
   </url>
   <url>
     <loc>https://developmentseed.github.io/geozarr-examples/examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html</loc>
-    <lastmod>2025-06-18T10:02:52.962Z</lastmod>
+    <lastmod>2025-06-21T21:13:34.102Z</lastmod>
   </url>
 </urlset>
