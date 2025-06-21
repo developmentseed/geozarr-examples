@@ -41,6 +41,8 @@ website:
             text: WebMercatorQuad overviews (Zarr V2)
           - href: examples/04_multiscales_as_WebMercatorQuad_ZarrV3.ipynb
             text: WebMercatorQuad overviews (Zarr V3)
+          - href: examples/06_embedded_STAC_block.ipynb
+            text: STAC metadata
 
 format:
 
