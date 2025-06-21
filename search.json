@@ -757,7 +757,88 @@
     "href": "examples/06_embedded_STAC_block.html",
     "title": "Create a STAC-aware GeoZarr RGB tile of a Sentinel-2 scene over Vienna.",
     "section": "",
-    "text": "This example demonstrates a best-practice workflow for creating a STAC-aware, interoperable GeoZarr store from Sentinel-2 Cloud-Optimized GeoTIFFs (COGs).\nThe key steps are: 1. Query Earth-Search for a recent, low-cloud Sentinel-2 L2A scene. 2. Stream and stack the source RGB bands into a single, lazy xarray.DataArray. 3. Prepare a GeoZarr-compliant xarray.Dataset in memory, which includes embedding STAC metadata and refining the CRS attributes. 4. Write the final, consolidated GeoZarr store. 5. Verify the result by reopening the store and inspecting the STAC metadata. 6. Display a coarsened preview of the RGB image.\n\n\"\"\"Create a STAC-aware GeoZarr RGB tile of a Sentinel-2 scene over Vienna.\"\"\"\n\nimport shutil\nfrom datetime import date\nfrom pathlib import Path\n\nimport jsonschema\nimport matplotlib.pyplot as plt\nimport pystac_client\nimport rioxarray as rxr\nimport xarray as xr\n\n# 1. Query Earth-Search for a recent, low-cloud Sentinel-2 L2A scene.\nprint(\"Step 1: Querying for a Sentinel-2 scene over Vienna...\")\nAPI = \"https://earth-search.aws.element84.com/v1\"\ncoll = \"sentinel-2-l2a\"\nbbox = [16.20, 48.10, 16.45, 48.30]  # Vienna\ntoday = date.today()\nlast_year = today.replace(year=today.year - 1)\ndaterange = f\"{last_year:%Y-%m-%d}/{today:%Y-%m-%d}\"\n\nitem = next(\n    pystac_client.Client.open(API)\n    .search(\n        collections=[coll],\n        bbox=bbox,\n        datetime=daterange,\n        query={\"eo:cloud_cover\": {\"lt\": 5}},\n        limit=1,\n    )\n    .items(),\n    None,\n)\nif not item:\n    raise RuntimeError(\"No Sentinel-2 scene found for the specified criteria.\")\nprint(f\"Found scene: {item.id} (Cloud cover: {item.properties['eo:cloud_cover']:.2f}%)\")\n\n\n# 2. Stream and stack the source RGB bands into a lazy DataArray.\nprint(\"\\nStep 2: Streaming and stacking source COG bands...\")\nbands = [\"red\", \"green\", \"blue\"]\nrgb = xr.concat(\n    [\n        rxr.open_rasterio(\n            item.assets[b].href, chunks={\"band\": 1, \"x\": 2048, \"y\": 2048}, masked=True\n        ).assign_coords(band=[b])\n        for b in bands\n    ],\n    dim=\"band\",\n)\nrgb.name = \"radiance\"\n# Assign the Coordinate Reference System from the STAC item's properties.\nrgb = rgb.rio.write_crs(item.properties[\"proj:code\"])\n\n\n# 3. Prepare a complete, GeoZarr-compliant xarray.Dataset in memory.\nprint(\"\\nStep 3: Preparing the final xarray.Dataset with all metadata...\")\n# Convert the stacked RGB DataArray into a Dataset and name the data variable\nradiance_ds = rgb.to_dataset(name=\"radiance\")\n\n# Grab the original GeoTransform from the DataArray\ntransform = rgb.rio.transform()\n\n# Ensure x/y are recognized as spatial dims, then write transform + CRS at the dataset level\nradiance_ds = (\n    radiance_ds.rio.set_spatial_dims(x_dim=\"x\", y_dim=\"y\")\n    .rio.write_transform(transform)\n    .rio.write_crs(item.properties[\"proj:code\"])\n)\n\n# Build the STAC Item metadata dictionary\ngsd = min(item.assets[b].to_dict().get(\"gsd\", 10) for b in bands)\nstore_path = Path(f\"{coll}_{'_'.join(bands)}_{item.id}.zarr\")\nstac_metadata = {\n    \"type\": \"Item\",\n    \"stac_version\": \"1.0.0\",\n    \"id\": item.id,\n    \"bbox\": item.bbox,\n    \"geometry\": item.geometry,\n    \"properties\": {\n        \"datetime\": item.properties[\"datetime\"],\n        \"proj:code\": item.properties[\"proj:code\"],\n        \"platform\": item.properties[\"platform\"],\n        \"instruments\": item.properties[\"instruments\"],\n        \"eo:cloud_cover\": item.properties[\"eo:cloud_cover\"],\n        \"gsd\": gsd,\n    },\n    \"assets\": {\n        \"data\": {\n            \"href\": store_path.name,\n            \"type\": \"application/x-zarr\",\n            \"roles\": [\"data\"],\n        }\n    },\n    \"license\": item.properties.get(\"license\", \"proprietary\"),\n}\n# Basic STAC schema check\njsonschema.validate(\n    instance=stac_metadata,\n    schema={\"type\": \"object\", \"required\": [\"type\", \"id\", \"stac_version\", \"assets\"]},\n)\n# Embed it in the dataset attrs\nradiance_ds.attrs[\"stac\"] = stac_metadata\n\n\n# 4. Write the final, consolidated GeoZarr store to disk.\nprint(f\"\\nStep 4: Writing the final GeoZarr store to {store_path.resolve()}...\")\nif store_path.exists():\n    shutil.rmtree(store_path)\n\nradiance_ds.chunk({\"y\": 512, \"x\": 512}).to_zarr(store_path, mode=\"w\", consolidated=True)\n\n\n# 5. Verify the result by reopening the store and checking for STAC metadata.\nprint(\"\\nStep 5: Verifying the created GeoZarr store...\")\nwith xr.open_zarr(store_path, consolidated=True) as verified_ds:\n    if \"stac\" not in verified_ds.attrs:\n        raise RuntimeError(\"FAIL: STAC metadata was not found.\")\n    print(\"✅ SUCCESS: Embedded STAC metadata was found.\")\n\n\n# 6. Display a coarsened preview of the RGB image.\nprint(\"\\nStep 6: Generating and displaying a coarsened preview...\")\nwith xr.open_zarr(store_path, consolidated=True) as ds_to_plot:\n    preview = ds_to_plot.radiance.coarsen(y=8, x=8, boundary=\"trim\").mean()\n\n    # Apply a simple contrast stretch for better visualization.\n    p2, p98 = preview.quantile(0.02), preview.quantile(0.98)\n\n    preview_stretched = preview.clip(min=p2, max=p98)\n    preview_stretched = (preview_stretched - p2) / (p98 - p2)\n\n    rgb_preview = preview_stretched.transpose(\"y\", \"x\", \"band\").values\n\n    fig, ax = plt.subplots(figsize=(8, 8))\n    ax.imshow(rgb_preview)\n    ax.set_title(f\"Coarsened Preview of {item.id}\")\n    ax.set_axis_off()\n    plt.show()"
+    "text": "This example demonstrates a best-practice workflow for creating a STAC-aware, interoperable GeoZarr store from Sentinel-2 Cloud-Optimized GeoTIFFs (COGs).\nThe key steps are:\n\"\"\"Create a STAC-aware GeoZarr RGB tile of a Sentinel-2 scene over Vienna.\"\"\"\n\nimport warnings\nfrom datetime import date\nfrom pathlib import Path\n\nimport jsonschema\nimport matplotlib.pyplot as plt\nimport pystac_client\nimport rioxarray as rxr\nimport xarray as xr",
+    "crumbs": [
+      "Examples",
+      "STAC metadata"
+    ]
+  },
+  {
+    "objectID": "examples/06_embedded_STAC_block.html#query-earth-search-for-a-recent-low-cloud-sentinel-2-l2a-scene.",
+    "href": "examples/06_embedded_STAC_block.html#query-earth-search-for-a-recent-low-cloud-sentinel-2-l2a-scene.",
+    "title": "Create a STAC-aware GeoZarr RGB tile of a Sentinel-2 scene over Vienna.",
+    "section": "Query Earth-Search for a recent, low-cloud Sentinel-2 L2A scene.",
+    "text": "Query Earth-Search for a recent, low-cloud Sentinel-2 L2A scene.\n\nprint(\"Step 1: Querying for a Sentinel-2 scene over Vienna...\")\nAPI = \"https://earth-search.aws.element84.com/v1\"\ncoll = \"sentinel-2-l2a\"\nbbox = [16.20, 48.10, 16.45, 48.30]  # Vienna\ntoday = date.today()\nlast_year = today.replace(year=today.year - 1)\ndaterange = f\"{last_year:%Y-%m-%d}/{today:%Y-%m-%d}\"\n\nitem = next(\n    pystac_client.Client.open(API)\n    .search(\n        collections=[coll],\n        bbox=bbox,\n        datetime=daterange,\n        query={\"eo:cloud_cover\": {\"lt\": 5}},\n        limit=1,\n    )\n    .items(),\n    None,\n)\nif not item:\n    raise RuntimeError(\"No Sentinel-2 scene found for the specified criteria.\")\nprint(f\"Found scene: {item.id} (Cloud cover: {item.properties['eo:cloud_cover']:.2f}%)\")\n\nStep 1: Querying for a Sentinel-2 scene over Vienna...\nFound scene: S2A_33UWP_20250620_0_L2A (Cloud cover: 4.52%)",
+    "crumbs": [
+      "Examples",
+      "STAC metadata"
+    ]
+  },
+  {
+    "objectID": "examples/06_embedded_STAC_block.html#stream-and-stack-the-source-rgb-bands-into-a-lazy-dataarray.",
+    "href": "examples/06_embedded_STAC_block.html#stream-and-stack-the-source-rgb-bands-into-a-lazy-dataarray.",
+    "title": "Create a STAC-aware GeoZarr RGB tile of a Sentinel-2 scene over Vienna.",
+    "section": "Stream and stack the source RGB bands into a lazy DataArray.",
+    "text": "Stream and stack the source RGB bands into a lazy DataArray.\n\nprint(\"\\nStep 2: Streaming and stacking source COG bands...\")\nbands = [\"red\", \"green\", \"blue\"]\nrgb = xr.concat(\n    [\n        rxr.open_rasterio(\n            item.assets[b].href, chunks={\"band\": 1, \"x\": 2048, \"y\": 2048}, masked=True\n        ).assign_coords(band=[b])\n        for b in bands\n    ],\n    dim=\"band\",\n)\nrgb.name = \"radiance\"\n# Assign the Coordinate Reference System from the STAC item's properties.\nrgb = rgb.rio.write_crs(item.properties[\"proj:code\"])\n\n\nStep 2: Streaming and stacking source COG bands...",
+    "crumbs": [
+      "Examples",
+      "STAC metadata"
+    ]
+  },
+  {
+    "objectID": "examples/06_embedded_STAC_block.html#prepare-a-complete-geozarr-compliant-xarray.dataset-in-memory.",
+    "href": "examples/06_embedded_STAC_block.html#prepare-a-complete-geozarr-compliant-xarray.dataset-in-memory.",
+    "title": "Create a STAC-aware GeoZarr RGB tile of a Sentinel-2 scene over Vienna.",
+    "section": "Prepare a complete, GeoZarr-compliant xarray.Dataset in memory.",
+    "text": "Prepare a complete, GeoZarr-compliant xarray.Dataset in memory.\n\nprint(\"\\nStep 3: Preparing the final xarray.Dataset with all metadata...\")\n# Convert the stacked RGB DataArray into a Dataset and name the data variable\nradiance_ds = rgb.to_dataset(name=\"radiance\")\n\n# Grab the original GeoTransform from the DataArray\ntransform = rgb.rio.transform()\n\n# Ensure x/y are recognized as spatial dims, then write transform + CRS at the dataset level\nradiance_ds = (\n    radiance_ds.rio.set_spatial_dims(x_dim=\"x\", y_dim=\"y\")\n    .rio.write_transform(transform)\n    .rio.write_crs(item.properties[\"proj:code\"])\n)\n\n# Remove the \"spatial_ref\" attribute because it is redundant with \"crs_wkt\" and not included in CF conventions.\n_ = radiance_ds[\"spatial_ref\"].attrs.pop(\"spatial_ref\", None)\n\n\nStep 3: Preparing the final xarray.Dataset with all metadata...",
+    "crumbs": [
+      "Examples",
+      "STAC metadata"
+    ]
+  },
+  {
+    "objectID": "examples/06_embedded_STAC_block.html#build-the-stac-item-metadata-dictionary",
+    "href": "examples/06_embedded_STAC_block.html#build-the-stac-item-metadata-dictionary",
+    "title": "Create a STAC-aware GeoZarr RGB tile of a Sentinel-2 scene over Vienna.",
+    "section": "Build the STAC Item metadata dictionary",
+    "text": "Build the STAC Item metadata dictionary\n\ngsd = min(item.assets[b].to_dict().get(\"gsd\", 10) for b in bands)\nstore_path = Path(f\"../output/{coll}_{'_'.join(bands)}_{item.id}.zarr\")\nstac_metadata = {\n    \"type\": \"Item\",\n    \"stac_version\": \"1.0.0\",\n    \"id\": item.id,\n    \"bbox\": item.bbox,\n    \"geometry\": item.geometry,\n    \"properties\": {\n        \"datetime\": item.properties[\"datetime\"],\n        \"proj:code\": item.properties[\"proj:code\"],\n        \"platform\": item.properties[\"platform\"],\n        \"instruments\": item.properties[\"instruments\"],\n        \"eo:cloud_cover\": item.properties[\"eo:cloud_cover\"],\n        \"gsd\": gsd,\n    },\n    \"assets\": {\n        \"data\": {\n            \"href\": store_path.name,\n            \"type\": \"application/x-zarr\",\n            \"roles\": [\"data\"],\n        }\n    },\n    \"license\": item.properties.get(\"license\", \"proprietary\"),\n}\n# Basic STAC schema check\njsonschema.validate(\n    instance=stac_metadata,\n    schema={\"type\": \"object\", \"required\": [\"type\", \"id\", \"stac_version\", \"assets\"]},\n)\n# Embed it in the dataset attrs\nradiance_ds.attrs[\"stac\"] = stac_metadata",
+    "crumbs": [
+      "Examples",
+      "STAC metadata"
+    ]
+  },
+  {
+    "objectID": "examples/06_embedded_STAC_block.html#write-the-final-consolidated-geozarr-store-to-disk.",
+    "href": "examples/06_embedded_STAC_block.html#write-the-final-consolidated-geozarr-store-to-disk.",
+    "title": "Create a STAC-aware GeoZarr RGB tile of a Sentinel-2 scene over Vienna.",
+    "section": "Write the final, consolidated GeoZarr store to disk.",
+    "text": "Write the final, consolidated GeoZarr store to disk.\n\nprint(f\"\\nStep 4: Writing the final GeoZarr store to '{store_path}'...\")\n\n# Ignore warnings about codecs, datetimes, and consolidated metadata not currently being part of the\n# Zarr format 3 specification, since it is not relevant for this example.\nwarnings.filterwarnings(\"ignore\", message=\".*Zarr format 3 specification.*\")\n\n# Mode 'w' will remove everything in the store_path before writing new data.\nstore = radiance_ds.chunk({\"y\": 512, \"x\": 512}).to_zarr(\n    store_path, mode=\"w\", consolidated=True\n)\n\n\nStep 4: Writing the final GeoZarr store to '../output/sentinel-2-l2a_red_green_blue_S2A_33UWP_20250620_0_L2A.zarr'...",
+    "crumbs": [
+      "Examples",
+      "STAC metadata"
+    ]
+  },
+  {
+    "objectID": "examples/06_embedded_STAC_block.html#verify-the-result-by-reopening-the-store-and-checking-for-stac-metadata.",
+    "href": "examples/06_embedded_STAC_block.html#verify-the-result-by-reopening-the-store-and-checking-for-stac-metadata.",
+    "title": "Create a STAC-aware GeoZarr RGB tile of a Sentinel-2 scene over Vienna.",
+    "section": "Verify the result by reopening the store and checking for STAC metadata.",
+    "text": "Verify the result by reopening the store and checking for STAC metadata.\n\nprint(\"\\nStep 5: Verifying the created GeoZarr store...\")\nwith xr.open_zarr(store_path, consolidated=True) as verified_ds:\n    if \"stac\" not in verified_ds.attrs:\n        raise RuntimeError(\"FAIL: STAC metadata was not found.\")\n    print(\"✅ SUCCESS: Embedded STAC metadata was found.\")\n\n\nStep 5: Verifying the created GeoZarr store...\n✅ SUCCESS: Embedded STAC metadata was found.",
+    "crumbs": [
+      "Examples",
+      "STAC metadata"
+    ]
+  },
+  {
+    "objectID": "examples/06_embedded_STAC_block.html#display-a-coarsened-preview-of-the-rgb-image.",
+    "href": "examples/06_embedded_STAC_block.html#display-a-coarsened-preview-of-the-rgb-image.",
+    "title": "Create a STAC-aware GeoZarr RGB tile of a Sentinel-2 scene over Vienna.",
+    "section": "Display a coarsened preview of the RGB image.",
+    "text": "Display a coarsened preview of the RGB image.\n\nprint(\"\\nStep 6: Generating and displaying a coarsened preview...\")\nwith xr.open_zarr(store_path, consolidated=True) as ds_to_plot:\n    preview = ds_to_plot.radiance.coarsen(y=8, x=8, boundary=\"trim\").mean()\n\n    # Apply a simple contrast stretch for better visualization.\n    p2, p98 = preview.quantile(0.02), preview.quantile(0.98)\n\n    preview_stretched = preview.clip(min=p2, max=p98)\n    preview_stretched = (preview_stretched - p2) / (p98 - p2)\n\n    rgb_preview = preview_stretched.transpose(\"y\", \"x\", \"band\").values\n\n    fig, ax = plt.subplots(figsize=(8, 8))\n    ax.imshow(rgb_preview)\n    ax.set_title(f\"Coarsened Preview of {item.id}\")\n    ax.set_axis_off()\n    plt.show()\n\n\nStep 6: Generating and displaying a coarsened preview...",
+    "crumbs": [
+      "Examples",
+      "STAC metadata"
+    ]
   },
   {
     "objectID": "examples/04_multiscales_as_WebMercatorQuad_ZarrV3.html",
