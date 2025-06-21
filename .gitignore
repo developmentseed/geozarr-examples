@@ -94,7 +94,6 @@ scratch-notebooks/*
 # data
 data/*
 output/*
-docs/examples/sentinel-2-l2a_red_green_blue_S2C_33UWP_20250615_0_L2A.zarr
 
 docs/data/*
 docs/output/*
