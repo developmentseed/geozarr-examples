@@ -10,7 +10,17 @@ authors = [
 ]
 requires-python = ">=3.11"
 dependencies = [
-    "zarr",
+    "zarr>=3.0.8",
+    "pystac-client",
+    "xarray",
+    "xproj",
+    "rioxarray",
+    "earthaccess",
+    "rio-cogeo",
+    "rio-tiler",
+    "cf-xarray",
+    "cftime",
+    "dask",
 ]
 dynamic = [
   "version",
@@ -38,23 +48,10 @@ build.hooks.vcs.version-file = "src/geozarr_examples/_version.py"
 
 [tool.pixi.pypi-dependencies]
 geozarr_examples = { path = ".", editable = true }
-xarray = { git = "https://github.com/pydata/xarray.git" }
-xproj = { git = "https://github.com/benbovy/xproj.git", branch = "main" }
-rioxarray = { git = "https://github.com/corteva/rioxarray.git" }
-earthaccess = { git = "https://github.com/nsidc/earthaccess" }
-rio-cogeo = "*"
-cf_xarray = "*"
-rio-tiler = "*"
-
 
 [tool.pixi.project]
 channels = ["conda-forge"]
 platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
-
-[tool.pixi.dependencies]
-proj = ">=9.5.1"
-cftime = ">=1.6.4,<2"
-dask = ">=2025.2.0,<2026"
 
 [tool.pixi.environments]
 default = { solve-group = "default" }
