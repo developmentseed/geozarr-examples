@@ -10,6 +10,8 @@ import xarray as xr
 import dask.array as da
 import rasterio
 import zarr
+import matplotlib.pyplot as plt
+from pathlib import Path
 
 
 def calculate_overview_levels(native_width, native_height, min_dimension=256, tileWidth=256):
@@ -216,7 +218,7 @@ def populate_overview_data(source_data, za, target_width, target_height):
         return False
 
 
-def create_cog_style_overviews(ds, var, v3_output, min_dimension=256, tileWidth=256):
+def create_cog_style_overviews(ds, var, v3_output, min_dimension=256, tileWidth=256, group_prefix=None):
     """
     Create COG-style overview levels for a variable in a dataset.
     
@@ -232,6 +234,8 @@ def create_cog_style_overviews(ds, var, v3_output, min_dimension=256, tileWidth=
         Minimum dimension for overview levels
     tileWidth : int, default 256
         Tile width for TMS compatibility
+    group_prefix : str, optional
+        Group prefix for hierarchical zarr stores
         
     Returns
     -------
@@ -447,3 +451,477 @@ def plot_overview_levels(v3_output, overview_levels, var, max_plots=3):
     plt.show()
     
     return fig
+
+
+def setup_eopf_metadata(reflectance_ds):
+    """
+    Set up CF standard names and CRS information for EOPF reflectance measurements.
+    
+    Parameters
+    ----------
+    reflectance_ds : xarray.DataTree
+        The reflectance measurements DataTree from EOPF
+        
+    Returns
+    -------
+    dict
+        Dictionary mapping group names to processed datasets
+    """
+    processed_groups = {}
+    
+    # Loop over the reflectance groups
+    for group in reflectance_ds.groups:
+        if not reflectance_ds[group].data_vars:
+            # Skip groups without data variables
+            continue
+            
+        print(f"Processing group: {group}")
+        ds = reflectance_ds[group].ds.copy()
+        
+        # Loop over the bands in the group
+        for band in ds.data_vars:
+            print(f"  Processing band: {band}")
+            
+            # Set CF standard name
+            ds[band].attrs["standard_name"] = "toa_bidirectional_reflectance"
+            
+            # Check if the band has the proj:epsg attribute
+            if "proj:epsg" in ds[band].attrs:
+                epsg = ds[band].attrs["proj:epsg"]
+                print(f"    Setting CRS for {band} to EPSG:{epsg}")
+                ds = ds.rio.write_crs(f"epsg:{epsg}")
+                ds[band].attrs["grid_mapping"] = "spatial_ref"
+        
+        processed_groups[group] = ds
+        
+    return processed_groups
+
+
+def create_full_eopf_zarr_store(dt, output_path, spatial_chunk=4096, min_dimension=256, tileWidth=256, 
+                               load_data=True, max_retries=3, skip_existing=True, force_overwrite=False):
+    """
+    Create a full EOPF Zarr store with all resolutions, groups, and variables.
+    
+    Parameters
+    ----------
+    dt : xarray.DataTree
+        Input EOPF DataTree
+    output_path : str
+        Output path for the Zarr store
+    spatial_chunk : int, default 4096
+        Spatial chunk size for encoding
+    min_dimension : int, default 256
+        Minimum dimension for overview levels
+    tileWidth : int, default 256
+        Tile width for TMS compatibility
+    load_data : bool, default True
+        Whether to load data into memory before processing (helps with timeouts)
+    max_retries : int, default 3
+        Maximum number of retries for network operations
+    skip_existing : bool, default True
+        Skip processing if output already exists (speeds up testing)
+    force_overwrite : bool, default False
+        Force overwrite existing data (overrides skip_existing)
+        
+    Returns
+    -------
+    dict
+        Dictionary containing processed groups and overview information
+    """
+    from zarr.codecs import BloscCodec
+    import time
+    import os
+    
+    # Set up compression
+    compressor = BloscCodec(cname="zstd", clevel=3, shuffle='shuffle', blocksize=0)
+    
+    # Process reflectance measurements
+    reflectance_ds = dt["measurements/reflectance"]
+    processed_groups = setup_eopf_metadata(reflectance_ds)
+    
+    # Create the main zarr store structure
+    result = {
+        'processed_groups': processed_groups,
+        'overview_levels': {},
+        'output_path': output_path
+    }
+    
+    # Check if we should skip existing data
+    if skip_existing and not force_overwrite and os.path.exists(output_path):
+        print(f"⏭️  Output path {output_path} already exists.")
+        print("🔍 Checking for existing data...")
+        
+        # Try to load existing results
+        existing_groups = {}
+        existing_overviews = {}
+        all_exist = True
+        
+        for group_name in processed_groups.keys():
+            group_path = f"{output_path}/{group_name}"
+            if os.path.exists(group_path):
+                try:
+                    # Try to load the existing group
+                    existing_ds = xr.open_zarr(group_path, zarr_format=3)
+                    existing_groups[group_name] = existing_ds
+                    print(f"✅ Found existing data for {group_name}")
+                    
+                    # Check for existing overviews
+                    group_overviews = {}
+                    for var in existing_ds.data_vars:
+                        if var in ['spatial_ref', 'time']:
+                            continue
+                        overview_path = f"{group_path}/{var}_overviews"
+                        if os.path.exists(overview_path):
+                            try:
+                                # Try to determine overview levels
+                                overview_dirs = [d for d in os.listdir(overview_path) 
+                                               if os.path.isdir(os.path.join(overview_path, d)) and d.isdigit()]
+                                if overview_dirs:
+                                    # Create mock overview levels info
+                                    overview_levels = []
+                                    for level_str in sorted(overview_dirs, key=int):
+                                        level = int(level_str)
+                                        try:
+                                            level_ds = xr.open_zarr(overview_path, group=level_str, zarr_format=3)
+                                            if var in level_ds.data_vars:
+                                                height, width = level_ds[var].shape[-2:]
+                                                overview_levels.append({
+                                                    'level': level,
+                                                    'width': width,
+                                                    'height': height,
+                                                    'scale_factor': 2**level
+                                                })
+                                        except Exception:
+                                            continue
+                                    
+                                    if overview_levels:
+                                        group_overviews[var] = {
+                                            'levels': overview_levels,
+                                            'path': overview_path
+                                        }
+                                        print(f"✅ Found existing overviews for {group_name}/{var}")
+                                    else:
+                                        print(f"⚠️  No valid overviews found for {group_name}/{var}")
+                                        all_exist = False
+                                else:
+                                    print(f"⚠️  No overview directories found for {group_name}/{var}")
+                                    all_exist = False
+                            except Exception as e:
+                                print(f"⚠️  Could not load overviews for {group_name}/{var}: {e}")
+                                all_exist = False
+                        else:
+                            print(f"⚠️  Overview path not found for {group_name}/{var}")
+                            all_exist = False
+                    
+                    existing_overviews[group_name] = group_overviews
+                    
+                except Exception as e:
+                    print(f"⚠️  Could not load existing data for {group_name}: {e}")
+                    all_exist = False
+            else:
+                print(f"⚠️  Group path not found: {group_path}")
+                all_exist = False
+        
+        if all_exist and existing_groups:
+            print("🎉 All data already exists! Returning existing results.")
+            return {
+                'processed_groups': existing_groups,
+                'overview_levels': existing_overviews,
+                'output_path': output_path
+            }
+        else:
+            print("⚠️  Some data missing or incomplete. Proceeding with processing...")
+    
+    # Create the root zarr store first
+    print(f"Creating root Zarr store at: {output_path}")
+    os.makedirs(output_path, exist_ok=True)
+    
+    # Create a simple approach: process one group at a time and create separate stores
+    # This is more reliable than trying to create complex hierarchical structures
+    for group_name, ds in processed_groups.items():
+        print(f"\n=== Processing {group_name} ===")
+        
+        # Load data into memory if requested to avoid timeout issues
+        if load_data:
+            print(f"Loading {group_name} data into memory to avoid timeouts...")
+            try:
+                # Load with retries
+                for attempt in range(max_retries):
+                    try:
+                        ds = ds.load()
+                        print(f"Successfully loaded {group_name} data")
+                        break
+                    except Exception as e:
+                        if attempt < max_retries - 1:
+                            print(f"Attempt {attempt + 1} failed, retrying in 5 seconds...")
+                            time.sleep(5)
+                        else:
+                            print(f"Failed to load {group_name} after {max_retries} attempts: {e}")
+                            print("Continuing with lazy loading (may be slower)...")
+                            break
+            except Exception as e:
+                print(f"Warning: Could not load {group_name} data: {e}")
+                print("Continuing with lazy loading...")
+        
+        # Create encoding for all variables in this group
+        encoding = {}
+        for var in ds.data_vars:
+            encoding[var] = {
+                "chunks": (1, spatial_chunk, spatial_chunk),
+                "compressors": compressor,
+            }
+        
+        # Add coordinate encoding
+        for coord in ds.coords:
+            encoding[coord] = {"compressors": None}
+        
+        # Write the base resolution data as a subgroup
+        group_path = f"{output_path}/{group_name}"
+        for attempt in range(max_retries):
+            try:
+                print(f"Writing base resolution for {group_name} to {group_path}")
+                ds.to_zarr(
+                    group_path,
+                    mode="w",
+                    consolidated=True,
+                    zarr_format=3, 
+                    encoding=encoding
+                )
+                print(f"Written base resolution for {group_name}")
+                break
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    print(f"Write attempt {attempt + 1} failed, retrying in 5 seconds...")
+                    time.sleep(5)
+                else:
+                    print(f"Failed to write {group_name} after {max_retries} attempts: {e}")
+                    raise
+        
+        # Create overviews for each variable (simplified approach)
+        group_overviews = {}
+        for var in ds.data_vars:
+            print(f"\nChecking {group_name}/{var}")
+            
+            # Skip special variables
+            if var in ['spatial_ref', 'time']:
+                continue
+            
+            # Check if this variable already exists
+            var_overview_path = f"{group_path}/{var}_overviews"
+            if skip_existing and not force_overwrite and os.path.exists(var_overview_path):
+                try:
+                    # Try to verify existing overviews
+                    overview_dirs = [d for d in os.listdir(var_overview_path) 
+                                   if os.path.isdir(os.path.join(var_overview_path, d)) and d.isdigit()]
+                    if overview_dirs:
+                        print(f"✅ Found existing overviews for {group_name}/{var}, skipping...")
+                        # Add to results
+                        var_overviews = []
+                        for level_str in sorted(overview_dirs, key=int):
+                            level = int(level_str)
+                            try:
+                                level_ds = xr.open_zarr(var_overview_path, group=level_str, zarr_format=3)
+                                if var in level_ds.data_vars:
+                                    height, width = level_ds[var].shape[-2:]
+                                    var_overviews.append({
+                                        'level': level,
+                                        'width': width,
+                                        'height': height,
+                                        'scale_factor': 2**level
+                                    })
+                            except Exception as e:
+                                print(f"⚠️  Could not verify level {level}: {e}")
+                                continue
+                        
+                        if var_overviews:
+                            group_overviews[var] = {
+                                'levels': var_overviews,
+                                'path': var_overview_path
+                            }
+                            continue
+                        else:
+                            print("⚠️  No valid overviews found, will recreate")
+                except Exception as e:
+                    print(f"⚠️  Could not verify existing overviews: {e}")
+            
+            print(f"Creating overviews for {group_name}/{var}")
+            try:
+                # Add multiscales metadata
+                native_height, native_width = ds[var].shape[-2:]
+                overview_levels = calculate_overview_levels(native_width, native_height, min_dimension, tileWidth)
+                
+                tile_matrix_limits = {str(ol['level']): {} for ol in overview_levels}
+                ds[var].attrs["multiscales"] = {
+                    "tile_matrix_set": "WebMercatorQuad",
+                    "resampling_method": "nearest",
+                    "tile_matrix_limits": tile_matrix_limits,
+                }
+                
+                # Create a single-variable dataset for overview creation
+                var_ds = ds[[var]].copy()  # Create a dataset with just this variable
+                
+                # Create overview levels in a separate store for now
+                var_overview_path = f"{group_path}/{var}_overviews"
+                var_overviews = create_cog_style_overviews(
+                    ds=var_ds,
+                    var=var,
+                    v3_output=var_overview_path,
+                    min_dimension=min_dimension,
+                    tileWidth=tileWidth
+                )
+                
+                group_overviews[var] = {
+                    'levels': var_overviews,
+                    'path': var_overview_path
+                }
+                
+            except Exception as e:
+                print(f"Warning: Failed to create overviews for {group_name}/{var}: {e}")
+                print("Continuing with next variable...")
+                continue
+        
+        result['overview_levels'][group_name] = group_overviews
+    
+    # Create a simple root zarr.json to make it a valid zarr store
+    try:
+        import json
+        root_metadata = {
+            "zarr_format": 3,
+            "node_type": "group",
+            "attributes": {
+                "description": "EOPF Zarr store with multiscale support",
+                "groups": list(processed_groups.keys())
+            }
+        }
+        
+        with open(f"{output_path}/zarr.json", "w") as f:
+            json.dump(root_metadata, f, indent=2)
+        
+        print(f"Created root zarr.json")
+        
+    except Exception as e:
+        print(f"Warning: Could not create root zarr.json: {e}")
+    
+    return result
+
+
+def plot_rgb_overview(zarr_store_path, group_name, red_band, green_band, blue_band, overview_level=0, 
+                     stretch_percentiles=(2, 98), figsize=(12, 8)):
+    """
+    Create an RGB plot using overview data from a Zarr store.
+    
+    Parameters
+    ----------
+    zarr_store_path : str
+        Path to the Zarr store
+    group_name : str
+        Name of the resolution group (e.g., 'r10m', 'r20m', 'r60m')
+    red_band : str
+        Name of the red band variable
+    green_band : str
+        Name of the green band variable  
+    blue_band : str
+        Name of the blue band variable
+    overview_level : int, default 0
+        Overview level to use (0 = native resolution)
+    stretch_percentiles : tuple, default (2, 98)
+        Percentiles for contrast stretching
+    figsize : tuple, default (12, 8)
+        Figure size
+        
+    Returns
+    -------
+    matplotlib.figure.Figure
+        The created figure
+    """
+    import matplotlib.pyplot as plt
+    import xarray as xr
+    import numpy as np
+    
+    # Load the overview data for each band
+    bands_data = {}
+    coords = None
+    crs = None
+    
+    for band_name, band_var in [('red', red_band), ('green', green_band), ('blue', blue_band)]:
+        if overview_level == 0:
+            # Use native resolution
+            band_path = f"{zarr_store_path}/{group_name}"
+            ds = xr.open_zarr(band_path, zarr_format=3)
+            band_data = ds[band_var]
+        else:
+            # Use overview level
+            overview_path = f"{zarr_store_path}/{group_name}/{band_var}_overviews"
+            ds = xr.open_zarr(overview_path, group=str(overview_level), zarr_format=3)
+            band_data = ds[band_var]
+        
+        # Store the data and get coordinates from first band
+        bands_data[band_name] = band_data.values.squeeze()
+        if coords is None:
+            coords = {'x': band_data.x.values, 'y': band_data.y.values}
+            if hasattr(ds, 'rio') and ds.rio.crs:
+                crs = ds.rio.crs
+    
+    # Create RGB array
+    rgb_array = np.stack([bands_data['red'], bands_data['green'], bands_data['blue']], axis=-1)
+    
+    # Apply contrast stretching
+    rgb_stretched = np.zeros_like(rgb_array)
+    for i in range(3):
+        band = rgb_array[:, :, i]
+        # Remove NaN values for percentile calculation
+        valid_data = band[~np.isnan(band)]
+        if len(valid_data) > 0:
+            p_low, p_high = np.percentile(valid_data, stretch_percentiles)
+            band_stretched = np.clip((band - p_low) / (p_high - p_low), 0, 1)
+            rgb_stretched[:, :, i] = band_stretched
+    
+    # Create the plot
+    fig, ax = plt.subplots(figsize=figsize)
+    
+    # Use imshow with proper extent
+    extent = [coords['x'].min(), coords['x'].max(), coords['y'].min(), coords['y'].max()]
+    im = ax.imshow(rgb_stretched, extent=extent, origin='upper', aspect='equal')
+    
+    # Set labels and title
+    scale_factor = 2**overview_level if overview_level > 0 else 1
+    title = f"RGB Composite ({red_band}, {green_band}, {blue_band})\n"
+    title += f"Group: {group_name}, Overview Level: {overview_level} (1:{scale_factor} scale)"
+    if crs:
+        title += f"\nCRS: {crs}"
+    
+    ax.set_title(title)
+    ax.set_xlabel(f"X coordinate ({crs if crs else 'unknown CRS'})")
+    ax.set_ylabel(f"Y coordinate ({crs if crs else 'unknown CRS'})")
+    
+    # Format coordinate labels
+    ax.ticklabel_format(style='scientific', axis='both', scilimits=(0,0))
+    
+    plt.tight_layout()
+    plt.show()
+    
+    return fig
+
+
+def get_sentinel2_rgb_bands(group_name):
+    """
+    Get appropriate RGB band combinations for Sentinel-2 data based on resolution group.
+    
+    Parameters
+    ----------
+    group_name : str
+        Resolution group name (e.g., 'r10m', 'r20m', 'r60m')
+        
+    Returns
+    -------
+    tuple
+        (red_band, green_band, blue_band) names
+    """
+    # Sentinel-2 band mapping by resolution
+    rgb_mapping = {
+        'r10m': ('b04', 'b03', 'b02'),  # Red, Green, Blue at 10m
+        'r20m': ('b04', 'b03', 'b02'),  # Red, Green, Blue at 20m (if available)
+        'r60m': ('b04', 'b03', 'b02'),  # Red, Green, Blue at 60m (if available)
+    }
+    
+    return rgb_mapping.get(group_name, ('b04', 'b03', 'b02'))
