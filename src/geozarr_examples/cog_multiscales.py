@@ -11,6 +11,7 @@ import dask.array as da
 import rasterio
 import zarr
 import matplotlib.pyplot as plt
+import time
 from pathlib import Path
 
 
@@ -160,9 +161,11 @@ def populate_overview_data(source_data, za, target_width, target_height):
         
     Returns
     -------
-    bool
-        True if successful, False otherwise
+    tuple
+        (bool, float) - (Success status, processing time in seconds)
     """
+    import time
+    start_time = time.time()
     try:
         # Get source dimensions
         if source_data.ndim == 3:
@@ -212,13 +215,14 @@ def populate_overview_data(source_data, za, target_width, target_height):
         else:
             za[:, :, :] = downsampled
         
-        return True
+        processing_time = time.time() - start_time
+        return True, processing_time
     except Exception as e:
         print(f"Failed to populate overview data: {e}")
-        return False
+        return False, 0.0
 
 
-def create_cog_style_overviews(ds, var, v3_output, min_dimension=256, tileWidth=256, group_prefix=None):
+def create_cog_style_overviews(ds, var, v3_output, min_dimension=256, tileWidth=256, group_prefix=None, collect_timing=True):
     """
     Create COG-style overview levels for a variable in a dataset.
     
@@ -237,10 +241,29 @@ def create_cog_style_overviews(ds, var, v3_output, min_dimension=256, tileWidth=
     group_prefix : str, optional
         Group prefix for hierarchical zarr stores
         
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        Source dataset
+    var : str
+        Variable name to create overviews for
+    v3_output : str
+        Output zarr store path
+    min_dimension : int, default 256
+        Minimum dimension for overview levels
+    tileWidth : int, default 256
+        Tile width for TMS compatibility
+    group_prefix : str, optional
+        Group prefix for hierarchical zarr stores
+    collect_timing : bool, default True
+        Whether to collect timing data for each overview level
+        
     Returns
     -------
-    list
-        List of created overview levels
+    tuple
+        (overview_levels, timing_data)
+        - overview_levels: List of created overview level dictionaries
+        - timing_data: List of timing measurements for each level
     """
     # Get native resolution dimensions and spatial information
     native_height, native_width = ds[var].shape[-2:]
@@ -327,7 +350,30 @@ def create_cog_style_overviews(ds, var, v3_output, min_dimension=256, tileWidth=
 
     print("\nAll overview levels populated with COG-style downsampled data!")
     
-    return overview_levels
+    timing_data = []
+    if collect_timing:
+        # Time and pixel count for each overview level
+        start_time = time.time()
+        for overview in overview_levels:
+            level = overview['level']
+            width = overview['width']
+            height = overview['height']
+            
+            # Open the zarr array for this level
+            za = zarr.open_array(v3_output, path=f"{level}/{var}", zarr_version=3, mode='r')
+            # Record the level data
+            success, proc_time = populate_overview_data(native_data, za, width, height)
+            if success:
+                timing_data.append({
+                    'level': level,
+                    'time': proc_time,
+                    'pixels': width * height,
+                    'width': width,
+                    'height': height,
+                    'scale_factor': 2**level
+                })
+    
+    return overview_levels, timing_data
 
 
 def verify_overview_coordinates(v3_output, overview_levels, native_crs, max_levels=3):
@@ -762,7 +808,7 @@ def create_full_eopf_zarr_store(dt, output_path, spatial_chunk=4096, min_dimensi
                 
                 # Create overview levels in a separate store for now
                 var_overview_path = f"{group_path}/{var}_overviews"
-                var_overviews = create_cog_style_overviews(
+                var_overviews, timing = create_cog_style_overviews(
                     ds=var_ds,
                     var=var,
                     v3_output=var_overview_path,
@@ -772,7 +818,8 @@ def create_full_eopf_zarr_store(dt, output_path, spatial_chunk=4096, min_dimensi
                 
                 group_overviews[var] = {
                     'levels': var_overviews,
-                    'path': var_overview_path
+                    'path': var_overview_path,
+                    'timing': timing
                 }
                 
             except Exception as e:
