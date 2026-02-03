@@ -4,57 +4,100 @@ title: "GeoZarr examples"
 
 ## Overview
 
-[GeoZarr examples](https://github.com/developmentseed/geozarr-examples) contains in-progress work towards GeoZarr examples. If useful, the contents will eventually be migrated to a different repository, such as the
-[Cloud Optimized Geospatial Formats Guide](https://github.com/cloudnativegeo/cloud-optimized-geospatial-formats-guide) or the [GeoZarr spec](https://github.com/zarr-developers/geozarr-spec)
-repository.
+[GeoZarr examples](https://github.com/developmentseed/geozarr-examples) provides a Python library and examples for working with GeoZarr-compliant Zarr stores. The library implements the new modular Zarr conventions:
+
+- **[spatial:](https://github.com/zarr-conventions/spatial)** - Spatial coordinate and transformation information
+- **[proj:](https://github.com/zarr-experimental/geo-proj)** - Coordinate Reference System (CRS) information
+- **[multiscales](https://github.com/zarr-conventions/multiscales)** - Multiscale pyramid layout
+
+## Python Library
+
+Install the library to create and validate GeoZarr-compliant metadata:
+
+```bash
+pip install "geozarr-examples @ git+https://github.com/developmentseed/geozarr-examples.git"
+```
+
+Quick example:
+
+```python
+from geozarr_examples import create_geozarr_attrs
+
+attrs = create_geozarr_attrs(
+    dimensions=["Y", "X"],
+    crs="EPSG:32633",
+    transform=[10.0, 0.0, 500000.0, 0.0, -10.0, 5000000.0],
+)
+```
+
+See the [Getting Started guide](getting-started.qmd) for more details, or browse the [API Reference](api/index.qmd).
 
 ## Goals
 
 - Demonstrate how to write GeoZarr compliant data.
-    - Provide a demonstration of writing only the MUST include metadata (most importantly grid_mapping).
-    - Provide a demonstration of writing data with a WebMercatorQuad TMS.
-    - Provide a demonstration of writing data with a Custom TMS that maps to simple downsampled version of the raw data, without any change in extent or CRS.
+    - Provide a demonstration of writing CRS information.
+    - Provide a demonstration of writing bounding box information.
+    - Provide a demonstration of writing multiscale data.
+    - Provide a demonstration of writing multi-scale data conforming to a specific well-known tile matrix set (TMS)
     - Provide a demonstration of storing raw data in NetCDF and overviews in native Zarr, with a virtual GeoZarr compliant entrypoint.
 - Demonstrate how to read GeoZarr compliant data.
-    - Provide a demonstration of reading in GeoZarr data with only MUST include metadata.
+    - Provide a demonstration of reading in GeoZarr data with raw data in "native" zarr.
     - Provide a demonstration of reading in GeoZarr data with raw data and overviews in "native" zarr.
     - Provide a demonstration of reading in GeoZarr data with raw data in archival formats and overviews in "native" zarr via a single virtual GeoZarr compliant entrypoint.
-- Demonstrate how to work with GeoZarr data in Xarray using the prototypes for flexible coordinates and the xproj extension.
-    - Demonstrate whether the GeoZarr v0.4 and flexible coordinates solve the limitations highlighted in https://discourse.pangeo.io/t/example-which-highlights-the-limitations-of-netcdf-style-coordinates-for-large-geospatial-rasters/4140.
-- Demonstrate how GeoZarr would need to be adapted for Zarr specification v3.
+- Demonstrate how to work with GeoZarr data in Xarray using flexible coordinates and the xproj extension.
+- Demonstrate how to work with GeoZarr data in OpenLayers.
+- Demonstrate how to work with GeoZarr data in GDAL.
 
 ## Feedback cadence
 
 We will provide progress and solicit community feedback during the following events:
 
-- March 05, 2025 GeoZarr Monthly Community Meeting
-- March 05, 2025 Pangeo Community Meeting
-- April 02, 2025 GeoZarr Monthly Community Meeting
-- April 02, 2025 Pangeo Community Meeting
-- April 02, 2025 posts on Pangeo and CNG forums
-- EGU 2025 Conference
-- CNG 2025 Conference
+- February 04, 2026 - GeoZarr SWG Meeting.
 
 ## FAQ
 
 ### What's the status of GeoZarr?
 
-GeoZarr is currently being developed as a [Open Geospatial Consortium Standard](https://www.ogc.org/announcement/ogc-forms-new-geozarr-standards-working-group-to-establish-a-zarr-encoding-for-geospatial-data/).
+GeoZarr is currently being developed as an [Open Geospatial Consortium Standard](https://www.ogc.org/announcement/ogc-forms-new-geozarr-standards-working-group-to-establish-a-zarr-encoding-for-geospatial-data/).
 There is a [GeoZarr Standards Working Group](https://portal.ogc.org/index.php?m=public&orderby=default&tab=7) that meets once a month. We now have
 experimental prototypes of [all](https://github.com/pydata/xarray/pull/9543) [of](https://github.com/zarr-developers/VirtualiZarr/pull/271) [the](https://xproj.readthedocs.io/en/latest/usage.html)
 [pieces](https://zarr.dev/blog/zarr-python-3-release/) to move GeoZarr out of a discussion phase and into a demonstration phase. This repository stems from the hope that building demonstrations will lead to
 adoption, iteration, and formalization of a stable GeoZarr specification.
 
+### What's the new approach for GeoZarr conventions?
+
+GeoZarr has shifted from a complex, abstract model (CDM) to a collection of simple, composable Zarr Conventions that directly address developer needs. This incremental, feature-driven strategy delivers immediate value and builds momentum. The [Zarr Conventions Framework](https://github.com/zarr-conventions/zarr-conventions-spec) provides the mechanism for communities (e.g., geospatial, bioimaging) to register and share metadata conventions within Zarr using a `zarr_conventions` attribute that points to a convention's spec URL, schema, or UUID.
+
+### What tools support GeoZarr conventions?
+
+GeoZarr conventions are gaining adoption across the ecosystem:
+
+- **OpenLayers**: Initial PR submitted for Multiscales support
+- **TiTiler**: Already compliant with Multiscales
+- **GDAL**: Read-only support for Multiscales and proj: conventions funded and in development
+- **EOPF Explorer V1 (ESA)**: Uses Zarr conventions as a foundational component
+- **ZarrLayer (CarbonPlan)**: Experimenting with Multiscales and proj:
+- **QGIS**: Plugin in development for direct GeoZarr data analysis
+
+### What is the relationship between GeoZarr and CF conventions?
+
+Zarr has a 10-year history of successful, informal use with CF (Climate and Forecast) data. The primary challenge is formalizing existing patterns, not creating new ones. The GeoZarr community is working on a proposal to formalize CF-on-Zarr patterns to ensure that GeoZarr serves both the GIS world and critical climate/weather data use cases. The [CF convention](examples/cf/) for Zarr uses unprefixed attribute names (`standard_name`, `units`, etc.) for backwards compatibility with existing CF-compliant datasets and libraries like cf-python and xarray.
+
 ### How does Zarr Specification V3 spec influence GeoZarr?
 
-The GeoZarr spec is designed for Zarr specification version 2. This repository will demonstrate how the differences between Zarr format 2 and Zarr format 3 would
-influence GeoZarr. My expectation is that there is not much difference in the metadata requirements between the two formats. However, best practices will likely be impacted by new features available
-in Zarr specification version 3 (e.g., sharding).
+The GeoZarr conventions are designed to work with both Zarr format 2 and Zarr format 3. The convention metadata content (`spatial:`, `proj:`, `multiscales`) is identical regardless of Zarr version - only the storage location differs (`.zattrs` files in V2 vs `attributes` in `zarr.json` for V3). Best practices may be impacted by new features available in Zarr specification version 3 (e.g., sharding).
 
 ### How does the release of Zarr-Python 3 influence GeoZarr?
 
 The Zarr-Python 3 release will help GeoZarr users through its increased performance, modernized codebase, and support for extensions. But, it only really interacts with the GeoZarr spec in-so-far
 as Zarr-Python 3 supports Zarr specification V3 (see prior question on "How does Zarr Specification V3 spec influence GeoZarr").
+
+### Where can I discuss GeoZarr?
+
+OGC has dissolved its Google Groups. The primary communication channels are now:
+
+- **CNG Slack**: [#geozarr channel](https://cloudnativegeo.slack.com/)
+- **OGC Agora**: The official OGC discussion platform
 
 ### What is the relationship between GeoZarr and Web-Optimized-Zarr?
 
