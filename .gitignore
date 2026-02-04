@@ -109,3 +109,5 @@ docs/.quarto/
 
 # uv
 uv.lock
+
+site/*

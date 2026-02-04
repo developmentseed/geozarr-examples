@@ -1,0 +1,138 @@
+site_name: geozarr-examples
+repo_name: developmentseed/geozarr-examples
+repo_url: https://github.com/developmentseed/geozarr-examples
+site_description: GeoZarr convention models, utilities, and examples
+site_author: Max Jones
+docs_dir: docs
+
+extra:
+  version:
+    alias: true
+    provider: mike
+
+nav:
+  - "About": "index.md"
+  - "FAQ": "faq.md"
+  # - "Examples":
+  #   - "Using the Library": "examples/utility/07_using_geozarr_examples_library.ipynb"
+  #   - "Download Data": "examples/utility/00_download_data.ipynb"
+  #   - "Spatial Convention":
+  #     - "GeoTransform": "examples/spatial/02_CRS_and_geotransform_in_auxiliary_variable.ipynb"
+  #   - "Proj Convention":
+  #     - "CRS in Auxiliary Variable": "examples/proj/01_CRS_in_auxiliary_variable.ipynb"
+  #   - "Multiscales Convention":
+  #     - "WebMercatorQuad (Zarr V2)": "examples/multiscales/03_multiscales_as_WebMercatorQuad_ZarrV2.ipynb"
+  #     - "WebMercatorQuad (Zarr V3)": "examples/multiscales/04_multiscales_as_WebMercatorQuad_ZarrV3.ipynb"
+  #   - "CF Convention":
+  #     - "CF Basics": "examples/cf/01_cf_basics.ipynb"
+  #     - "CF Grid Mapping": "examples/cf/02_cf_grid_mapping.ipynb"
+  #     - "Composed Conventions": "examples/cf/03_cf_composed_conventions.ipynb"
+  #   - "Utility":
+  #     - "STAC Metadata": "examples/utility/06_embedded_STAC_block.ipynb"
+  - "Toolkit":
+    - "Getting Started": "getting-started.md"
+    - "API Reference": "api/index.md"
+    - "CLI Reference": "cli.md"
+
+watch:
+  - src/geozarr_examples
+  - docs
+
+theme:
+  language: en
+  name: material
+  custom_dir: docs/overrides
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      primary: blue grey
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue grey
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+  features:
+    - content.code.annotate
+    - content.code.copy
+    - navigation.indexes
+    - navigation.instant
+    - navigation.tracking
+    - search.suggest
+    - search.share
+
+extra_css:
+  - overrides/stylesheets/extra.css
+
+plugins:
+  - search
+  - markdown-exec
+  - mkdocs-jupyter:
+      include_source: true
+      execute: false
+  - mkdocstrings:
+      enable_inventory: true
+      handlers:
+        python:
+          paths: [src]
+          options:
+            allow_inspection: true
+            docstring_section_style: list
+            docstring_style: numpy
+            line_length: 80
+            separate_signature: true
+            show_root_heading: true
+            show_signature_annotations: true
+            show_source: false
+            show_symbol_type_toc: true
+            signature_crossrefs: true
+
+          inventories:
+            - https://docs.python.org/3/objects.inv
+            - https://zarr.readthedocs.io/en/stable/objects.inv
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - codehilite:
+      guess_lang: false
+  - def_list
+  - footnotes
+  - md_in_html
+  - pymdownx.arithmatex
+  - pymdownx.betterem
+  - pymdownx.caret:
+      insert: false
+  - pymdownx.details
+  - pymdownx.escapeall:
+      hardbreak: true
+      nbsp: true
+  - pymdownx.magiclink:
+      hide_protocol: true
+      repo_url_shortener: true
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - toc:
+      permalink: true
