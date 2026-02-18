@@ -106,3 +106,8 @@ docs/.quarto/
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
+
+# uv
+uv.lock
+
+site/*
