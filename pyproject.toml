@@ -21,6 +21,8 @@ dependencies = [
     "pyproj>=3.7.0",
     "structlog>=25.5.0",
     "typing-extensions>=4.15.0",
+    "async-geotiff",
+    "obstore"
 ]
 dynamic = ["version"]
 classifiers = [

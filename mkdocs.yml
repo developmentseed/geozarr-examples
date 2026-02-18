@@ -13,13 +13,12 @@ extra:
 nav:
   - "About": "index.md"
   - "FAQ": "faq.md"
-  # - "Examples":
+  - "Examples":
   #   - "Using the Library": "examples/utility/07_using_geozarr_examples_library.ipynb"
   #   - "Download Data": "examples/utility/00_download_data.ipynb"
   #   - "Spatial Convention":
   #     - "GeoTransform": "examples/spatial/02_CRS_and_geotransform_in_auxiliary_variable.ipynb"
-  #   - "Proj Convention":
-  #     - "CRS in Auxiliary Variable": "examples/proj/01_CRS_in_auxiliary_variable.ipynb"
+    - "Proj Convention": "examples/proj-convention.ipynb"
   #   - "Multiscales Convention":
   #     - "WebMercatorQuad (Zarr V2)": "examples/multiscales/03_multiscales_as_WebMercatorQuad_ZarrV2.ipynb"
   #     - "WebMercatorQuad (Zarr V3)": "examples/multiscales/04_multiscales_as_WebMercatorQuad_ZarrV3.ipynb"
