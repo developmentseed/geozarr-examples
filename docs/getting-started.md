@@ -260,4 +260,3 @@ print(json.dumps(attrs, indent=2))
 
 - See the [API Reference](api/index.md) for complete documentation
 - See the [CLI Reference](cli.md) for command-line usage
-- Explore the [example notebooks](examples/utility/07_using_geozarr_examples_library.ipynb) for more detailed examples

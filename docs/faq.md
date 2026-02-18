@@ -22,7 +22,7 @@ GeoZarr conventions are gaining adoption across the ecosystem:
 
 ### What is the relationship between GeoZarr and CF conventions?
 
-Zarr has a 10-year history of successful, informal use with CF (Climate and Forecast) data. The primary challenge is formalizing these existing patterns, while also providing optimal solutions for Earth data outside the scope of CF. The GeoZarr community is working on a proposal to formalize CF-on-Zarr patterns to ensure that GeoZarr serves both the GIS world and critical climate/weather data use cases. The [CF convention](examples/cf/) for Zarr uses unprefixed attribute names (`standard_name`, `units`, etc.) for backwards compatibility with existing CF-compliant datasets and libraries like cf-python and xarray.
+Zarr has a 10-year history of successful, informal use with CF (Climate and Forecast) data. The primary challenge is formalizing these existing patterns, while also providing optimal solutions for Earth data outside the scope of CF. The GeoZarr community is working on a proposal to formalize CF-on-Zarr patterns to ensure that GeoZarr serves both the GIS world and critical climate/weather data use cases. The CF convention for Zarr uses unprefixed attribute names (`standard_name`, `units`, etc.) for backwards compatibility with existing CF-compliant datasets and libraries like cf-python and xarray.
 
 ### How does Zarr Specification V3 spec influence GeoZarr?
 
