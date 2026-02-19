@@ -1,10 +1,7 @@
-[build-system]
-requires = ["hatchling", "hatch-vcs"]
-build-backend = "hatchling.build"
-
 [project]
 name = "geozarr-examples"
-description = "GeoZarr convention models, utilities, and examples"
+version = "0.1.0"
+description = "GeoZarr convention examples and documentation"
 authors = [
     {name = "Max Jones", email = "14077947+maxrjones@users.noreply.github.com"}
 ]
@@ -22,32 +19,10 @@ dependencies = [
     "structlog>=25.5.0",
     "typing-extensions>=4.15.0",
     "async-geotiff",
-    "obstore"
-]
-dynamic = ["version"]
-classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Intended Audience :: Developers",
-    "Intended Audience :: Information Technology",
-    "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Operating System :: Unix",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
+    "obstore",
 ]
 license = {text = "MIT License"}
 keywords = ["Python", "geospatial", "zarr", "geozarr", "conventions"]
-
-[project.scripts]
-geozarr-examples = "geozarr_examples.cli:main"
-
-[tool.hatch]
-version.source = "vcs"
-build.hooks.vcs.version-file = "src/geozarr_examples/_version.py"
 
 [dependency-groups]
 dev = [

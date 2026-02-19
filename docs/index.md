@@ -1,37 +1,15 @@
 # GeoZarr examples
 
+!!! note "Python library has moved"
+    The Python library originally developed in this repository has moved to [geozarr-toolkit](https://github.com/zarr-developers/geozarr-toolkit). Please use `geozarr-toolkit` for creating and validating GeoZarr-compliant metadata going forward.
+
 ## Overview
 
-[GeoZarr examples](https://github.com/developmentseed/geozarr-examples) provides a Python library and examples for working with GeoZarr-compliant Zarr stores. The library implements the new modular Zarr conventions:
+[GeoZarr examples](https://github.com/developmentseed/geozarr-examples) provides examples and documentation for working with GeoZarr-compliant Zarr stores, using the modular [Zarr conventions](https://github.com/zarr-conventions):
 
 - **[spatial:](https://github.com/zarr-conventions/spatial)** - Spatial coordinate and transformation information
 - **[proj:](https://github.com/zarr-experimental/geo-proj)** - Coordinate Reference System (CRS) information
 - **[multiscales](https://github.com/zarr-conventions/multiscales)** - Multiscale pyramid layout
-
-## Python Library
-
-Install the library to create and validate GeoZarr-compliant metadata:
-
-```bash
-pip install "geozarr-examples @ git+https://github.com/developmentseed/geozarr-examples.git"
-```
-
-Quick example:
-
-```python exec="on" source="above" result="json"
-from geozarr_examples import create_geozarr_attrs
-import json
-
-attrs = create_geozarr_attrs(
-    dimensions=["Y", "X"],
-    crs="EPSG:32633",
-    transform=[10.0, 0.0, 500000.0, 0.0, -10.0, 5000000.0],
-)
-
-print(json.dumps(attrs, indent=2))
-```
-
-See the [Getting Started guide](getting-started.md) for more details, or browse the [API Reference](api/index.md).
 
 ## Goals
 
