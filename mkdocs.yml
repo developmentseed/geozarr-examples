@@ -4,6 +4,7 @@ repo_url: https://github.com/developmentseed/geozarr-examples
 site_description: GeoZarr convention models, utilities, and examples
 site_author: Max Jones
 docs_dir: docs
+site_url: !ENV [READTHEDOCS_CANONICAL_URL, "https://developmentseed.org/geozarr-examples/"]
 
 extra:
   version:
