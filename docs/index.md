@@ -90,7 +90,6 @@ Examples in this repository use the following open-source libraries:
 
 ### Tools and Validators
 
-- [GeoZarr validator](https://github.com/briannapagan/geozarr-validator) by [@briannapagan](https://github.com/briannapagan) [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/)
 - [AJV](https://ajv.js.org/) - JSON Schema validator used in convention tests (MIT License)
 
 ### Data
@@ -99,6 +98,10 @@ Example notebooks use data from:
 
 - [NASA JPL MUR-SST](https://podaac.jpl.nasa.gov/MEaSUREs-MUR) - Multi-scale Ultra-high Resolution Sea Surface Temperature
 - [Copernicus Sentinel-2](https://sentinel.esa.int/web/sentinel/missions/sentinel-2) via [Earth Search](https://earth-search.aws.element84.com/)
+
+### Prior art
+
+- [GeoZarr validator](https://github.com/briannapagan/geozarr-validator) by [@briannapagan](https://github.com/briannapagan) [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/) - Test validator used during the development of the GeoZarr spec. Not applicable to the proposed release candidate (i.e., outdated).
 
 ## License
 
