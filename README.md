@@ -2,9 +2,9 @@
 
 ## About
 
-This repository contains in-progress work towards GeoZarr examples. If useful, the contents will eventually be migrated to a different repository, such as the
-[Cloud Optimized Geospatial Formats Guide](https://github.com/cloudnativegeo/cloud-optimized-geospatial-formats-guide) or the [GeoZarr spec](https://github.com/zarr-developers/geozarr-spec)
-repository.
+This repository contains examples and documentation for working with GeoZarr-compliant Zarr stores.
+
+The **Python library** (`geozarr-examples`) that was originally developed here has moved to [geozarr-toolkit](https://github.com/zarr-developers/geozarr-toolkit). Please use `geozarr-toolkit` for creating and validating GeoZarr-compliant metadata going forward.
 
 More information is available in the [GeoZarr examples website](https://developmentseed.org/geozarr-examples/).
 
