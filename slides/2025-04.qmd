@@ -1,0 +1,165 @@
+---
+title: GeoZarr
+subtitle: STAC and Zarr Workshop Update (April 2025)
+footer: "Thanks: Brianna Pagán, Christophe Noël, GeoZarr SWG, Zarr refactor WG"
+format:
+  revealjs:
+    incremental: false
+    auto-stretch: false
+    theme: solarized
+    width: 1600
+    height: 900
+    slideNumber: true
+    pdf-max-pages-per-slide: 1
+---
+
+## Goals {footer=false}
+
+- 📍 Provide a status update on the GeoZarr specification
+- 🧭 Provide entry-points for contributing to GeoZarr development
+
+::: footer
+:::
+
+## What is GeoZarr?
+
+A geospatial extension for the Zarr specification, formalizing metadata expectations.
+
+![](_static/geozarr-repo.png){fig-alt="GeoZarr repository" fig-align="center" width="60%"}
+
+::: footer
+Read [the spec](https://github.com/zarr-developers/geozarr-spec/)!
+:::
+
+## Some history
+
+![](_static/geozarr-activity.png){fig-alt="GeoZarr commit activity" fig-align="center" width="95%"}
+
+::: footer
+Figure generated February 2025
+:::
+
+## Recent activity
+
+Christophe Noël proposes structuring GeoZarr around the Unified Abstract Data Model
+
+![](_static/CDM-issue.png){fig-alt="Unified data model presentation" fig-align="center" width="60%"}
+
+::: footer
+See [the GitHub issue](https://github.com/zarr-developers/geozarr-spec/issues/63)!
+:::
+
+## (Very) recent activity
+
+Christophe Noël structures the spec based on the Unified Data Model and Conformance Classes
+
+![](_static/CDM-PR.png){fig-alt="Unified data model proposal" fig-align="center" width="60%"}
+
+
+::: footer
+See [the GitHub pull request](https://github.com/zarr-developers/geozarr-spec/pull/64)!
+:::
+
+## Background
+
+Unidata's Common Data Model is an abstract data model that merges the NetCDF, OPenDAP, and HDF5 data models to create a common API for many types of scientific data.
+
+![](_static/CDM.png){fig-alt="Common data model" fig-align="center" width="60%"}
+
+::: footer
+Based on [Christophe Noël's ideas](https://github.com/zarr-developers/geozarr-spec/pull/64)
+:::
+
+## Unified Abstract Data Model
+
+A Unified Abstract Data Model would encapsulate traditional models from the modelling (NetCDF, CF) plus models from the earth observation (GeoTIFF, GDAL) communities
+
+![](_static/UADM.png){fig-alt="Unified data model proposal" fig-align="center" width="60%"}
+
+::: footer
+Based on [Christophe Noël's ideas](https://github.com/zarr-developers/geozarr-spec/pull/64)
+:::
+
+## N-D functionality with E-O optimizations
+
+![](_static/UADM_example.png){fig-alt="Unified data model proposal" fig-align="center" width="60%"}
+
+::: footer
+:::
+
+## Unified Abstract Data Model Implementation
+
+The VirtualiZarr library could be an implementation of the Unified Abstract Data Model
+
+![](_static/virtualizarr.png){fig-alt="Virtualizarr diagram" fig-align="center" width="60%"}
+
+::: footer
+Check out VirtualiZarr on [GitHub](https://github.com/zarr-developers/VirtualiZarr)
+:::
+
+## Upcoming activity
+
+Discussion about conformance classes April 17
+
+![](_static/conformance-class-meeting.png){fig-alt="Calendar event" fig-align="center" width="60%"}
+
+::: footer
+Copy event from the [Pangeo calendar](https://pangeo.io/calendar)
+:::
+
+## Upcoming activity
+
+Monthly GeoZarr meeting on May 7
+
+![](_static/recurring-meeting.png){fig-alt="Calendar event" fig-align="center" width="60%"}
+
+::: footer
+Copy event from the [Pangeo calendar](https://pangeo.io/calendar)
+:::
+
+## Upcoming activity
+
+Cloud Native Geospatial conference including a STAC + Zarr presentation by Julia Signell
+
+![](_static/CNG-conference.png){fig-alt="Calendar event" fig-align="center" width="60%"}
+
+::: footer
+[Register online](https://conference.cloudnativegeo.org/CNGConference2025#/?lang=en)
+:::
+
+## Upcoming activity
+
+EGU General Assembly including a EOPF Zarr discussion at the Pangeo session
+
+![](_static/EGU.png){fig-alt="Calendar event" fig-align="center" width="60%"}
+
+::: footer
+[Attend the session](https://meetingorganizer.copernicus.org/EGU25/session/52079)
+:::
+
+## Shameless plug
+
+Pangeo showcase in 3 hours will include a presentation about new Zarr optimizations!
+
+![](_static/pangeo-showcase.png){fig-alt="Calendar event" fig-align="center" width="60%"}
+
+::: footer
+[Attend the showcase](https://discourse.pangeo.io/t/spring-showcase-close-out-lightning-talks-april-16-2025-at-12-pm-et/5047)
+:::
+
+## Shameless plug
+
+Pangeo showcase in 3 hours will include a presentation about new Zarr optimizations!
+
+![](_static/zarr-obstore.png){fig-alt="Performance difference" fig-align="center" width="60%"}
+
+::: footer
+[Attend the showcase](https://discourse.pangeo.io/t/spring-showcase-close-out-lightning-talks-april-16-2025-at-12-pm-et/5047)
+:::
+## Thanks! 🚀
+
+![](_static/geozarr-examples-request.png){fig-alt="GitHub source" fig-align="center" width="60%"}
+
+::: footer
+[Slides](https://developmentseed.org/geozarr-examples/slides/2025-04.html#/title-slide) and [source](https://github.com/developmentseed/geozarr-examples) available online
+:::

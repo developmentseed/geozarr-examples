@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://developmentseed.org/geozarr-examples/</loc>
+         <lastmod>2026-02-23</lastmod>
+    </url>
+    <url>
+         <loc>https://developmentseed.org/geozarr-examples/examples/cog-to-zarr/</loc>
+         <lastmod>2026-02-23</lastmod>
+    </url>
+    <url>
+         <loc>https://developmentseed.org/geozarr-examples/examples/composition/</loc>
+         <lastmod>2026-02-23</lastmod>
+    </url>
+    <url>
+         <loc>https://developmentseed.org/geozarr-examples/examples/inheritance/</loc>
+         <lastmod>2026-02-23</lastmod>
+    </url>
+    <url>
+         <loc>https://developmentseed.org/geozarr-examples/examples/proj-convention/</loc>
+         <lastmod>2026-02-23</lastmod>
+    </url>
+</urlset>
