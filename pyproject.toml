@@ -8,43 +8,27 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "async-geotiff",
-    "cartopy",
-    "cf-xarray",
-    "cftime",
-    "dask",
-    "earthaccess",
     "geozarr-toolkit",
-    "geoviews",
-    "hvplot",
     "jupyter",
-    "markdown-exec[ansi]>=1.7.0",
-    "matplotlib",
-    "mkdocs>=1.5.0",
-    "mkdocs-jupyter>=0.24.0",
-    "mkdocs-material>=9.0.0",
-    "mkdocstrings[python]>=0.24.0",
-    "netcdf4",
     "obstore",
-    "panel",
-    "pooch>=1.8.2",
-    "pydantic>=2.12",
-    "pydantic-zarr>=0.8.0",
     "pyproj>=3.7.0",
-    "pystac-client",
-    "rasterio>=1.4.3",
-    "rich",
-    "rio-cogeo",
-    "rio-tiler",
-    "rioxarray",
-    "ruff",
-    "structlog>=25.5.0",
-    "typing-extensions>=4.15.0",
-    "xarray",
-    "xproj",
+    "rich>=14.3.3",
     "zarr>=3.0.8",
 ]
 license = {text = "MIT License"}
 keywords = ["Python", "geospatial", "zarr", "geozarr", "conventions"]
+
+[project.optional-dependencies]
+docs = [
+    "markdown-exec[ansi]>=1.7.0",
+    "mkdocs>=1.5.0",
+    "mkdocs-jupyter>=0.24.0",
+    "mkdocs-material>=9.0.0",
+    "mkdocstrings[python]>=0.24.0",
+]
+dev = [
+    "ruff",
+]
 
 [tool.ruff]
 line-length = 100
@@ -81,45 +65,4 @@ extend-select = [
 ignore = [
     "ANN001",  # Missing type annotation for function argument
     "ANN401",  # Dynamically typed Any
-]
-
-[tool.mypy]
-python_version = "3.11"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-check_untyped_defs = true
-no_implicit_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-strict_equality = true
-
-[[tool.mypy.overrides]]
-module = ["zarr.*", "xarray.*", "rioxarray.*", "cf_xarray.*", "dask.*", "pyproj.*"]
-ignore_missing_imports = true
-
-[tool.pytest.ini_options]
-minversion = "7.0"
-addopts = "-ra -q --strict-markers --strict-config"
-testpaths = ["tests"]
-markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-    "integration: marks tests as integration tests",
-    "network: marks tests that require network access",
-]
-
-[tool.coverage.run]
-source = ["src"]
-omit = ["tests/*"]
-
-[tool.coverage.report]
-exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "raise AssertionError",
-    "raise NotImplementedError",
-    "if __name__ == .__main__.:",
-    "class .*\\bProtocol\\):",
-    "@(abc\\.)?abstractmethod",
 ]
