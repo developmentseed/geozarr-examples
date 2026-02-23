@@ -10,15 +10,21 @@ dependencies = [
     "async-geotiff",
     "geozarr-toolkit",
     "jupyter",
+    "obstore",
+    "pyproj>=3.7.0",
+    "zarr>=3.0.8",
+]
+
+[project.optional-dependencies]
+docs = [
     "markdown-exec[ansi]>=1.7.0",
     "mkdocs>=1.5.0",
     "mkdocs-jupyter>=0.24.0",
     "mkdocs-material>=9.0.0",
     "mkdocstrings[python]>=0.24.0",
-    "obstore",
-    "pyproj>=3.7.0",
+]
+dev = [
     "ruff",
-    "zarr>=3.0.8",
 ]
 license = {text = "MIT License"}
 keywords = ["Python", "geospatial", "zarr", "geozarr", "conventions"]
