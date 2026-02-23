@@ -20,4 +20,4 @@ jobs:
           enable-cache: true
 
       - name: Deploy docs
-        run: uv run --group docs mkdocs gh-deploy --force --strict
+        run: uv run mkdocs gh-deploy --force --strict
