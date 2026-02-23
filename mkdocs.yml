@@ -13,7 +13,6 @@ extra:
 
 nav:
   - "About": "index.md"
-  - "FAQ": "faq.md"
   - "Examples":
   #   - "Using the Library": "examples/utility/07_using_geozarr_examples_library.ipynb"
   #   - "Download Data": "examples/utility/00_download_data.ipynb"
@@ -32,10 +31,6 @@ nav:
   #     - "Composed Conventions": "examples/cf/03_cf_composed_conventions.ipynb"
   #   - "Utility":
   #     - "STAC Metadata": "examples/utility/06_embedded_STAC_block.ipynb"
-  - "Toolkit":
-    - "Getting Started": "getting-started.md"
-    - "API Reference": "api/index.md"
-    - "CLI Reference": "cli.md"
 
 watch:
   - docs

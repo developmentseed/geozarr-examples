@@ -1,8 +1,5 @@
 # GeoZarr examples
 
-!!! note "Python library has moved"
-    The Python library originally developed in this repository has moved to [geozarr-toolkit](https://github.com/zarr-developers/geozarr-toolkit). Please use `geozarr-toolkit` for creating and validating GeoZarr-compliant metadata going forward.
-
 ## Overview
 
 [GeoZarr examples](https://github.com/developmentseed/geozarr-examples) provides examples and documentation for working with GeoZarr-compliant Zarr stores, using the modular [Zarr conventions](https://github.com/zarr-conventions):
@@ -10,6 +7,9 @@
 - **[spatial:](https://github.com/zarr-conventions/spatial)** - Spatial coordinate and transformation information
 - **[proj:](https://github.com/zarr-experimental/geo-proj)** - Coordinate Reference System (CRS) information
 - **[multiscales](https://github.com/zarr-conventions/multiscales)** - Multiscale pyramid layout
+
+
+These examples leverage the Python library  [geozarr-toolkit](https://github.com/zarr-developers/geozarr-toolkit) for creating and validating GeoZarr-compliant Zarr stores.
 
 ## Goals
 
@@ -29,11 +29,9 @@
 
 ## Feedback cadence
 
-We will provide progress and solicit community feedback during the following events:
+We will provide progress and solicit community feedback during the monthly OGC SWG Meetings. Find out more at [geozarr.org](https://geozarr.org).
 
-- February 04, 2026 - GeoZarr SWG Meeting.
-
-See the [FAQ](faq.md) for common questions about GeoZarr.
+See the [GeoZarr FAQ](https://geozarr.org/faq) for common questions about GeoZarr.
 
 ## References/Acknowledgements
 
@@ -55,6 +53,7 @@ The Python convention models (`Spatial`, `Proj`, `Multiscales`, etc.) in this li
 
 Examples in this repository use the following open-source libraries:
 
+- [Geozarr-toolkit](https://geozarr-toolkit.readthedocs.io/en/latest/) - Tools for creating and validating GeoZarr data (MIT License)
 - [Zarr](https://zarr.readthedocs.io/) - Chunked array storage format (MIT License)
 - [xarray](https://xarray.pydata.org/) - N-dimensional labeled arrays (Apache 2.0)
 - [rioxarray](https://corteva.github.io/rioxarray/) - Rasterio xarray extension (Apache 2.0)
