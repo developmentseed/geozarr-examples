@@ -12,6 +12,7 @@ dependencies = [
     "jupyter",
     "obstore",
     "pyproj>=3.7.0",
+    "rich>=14.3.3",
     "zarr>=3.0.8",
 ]
 license = {text = "MIT License"}
