@@ -5,66 +5,46 @@ description = "GeoZarr convention examples and documentation"
 authors = [
     {name = "Max Jones", email = "14077947+maxrjones@users.noreply.github.com"}
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
-    "zarr>=3.0.8",
-    "xarray",
-    "rioxarray",
+    "async-geotiff",
+    "cartopy",
     "cf-xarray",
     "cftime",
     "dask",
+    "earthaccess",
+    "geozarr-toolkit",
+    "geoviews",
+    "hvplot",
+    "jupyter",
+    "markdown-exec[ansi]>=1.7.0",
+    "matplotlib",
+    "mkdocs>=1.5.0",
+    "mkdocs-jupyter>=0.24.0",
+    "mkdocs-material>=9.0.0",
+    "mkdocstrings[python]>=0.24.0",
+    "netcdf4",
+    "obstore",
+    "panel",
+    "pooch>=1.8.2",
     "pydantic>=2.12",
     "pydantic-zarr>=0.8.0",
     "pyproj>=3.7.0",
+    "pystac-client",
+    "rasterio>=1.4.3",
+    "rich",
+    "rio-cogeo",
+    "rio-tiler",
+    "rioxarray",
+    "ruff",
     "structlog>=25.5.0",
     "typing-extensions>=4.15.0",
-    "async-geotiff",
-    "obstore",
+    "xarray",
+    "xproj",
+    "zarr>=3.0.8",
 ]
 license = {text = "MIT License"}
 keywords = ["Python", "geospatial", "zarr", "geozarr", "conventions"]
-
-[dependency-groups]
-dev = [
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
-    "mypy>=1.0.0",
-    "pre-commit>=3.0.0",
-    "ruff>=0.4.0",
-]
-test = [
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
-    "pytest-mock>=3.10.0",
-    "jsondiff>=2.0.0",
-]
-docs = [
-    "mkdocs>=1.5.0",
-    "mkdocs-material>=9.0.0",
-    "mkdocs-jupyter>=0.24.0",
-    "mkdocstrings[python]>=0.24.0",
-    "markdown-exec[ansi]>=1.7.0",
-    "jupyter",
-    "panel",
-    "matplotlib",
-    "cartopy",
-    "hvplot",
-    "geoviews",
-    "rich",
-]
-io = [
-    "netcdf4",
-    "pooch>=1.8.2",
-    "rasterio>=1.4.3",
-    "pystac-client",
-    "earthaccess",
-    "rio-cogeo",
-    "rio-tiler",
-    "xproj",
-]
-
-[tool.uv]
-default-groups = ["dev", "test"]
 
 [tool.ruff]
 line-length = 100
