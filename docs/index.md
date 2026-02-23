@@ -67,6 +67,7 @@ Examples in this repository use the following open-source libraries:
 
 ### Tools and Validators
 
+- [https://inspect.geozarr.org/](https://inspect.geozarr.org/) - Browser based inspector and validator
 - [AJV](https://ajv.js.org/) - JSON Schema validator used in convention tests (MIT License)
 
 ### Data
