@@ -14,6 +14,8 @@ dependencies = [
     "pyproj>=3.7.0",
     "zarr>=3.0.8",
 ]
+license = {text = "MIT License"}
+keywords = ["Python", "geospatial", "zarr", "geozarr", "conventions"]
 
 [project.optional-dependencies]
 docs = [
@@ -26,8 +28,6 @@ docs = [
 dev = [
     "ruff",
 ]
-license = {text = "MIT License"}
-keywords = ["Python", "geospatial", "zarr", "geozarr", "conventions"]
 
 [tool.ruff]
 line-length = 100
