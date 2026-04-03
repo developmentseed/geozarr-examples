@@ -1,0 +1,188 @@
+---
+title: GeoZarr
+subtitle: February 2025 (subjective) status report
+footer: "Thanks: Brianna Pagán, Joe Hamman, GeoZarr WG, Zarr refactor WG"
+format:
+  revealjs:
+    incremental: false
+    auto-stretch: false
+    theme: solarized
+    width: 1600
+    height: 900
+    slideNumber: true
+---
+
+## Goals {footer=false}
+
+- Reinvigorate Building It Out!
+    - 🙅‍♂️💭 All benefits from discussion are exhausted
+    - 🚀 GeoZarr can be successful if we act now
+    - 💔 GeoZarr can fail if we don't
+
+::: footer
+:::
+
+## What is Zarr? {footer=false}
+
+An community-developed, open-source format for the storage of chunked, compressed, N-dimensional arrays
+
+- Cloud optimized (concurrent read/writes, "infinitely" scalable)
+- Cross-disciplinary (originally developed for bio-imaging)
+- *Extremely* extensible (supports any key-value store)
+
+::: footer
+Find out more at [https://zarr.dev](https://zarr.dev)
+:::
+
+## What's going on today?
+
+- Zarr is growing in popularity
+- Icechunk is improving consistency and performance
+- VirtualiZarr is simplifying virtualization
+- Progressing towards Zarr specification V3 across languages
+
+::: footer
+Read more about [Zarr-Python](https://zarr.readthedocs.io/en/stable/index.html), [Icechunk](https://icechunk.io/en/latest/) (from Earthmover), and [VirtualiZarr](https://virtualizarr.readthedocs.io/en/stable/index.html) (community developed, created by Tom Nicholas).
+:::
+
+## Zarr implementation landscape
+
+- Zarr Python 3.0 [released in January](https://zarr.dev/blog/zarr-python-3-release/)
+- Even Rouault is updating [GDAL's Zarr driver](https://gdal.org/en/stable/drivers/raster/zarr.html)
+- Lachlan Deakin is [updating the Zarrs Rust library](https://github.com/LDeakin/zarrs)
+- OpenScapes is coordinating R support (will rely on GDAL driver)
+- Unidata has build [Zarr support into the NetCDF C library](https://docs.unidata.ucar.edu/nug/current/nczarr_head.html)
+- Trevor Manz was (is?) trying to consolidate the JavaScript implementations
+
+::: footer
+Zarr is [independently implemented across languages](https://zarr.dev/implementations/)
+:::
+
+::: footer
+:::
+
+## What is GeoZarr?
+
+A geospatial extension for the Zarr specification, formalizing metadata expectations.
+
+![](_static/geozarr-repo.png){fig-alt="GeoZarr repository" fig-align="center" width="60%"}
+
+::: footer
+Read [the spec](https://github.com/zarr-developers/geozarr-spec/)!
+:::
+
+## Some history
+
+![](_static/geozarr-activity.png){fig-alt="GeoZarr commit activity" fig-align="center" width="95%"}
+
+::: footer
+:::
+
+## Why is this an exciting time?
+
+Multi-dimensional geospatial solutions can bring real impact across humanitarian, scientific, and industrial needs
+
+::: footer
+:::
+
+## Why is this an exciting time?
+
+Experimental CRS handling across the Python ecosystem
+
+![](_static/xproj-docs.png){fig-alt="XProj repository" fig-align="center" width="60%"}
+
+::: footer
+Read more in the [xproj docs](https://xproj.readthedocs.io/en/latest/index.html)
+:::
+
+
+## Why is this an exciting time?
+
+Generic support for analytic/functional coordinates in Xarray
+
+![](_static/flexible-coordinates.png){fig-alt="Flexible coordinates PR" fig-align="center" width="60%"}
+
+::: footer
+Check out the [pull request](https://github.com/pydata/xarray/pull/9543)
+:::
+
+## Why is this an exciting time?
+
+Draft ZEP for breaking the stalemate on building Zarr extensions
+
+![](_static/zep9.png){fig-alt="Zarr Extension Naming ZEP" fig-align="center" width="60%"}
+
+::: footer
+Check out the [draft ZEP](https://zarr.dev/zeps/draft/ZEP0009.html)
+:::
+
+
+## Why is this an exciting time?
+
+We have a deadline!
+
+![](_static/CNG-conference.png){fig-alt="Cloud Native Geospatial Conference Home Page" fig-align="center" width="60%"}
+
+::: footer
+Check out the [conference](https://2025-ut.cloudnativegeo.org/)
+:::
+
+## What do we need?
+
+To prove whether OGC TMS 2.0 is sufficient for performant and reliable rendering and analysis
+
+![](_static/OGC-TMS.png){fig-alt="OGC TMS 2.0 Standard" fig-align="center" width="60%"}
+
+::: footer
+Check out the [standard](https://www.ogc.org/standards/tms)
+
+:::
+
+## What do we need?
+
+To push forward Xarray functional coordinates for geospatial
+
+![](_static/Pangeo-NetCDF-limitations.png){fig-alt="Pangeo issue on )NetCDF limitations" fig-align="center" width="60%"}
+
+::: footer
+Check out the [Discourse post](https://discourse.pangeo.io/t/example-which-highlights-the-limitations-of-netcdf-style-coordinates-for-large-geospatial-rasters/4140)
+:::
+
+
+
+## What do we need?
+
+To demonstrate how XPublish and Titiler's Xarray extension fit together (or not)
+
+:::: {.columns}
+
+::: {.column width="50%"}
+![](_static/xpublish-community.png){fig-alt="XPublish on GitHub" fig-align="center" width="80%"}
+:::
+
+
+::: {.column width="50%"}
+![](_static/titiler-multidim-repo.png){fig-alt="Titiler-multidim on GitHub" fig-align="center" width="80%"}
+:::
+
+::::
+
+::: footer
+Check out [XPublish](https://github.com/xpublish-community/xpublish) and [Titiler-Xarray](https://github.com/developmentseed/titiler/tree/main/src/titiler/xarray)
+:::
+
+## What do we need?
+
+To show how to get the most out of Zarr and STAC
+
+![](_static/zarr-stac-issue.png){fig-alt="Issue on Zarr + STAC best practices" fig-align="center" width="60%"}
+
+::: footer
+Help us [tackle this issue](https://github.com/cloudnativegeo/cloud-optimized-geospatial-formats-guide/issues/134)
+:::
+
+## Let's get going! 🚀
+
+::: footer
+Build code in [GeoZarr examples](https://github.com/developmentseed/geozarr-examples)!
+:::
