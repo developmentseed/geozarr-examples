@@ -44,11 +44,11 @@ for i, overview in enumerate(geotiff.overviews):
     )
 
 multiscales_attrs = create_multiscales_layout(levels)
-multiscales_attrs["multiscales"]["layout"][0]["spatial:transform"] = list(geotiff.transform)
+multiscales_attrs["multiscales"]["layout"][0]["spatial:transform"] = geotiff.transform[:6]
 for item, overview in zip(
     multiscales_attrs["multiscales"]["layout"][1:], geotiff.overviews, strict=True
 ):
-    item["spatial:transform"] = list(overview.transform)
+    item["spatial:transform"] = overview.transform[:6]
 
 
 zarr_conventions = create_zarr_conventions(
