@@ -12,8 +12,12 @@ from geozarr_toolkit import (
 from obstore.store import S3Store
 from zarr.storage import LocalStore
 
+DIMENSIONS = ("band", "Y", "X")
+
+
 store = S3Store("sentinel-cogs", region="us-west-2", skip_signature=True)
-path = "sentinel-s2-l2a-cogs/12/S/UF/2022/6/S2B_12SUF_20220609_0_L2A/TCI.tif"
+# path = "sentinel-s2-l2a-cogs/12/S/UF/2022/6/S2B_12SUF_20220609_0_L2A/TCI.tif"
+path = "sentinel-s2-l2a-cogs/18/T/WL/2026/1/S2B_18TWL_20260101_0_L2A/TCI.tif"
 
 geotiff = await GeoTIFF.open(path, store=store)
 
@@ -76,11 +80,21 @@ root.attrs.update(geozarr_attrs)
 
 # Write the full-resolution image as level "0"
 base_array = await geotiff.read()
-root.create_array("0", data=base_array.data, chunks=(3, 512, 512))
+root.create_array(
+    "0",
+    data=base_array.data,
+    chunks=(3, 512, 512),
+    dimension_names=DIMENSIONS,
+)
 print(f"Level 0 (base): shape={base_array.data.shape}, dtype={base_array.data.dtype}")
 
 # Write each overview as a separate level
 for i, overview in enumerate(geotiff.overviews):
     ov_array = await overview.read()
-    root.create_array(str(i + 1), data=ov_array.data, chunks=(3, 512, 512))
+    root.create_array(
+        str(i + 1),
+        data=ov_array.data,
+        chunks=(3, 512, 512),
+        dimension_names=DIMENSIONS,
+    )
     print(f"Level {i + 1} (overview): shape={ov_array.data.shape}")
