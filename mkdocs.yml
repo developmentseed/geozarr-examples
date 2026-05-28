@@ -22,6 +22,7 @@ nav:
     - "Inheritance": "examples/inheritance.ipynb"
     - "Composition": "examples/composition.ipynb"
     - "COG to Zarr": "examples/cog-to-zarr.ipynb"
+    - "Read Chunk Shape": "examples/read-chunk-shape.ipynb"
   #   - "Multiscales Convention":
   #     - "WebMercatorQuad (Zarr V2)": "examples/multiscales/03_multiscales_as_WebMercatorQuad_ZarrV2.ipynb"
   #     - "WebMercatorQuad (Zarr V3)": "examples/multiscales/04_multiscales_as_WebMercatorQuad_ZarrV3.ipynb"

@@ -5,7 +5,7 @@
 [GeoZarr examples](https://github.com/developmentseed/geozarr-examples) provides examples and documentation for working with GeoZarr-compliant Zarr stores, using the modular [Zarr conventions](https://github.com/zarr-conventions):
 
 - **[spatial:](https://github.com/zarr-conventions/spatial)** - Spatial coordinate and transformation information
-- **[proj:](https://github.com/zarr-experimental/geo-proj)** - Coordinate Reference System (CRS) information
+- **[proj:](https://github.com/zarr-conventions/proj)** - Coordinate Reference System (CRS) information
 - **[multiscales](https://github.com/zarr-conventions/multiscales)** - Multiscale pyramid layout
 
 
@@ -40,7 +40,7 @@ See the [GeoZarr FAQ](https://geozarr.org/faq) for common questions about GeoZar
 - [GeoZarr spec](https://github.com/zarr-developers/geozarr-spec) [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/)
 - [CF Conventions](https://cfconventions.org/) - Climate and Forecast metadata conventions
 - [STAC Extensions Template](https://github.com/stac-extensions/template) - Convention documentation structure
-- [EOPF-Explorer Data Model](https://github.com/EOPF-Explorer/data-model) - Base implementation for geo-proj and spatial conventions
+- [EOPF-Explorer Data Model](https://github.com/EOPF-Explorer/data-model) - Base implementation for proj and spatial conventions
 - [Zarr Extensions PR #21](https://github.com/zarr-developers/zarr-extensions/pull/21) - Original draft of conventions
 
 ### Code Attribution
